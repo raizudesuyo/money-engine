@@ -1,0 +1,100 @@
+{
+    "maiVaultContracts": [
+        {
+            "name": "Wrapped Ether",
+            "address": "0x3fd939B017b31eaADF9ae50C7fF7Fa5c0661d47C",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Wrapped BTC",
+            "address": "0x37131aEDd3da288467B6EBe9A77C523A700E6Ca1",
+            "type": "erc20QiStablecoinwbtc",
+            "chain": "polygon"
+        },
+        {
+            "name": "ChainLink",
+            "address": "0x61167073E31b1DAd85a3E531211c7B8F1E5cAE72",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Compounding Aave Market AAVE",
+            "address": "0x578375c3af7d61586c2C3A7BA87d2eEd640EFA40",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Aave",
+            "address": "0x87ee36f780ae843A78D5735867bc1c13792b7b11",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Compounding Aave Market MATIC",
+            "address": "0x88d84a85A87ED12B8f098e8953B322fF789fCD1a",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Aavegotchi GHST",
+            "address": "0xF086dEdf6a89e7B16145b03a6CB0C0a9979F1433",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Curve Dao Token",
+            "address": "0x98B5F32dd9670191568b661a3e847Ed764943875",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Balancer",
+            "address": "0x701A1824e5574B0b6b1c8dA808B184a7AB7A2867",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Dragon QUICK",
+            "address": "0x649Aa6E6b6194250C077DF4fB37c23EE6c098513",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Compounding Aave Market WETH",
+            "address": "0x11A33631a5B5349AF3F165d2B7901A4d67e561ad",
+            "type": "erc20QiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Compounding Aave Market WBTC",
+            "address": "0x7dDA5e1A389E0C1892CaF55940F5fcE6588a9ae0",
+            "type": "erc20QiStablecoincamwbtc",
+            "chain": "polygon"
+        },
+        {
+            "name": "Frax Share",
+            "address": "0xff2c44Fb819757225a176e825255a01B3B8BB051",
+            "type": "crosschainQiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Stake DAO am3CRV Strategy",
+            "address": "0x57Cbf36788113237D64E46f25A88855c3dff1691",
+            "type": "crosschainQiStablecoinV2",
+            "chain": "polygon"
+        },
+        {
+            "name": "Compounding Aave Market DAI",
+            "address": "0xD2FE44055b5C874feE029119f70336447c8e8827",
+            "type": "crosschainQiStablecoin",
+            "chain": "polygon"
+        },
+        {
+            "name": "Polygon MATIC",
+            "address": "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1",
+            "type": "QiStablecoin",
+            "chain": "polygon"
+        }
+    ]
+}

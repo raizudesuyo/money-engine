@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  db_host: qidao-monitoring-engine-db-postgres
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: db-cred

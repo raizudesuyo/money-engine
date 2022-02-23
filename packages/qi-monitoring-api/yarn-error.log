@@ -1,0 +1,46 @@
+Arguments: 
+  /usr/bin/node /home/jerome/.yarn/bin/yarn.js add @nestjs
+
+PATH: 
+  /home/jerome/.yarn/bin:/home/jerome/.config/yarn/global/node_modules/.bin:/home/jerome/.yarn/bin:/home/jerome/.config/yarn/global/node_modules/.bin:/home/jerome/.local/bin:/home/jerome/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/jerome/.dotnet/tools:/var/lib/flatpak/exports/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin:/usr/lib/jvm/default/bin
+
+Yarn version: 
+  1.22.17
+
+Node version: 
+  17.3.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@nestjs: Request "https://registry.yarnpkg.com/@nestjs" returned a 405
+      at Request.params.callback [as _callback] (/home/jerome/.yarn/lib/cli.js:67038:18)
+      at Request.self.callback (/home/jerome/.yarn/lib/cli.js:140883:22)
+      at Request.emit (node:events:390:28)
+      at Request.<anonymous> (/home/jerome/.yarn/lib/cli.js:141855:10)
+      at Request.emit (node:events:390:28)
+      at IncomingMessage.<anonymous> (/home/jerome/.yarn/lib/cli.js:141777:12)
+      at Object.onceWrapper (node:events:509:28)
+      at IncomingMessage.emit (node:events:402:35)
+      at endReadableNT (node:internal/streams/readable:1343:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "qi-monitoring-api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

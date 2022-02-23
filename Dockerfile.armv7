@@ -1,0 +1,12 @@
+# Find a way to remove 2nd ts-node shiet
+# debian buster, tested to work on orangepi one
+FROM node:lts
+RUN npm install -g ts-node
+WORKDIR /qidao-monitoring-backend
+COPY . .
+RUN yarn install --network-timeout=3600000 && yarn build
+
+EXPOSE 7070
+
+ENTRYPOINT [ "yarn" ]
+CMD [ "serve-ts",  "-r", "true", "-l", "true" ]

@@ -1,0 +1,27 @@
+{
+  "name": "qi-monitoring-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nestjs/common": "^8.3.1",
+    "@nestjs/core": "^8.3.1",
+    "@nestjs/swagger": "^5.2.0",
+    "nestjs": "^0.0.1",
+    "nestjs-pino": "^2.5.0",
+    "qi-common": "1.0.0",
+    "qi-db": "1.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.5.4",
+    "typeorm": "^0.2.43"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^8.3.1",
+    "@types/jest": "^27.4.0"
+  }
+}

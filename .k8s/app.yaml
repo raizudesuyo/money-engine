@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qidao-monitoring-engine-backend-service
+  labels:
+    app: qidao-monitoring-engine-backend
+spec:
+  type: NodePort
+  selector:
+    app: qidao-monitoring-engine-backend
+  ports:
+  - port: 7070
+    targetPort: 7070
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qidao-monitoring-engine-backend
+  labels:
+    app: qidao-monitoring-engine-backend
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qidao-monitoring-engine-backend
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: qidao-monitoring-engine-backend
+        tier: backend
+    spec:
+      containers:
+      - name: qidao-monitoring-engine-backend
+        image: 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qidao-monitoring-backend:latest
+        imagePullPolicy: Always
+        ports:
+          - name: restapi
+            containerPort: 7070
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "2000m"
+        envFrom:
+          - configMapRef:
+              name: db-cred
+      imagePullSecrets:
+          - name: regcred
+      nodeSelector:
+        kubernetes.io/arch: arm64
