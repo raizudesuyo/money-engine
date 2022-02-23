@@ -3,9 +3,11 @@ import { reloadAll } from './reloadAll';
 import { listen } from './qiEventsListener';
 import { createConnection } from 'typeorm';
 
-// process all the shit first on the connection
-
-createConnection().then(async () => {
+export const syncAndListenToEvents = () => createConnection().then(async () => {
     reloadAll()
+    listen()
+})
+
+export const listenToEvents = () => createConnection().then(async () => {
     listen()
 })

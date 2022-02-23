@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { VaultDataResult, VaultsResult, SortType } from '../app/app.definitions';
 import { MoreThan } from 'typeorm';
-import { QiVault } from 'qi-db/src/entity/QiVault.entity';
-import { QiVaultData } from 'qi-db/src/entity/QiVaultData.entity';
+import { QiVault, QiVaultData } from 'qi-db';
 import { getConnection } from 'typeorm'
 
 @Injectable()

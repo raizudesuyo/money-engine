@@ -2,20 +2,20 @@
 /**
  * @type require('typeorm').ConnectionOptions
  */
-module.exports = {
-   synchronize: true,
+ module.exports = {
+   synchronize: false,
    logging: false,
-   entities: ['src/entity/*.entity.{js,ts}'],
+   entities: ['node_modules/qi-db/src/entity/*.entity.{js,ts}'],
    migrations: [
-      "src/migration/*.ts"
+      "node_modules/qi-db/src/migration/*.ts"
    ],
    // subscribers: [
    //    "src/subscriber/**/*.ts"
    // ],
    cli: {
-      "entitiesDir": "src/entity",
-      "migrationsDir": "src/migration",
-      "subscribersDir": "src/subscriber"
+      "entitiesDir": "node_modules/qi-db/src/entity",
+      "migrationsDir": "node_modules/qi-db/src/migration",
+      "subscribersDir": "node_modules/qi-db/src/subscriber"
    },
    type: process.env.db_type || 'postgres',
    host: process.env.db_host || 'localhost',

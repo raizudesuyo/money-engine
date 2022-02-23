@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { QiVaultData } from '../../entity/QiVaultData.entity';
-import { MoreThan } from 'typeorm';
+import { QiVaultData } from 'qi-db';
+import { MoreThan, getConnection } from 'typeorm';
 import { VaultDataOnlyResult, SortType } from '../app/app.definitions';
-import { DbConnectionProvider } from '../../providers/ConnectionProvider';
 
 @Injectable()
 export class VaultDataService {
@@ -28,7 +27,7 @@ export class VaultDataService {
             break;
         }
 
-        const [vaultData, resultCount] = await (await DbConnectionProvider.getInstance()).manager.findAndCount(QiVaultData, {
+        const [vaultData, resultCount] = await getConnection().manager.findAndCount(QiVaultData, {
             where: {
               collateralRatio: MoreThan(1)
             },

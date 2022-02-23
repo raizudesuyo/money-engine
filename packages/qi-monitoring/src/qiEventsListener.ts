@@ -1,26 +1,30 @@
 import { config } from 'dotenv'
 config();
 
-import { LoggerSingleton } from './providers/LoggerSingleton';
-import { IData, IMaiVaultContractData } from 'qi-common/interfaces/data';
-import { MaticWebSockerSingleton } from './providers/MaticWebSocketSingleton';
-import { ethers, BigNumber } from 'ethers';
-import { IQiDaoVaultService, IQiDaoVaultData } from './providers/qi-dao/IQiDaoVaultContract';
-import { updateVaultUserData } from './utils/QiDaoPrismaUtils';
-import { IQiDaoSmartContractListener } from './providers/qi-dao/smart-contract-listener/IQiDaoSmartContractListener';
-import { QiDaoVaultContractAdapterFactory } from './providers/qi-dao/smart-contract-service/QiDaoVaultContractAdapterFactory';
-import { QiDaoVaultService } from './providers/qi-dao/QiDaoVaultService';
-import { QiDaoSmartContractListenerFactory } from './providers/qi-dao/smart-contract-listener/QiDaoSmartContractListenerFactory';
-import { QiVault } from 'qi-db/src/entity/QiVault.entity';
-import { QiVaultData } from 'qi-db/src/entity/QiVaultData.entity';
 import { getConnection } from 'typeorm'
+import { ethers, BigNumber } from 'ethers';
+
+import { 
+    IData, 
+    IMaiVaultContractData, 
+    IQiDaoVaultService, 
+    IQiDaoVaultData, 
+    QiDaoVaultService, 
+    QiDaoVaultContractAdapterFactory, 
+    QiDaoSmartContractListenerFactory, 
+    IQiDaoSmartContractListener } from 'qi-common';
+import { QiVault, QiVaultData } from 'qi-db';
+
+import { LoggerSingleton } from './providers/LoggerSingleton';
+import { MaticWebSockerSingleton } from './providers/MaticWebSocketSingleton';
+import { updateVaultUserData } from './utils/QiDaoPrismaUtils';
 
 // Sets up listener for each, assume everything is a erc20QiStablecoin event, coz they mostly are
 // Only update support for cross-chain vaults
 
 interface ListenerParams {
     vaultListener: IQiDaoSmartContractListener,
-    vault: IMaiVaultContractData, 
+    vault: IMaiVaultContractData,
     vaultService: IQiDaoVaultService
 }
 
@@ -65,10 +69,10 @@ export const listen = async () => {
 }
 
 // Gets vault via vault address (address of the vault in their chain, most probably unique)
-const getQiVault = async (vaultAddress: string) => (await getConnection().manager.find(QiVault, { where: { vaultAddress: vaultAddress }}))[0];
+const getQiVault = async (vaultAddress: string) => (await getConnection().manager.find(QiVault, { where: { vaultAddress: vaultAddress } }))[0];
 
 // Gets vault data based from what vault it is and its id on chain (not the id, don't be mistaken, vaultId is based from the chain)
-const getQiVaultData = async (vault: QiVault, vaultId: number) => (await getConnection().manager.find(QiVaultData, { where: { vaultId: vaultId, vault: { id: vault.id } }, relations: ['vault']}))[0];
+const getQiVaultData = async (vault: QiVault, vaultId: number) => (await getConnection().manager.find(QiVaultData, { where: { vaultId: vaultId, vault: { id: vault.id } }, relations: ['vault'] }))[0];
 
 const safeConvertBigNumberToNumber = (n: BigNumber) => {
     try {
@@ -79,7 +83,7 @@ const safeConvertBigNumberToNumber = (n: BigNumber) => {
 };
 
 const listenToCreateVault = (params: ListenerParams) => {
-    const { vaultListener: contractListener,  vault } = params;
+    const { vaultListener: contractListener, vault } = params;
     const log = LoggerSingleton.getInstance();
 
     // contract.on works
@@ -97,7 +101,7 @@ const listenToCreateVault = (params: ListenerParams) => {
 }
 
 const listenToCollateralDeposits = (params: ListenerParams) => {
-    const { vaultListener: contractListener,  vault, vaultService: contractGateway } = params;
+    const { vaultListener: contractListener, vault, vaultService: contractGateway } = params;
     const log = LoggerSingleton.getInstance();
 
     // contract.on works
@@ -107,11 +111,11 @@ const listenToCollateralDeposits = (params: ListenerParams) => {
         const qiVault = await getQiVault(vault.address);
         const vaultData = await getQiVaultData(qiVault, id.toNumber());
 
-        if (!vaultData) { 
+        if (!vaultData) {
             log.silly(`${logMessage} but it hasn't been synced yet 😥`)
             return;
-        } else { 
-            log.info(logMessage); 
+        } else {
+            log.info(logMessage);
         }
 
         // TODO: update algorithm to include latest dollar price of asset?
@@ -119,7 +123,7 @@ const listenToCollateralDeposits = (params: ListenerParams) => {
         const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault.dollarValue));
         const predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
 
-        getConnection().manager.update(QiVaultData, vaultData.id, { 
+        getConnection().manager.update(QiVaultData, vaultData.id, {
             predictedCollateralAmount: predictedCollateralAmount.toString(),
             predictedCollateralRatio: safeConvertBigNumberToNumber(predictedDebtRatio),
             predictedTotalCollateralValue: predictedCollateralValue.toString(),
@@ -128,7 +132,7 @@ const listenToCollateralDeposits = (params: ListenerParams) => {
 }
 
 const listenToCollateralWithdrawals = (params: ListenerParams) => {
-    const { vaultListener: contractListener,  vault, vaultService: contractGateway } = params;
+    const { vaultListener: contractListener, vault, vaultService: contractGateway } = params;
     const log = LoggerSingleton.getInstance();
 
     // contract.on works
@@ -138,11 +142,11 @@ const listenToCollateralWithdrawals = (params: ListenerParams) => {
         const qiVault = await getQiVault(vault.address);
         const vaultData = await getQiVaultData(qiVault, id.toNumber());
 
-        if (!vaultData) { 
+        if (!vaultData) {
             log.silly(`${logMessage} but it hasn't been synced yet 😥`)
             return;
-        } else { 
-            log.info(logMessage); 
+        } else {
+            log.info(logMessage);
         }
 
         // TODO: update algorithm to include latest dollar price of asset?
@@ -151,7 +155,7 @@ const listenToCollateralWithdrawals = (params: ListenerParams) => {
         const predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
 
         // Make a guess work for now, on deposit update predicted values,
-        getConnection().manager.update(QiVaultData, vaultData.id, { 
+        getConnection().manager.update(QiVaultData, vaultData.id, {
             predictedCollateralAmount: predictedCollateralAmount.toString(),
             predictedCollateralRatio: safeConvertBigNumberToNumber(predictedDebtRatio),
             predictedTotalCollateralValue: predictedCollateralValue.toString(),
@@ -160,7 +164,7 @@ const listenToCollateralWithdrawals = (params: ListenerParams) => {
 }
 
 const listenToTokenBorrows = (params: ListenerParams) => {
-    const { vaultListener: contractListener,  vault, vaultService: contractGateway } = params;
+    const { vaultListener: contractListener, vault, vaultService: contractGateway } = params;
     const log = LoggerSingleton.getInstance();
 
     contractListener.onTokenBorrow(async (id, amount) => {
@@ -169,19 +173,19 @@ const listenToTokenBorrows = (params: ListenerParams) => {
         const qiVault = await getQiVault(vault.address);
         const vaultData = await getQiVaultData(qiVault, id.toNumber());
 
-        if (!vaultData) { 
+        if (!vaultData) {
             log.silly(`${logMessage} but it hasn't been synced yet 😥`)
             return;
-        } else { 
-            log.info(logMessage); 
+        } else {
+            log.info(logMessage);
         }
 
         // TODO: update algorithm to include latest dollar price of asset?
         const newMaiDebt = BigNumber.from(vaultData.maiDebt).add(amount);
-        const predictedDebtRatio =  BigNumber.from(vaultData.predictedCollateralAmount).mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
+        const predictedDebtRatio = BigNumber.from(vaultData.predictedCollateralAmount).mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
 
         // Make a guess work for now, on deposit update predicted values,
-        getConnection().manager.update(QiVaultData, vaultData.id, { 
+        getConnection().manager.update(QiVaultData, vaultData.id, {
             predictedCollateralRatio: safeConvertBigNumberToNumber(predictedDebtRatio),
             maiDebt: newMaiDebt.toString(),
         })
@@ -189,7 +193,7 @@ const listenToTokenBorrows = (params: ListenerParams) => {
 }
 
 const listenToTokenRepayments = (params: ListenerParams) => {
-    const { vaultListener: contractListener,  vault, vaultService: contractGateway } = params;
+    const { vaultListener: contractListener, vault, vaultService: contractGateway } = params;
     const log = LoggerSingleton.getInstance();
 
     contractListener.onTokenRepaid(async (id, amount, closingFee) => {
@@ -198,11 +202,11 @@ const listenToTokenRepayments = (params: ListenerParams) => {
         const qiVault = await getQiVault(vault.address);
         const vaultData = await getQiVaultData(qiVault, id.toNumber());
 
-        if (!vaultData) { 
+        if (!vaultData) {
             log.silly(`${logMessage} but it hasn't been synced yet 😥`)
             return;
-        } else { 
-            log.info(logMessage); 
+        } else {
+            log.info(logMessage);
         }
 
         // TODO: update algorithm to include latest dollar price of asset?
@@ -213,7 +217,7 @@ const listenToTokenRepayments = (params: ListenerParams) => {
 
         // Make a guess work for now, on deposit update predicted values,
 
-        getConnection().manager.update(QiVaultData, vaultData.id, { 
+        getConnection().manager.update(QiVaultData, vaultData.id, {
             predictedCollateralRatio: safeConvertBigNumberToNumber(predictedDebtRatio),
             predictedTotalCollateralValue: predictedCollateralValue.toString(),
             predictedCollateralAmount: predictedCollateralAmount.toString(),
@@ -224,24 +228,24 @@ const listenToTokenRepayments = (params: ListenerParams) => {
 
 
 const listenToVaultLiquidations = (params: ListenerParams) => {
-    const { vaultListener: contractListener,  vault, vaultService: contractGateway } = params;
+    const { vaultListener: contractListener, vault, vaultService: contractGateway } = params;
     const log = LoggerSingleton.getInstance();
 
     contractListener.onLiquidateVault(async (id, amount, buyer) => {
         const logMessage = `Vault ${vault.name} # ${id} Liquidated by ${buyer}`;
-        
+
         const qiVault = await getQiVault(vault.address);
         const vaultUserData: IQiDaoVaultData = await contractGateway.getVaultUserData(id.toNumber()).catch(() => null);
 
-        if (!vaultUserData) { 
+        if (!vaultUserData) {
             log.silly(`${logMessage} but it hasn't been synced yet 😥`)
             return;
-        } else { 
-            log.info(logMessage); 
+        } else {
+            log.info(logMessage);
         }
-        
 
-        if(vaultUserData) {
+
+        if (vaultUserData) {
             updateVaultUserData({
                 collateralAmount: vaultUserData.collateralAmount.toString(),
                 collateralRatio: vaultUserData.collateralRatio.lt(1000) ? vaultUserData.collateralRatio.toNumber() : 1000,

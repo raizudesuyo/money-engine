@@ -1,10 +1,6 @@
 import { BigNumber } from 'ethers';
-// import { PrismaClientSingleton } from '../providers/PrismaClientSingleton';
-import { QiVault } from 'qi-db/src/entity/QiVault.entity';
-import { QiVaultData } from 'qi-db/src/entity/QiVaultData.entity';
+import { QiVault, QiVaultData } from 'qi-db';
 import { getConnection } from 'typeorm'
-
-//TODO: Migrate to Vaults Service
 
 export interface UpdateVaultParams {
     vaultName?: string

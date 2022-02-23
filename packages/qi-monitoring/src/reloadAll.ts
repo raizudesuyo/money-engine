@@ -1,14 +1,12 @@
-import { IData } from 'qi-common/interfaces/data';
 import { config } from 'dotenv'
 import { filter } from 'lodash'
 config();
 
+import { IData, IQiDaoVaultData, QiDaoVaultService, QiDaoVaultContractAdapterFactory } from 'qi-common';
+
 import { updateVaultData, updateVaultUserData } from './utils/QiDaoPrismaUtils';
 import { LoggerSingleton } from './providers/LoggerSingleton';
-import { IQiDaoVaultData } from './providers/qi-dao/IQiDaoVaultContract';
-import { QiDaoVaultContractAdapterFactory } from './providers/qi-dao/smart-contract-service/QiDaoVaultContractAdapterFactory';
 import { MaticWebSockerSingleton } from './providers/MaticWebSocketSingleton';
-import { QiDaoVaultService } from './providers/qi-dao/QiDaoVaultService';
 
 export const reloadAll = async () => {
     const log = LoggerSingleton.getInstance();

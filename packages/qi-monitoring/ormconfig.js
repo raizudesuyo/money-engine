@@ -7,7 +7,7 @@ module.exports = {
    logging: false,
    entities: ['node_modules/qi-db/src/entity/*.entity.{js,ts}'],
    migrations: [
-      "src/migration/*.ts"
+      "node_modules/qi-db/src/migration/*.ts"
    ],
    // subscribers: [
    //    "src/subscriber/**/*.ts"
