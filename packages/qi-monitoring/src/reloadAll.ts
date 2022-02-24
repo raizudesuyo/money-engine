@@ -1,17 +1,13 @@
-import { config } from 'dotenv'
 import { filter } from 'lodash'
-config();
 
-import { IData, IQiDaoVaultData, QiDaoVaultService, QiDaoVaultContractAdapterFactory } from 'qi-common';
+import { IData, IQiDaoVaultData, QiDaoVaultService, QiDaoVaultContractAdapterFactory, Web3WebSocketFactory, LoggerSingleton, Web3Chain } from 'qi-common';
 
 import { updateVaultData, updateVaultUserData } from './utils/QiDaoPrismaUtils';
-import { LoggerSingleton } from './providers/LoggerSingleton';
-import { MaticWebSockerSingleton } from './providers/MaticWebSocketSingleton';
+
 
 export const reloadAll = async () => {
     const log = LoggerSingleton.getInstance();
-    const maticProvider = MaticWebSockerSingleton.getInstance();
-
+    
     log.info('Starting reload all data');
     const data = require('../config.json') as IData;
 
@@ -19,9 +15,16 @@ export const reloadAll = async () => {
     
     // prints check collateral percentage for each
     validContracts.forEach(async (contract) => {
+    
+        const web3Provider = Web3WebSocketFactory.getProvider(contract.chain as Web3Chain)
+
+        if(!web3Provider) {
+            return;
+        }
+    
         const vaultAdapter = QiDaoVaultContractAdapterFactory.getProvider({
             contractAddress: contract.address,
-            contractProvider: maticProvider,
+            contractProvider: web3Provider,
             contractType: contract.type
         });
 

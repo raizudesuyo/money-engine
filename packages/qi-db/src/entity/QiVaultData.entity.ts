@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, Timestamp, ManyToOne, Index, UpdateDateColumn, CreateDateColumn} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, Timestamp, ManyToOne, Index, UpdateDateColumn, CreateDateColumn, JoinColumn} from "typeorm";
 import { QiVault } from "./QiVault.entity";
 
 @Entity()
@@ -37,7 +37,11 @@ export class QiVaultData {
     owner: string;
 
     @ManyToOne(type => QiVault, vault => vault.vaultData)
+    @JoinColumn({ name: 'qiVaultId', referencedColumnName: 'id' })
     vault: QiVault
+
+    @Column()
+    qiVaultId: number
 
     @CreateDateColumn()
     @Index()

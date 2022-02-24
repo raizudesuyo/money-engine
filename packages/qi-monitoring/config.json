@@ -95,6 +95,132 @@
             "address": "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1",
             "type": "QiStablecoin",
             "chain": "polygon"
+        },
+        {
+            "name": "Fantom",
+            "address": "0x1066b8FC999c1eE94241344818486D5f944331A0",
+            "type": "crosschainNativeQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Yearn Fantom",
+            "address": "0x7efB260662a6FA95c1CE1092c53Ca23733202798",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Beefy Staked BIFI",
+            "address": "0x75D4aB6843593C111Eeb02Ff07055009c836A1EF",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Beefy Scream LINK",
+            "address": "0x8e5e4D08485673770Ab372c05f95081BE0636Fa2",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "ChainLink",
+            "address": "0xd6488d586E8Fcd53220e4804D767F19F5C846086",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "BitCoin",
+            "address": "0xE5996a2cB60eA57F03bf332b5ADC517035d8d094",
+            "type": "crosschainQiStablecoinwbtc",
+            "chain": "fantom"
+        },
+        {
+            "name": "Beefy Scream DAI",
+            "address": "0xBf0ff8ac03f3E0DD7d8faA9b571ebA999a854146",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Beefy Scream Fantom",
+            "address": "0x3609A304c6A41d87E895b9c1fd18c02ba989Ba90",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Beefy Scream WBTC",
+            "address": "0x5563Cc1ee23c4b17C861418cFF16641D46E12436",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Ethereum",
+            "address": "0xD939c268C49c442F037E968F045ba02f499562D4",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Beefy Scream ETH",
+            "address": "0xC1c7eF18ABC94013F6c58C6CdF9e829A48075b4e",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Sushi",
+            "address": "0x267bDD1C19C932CE03c7A62BBe5b95375F9160A6",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Aave",
+            "address": "0xdB09908b82499CAdb9E6108444D5042f81569bD9",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Yearn Dai",
+            "address": "0x682E473FcA490B0adFA7EfE94083C1E63f28F034",
+            "type": "crosschainQiStablecoin",
+            "chain": "fantom"
+        },
+        {
+            "name": "Beefy Aave AVAX",
+            "address": "0xfA19c1d104F4AEfb8d5564f02B3AdCa1b515da58",
+            "type": "crosschainQiStablecoin",
+            "chain": "avalanche"
+        },
+        {
+            "name": "Stake DAO av3CRV Strategy",
+            "address": "0x13A7fE3Ab741ea6301Db8B164290bE711f546A73",
+            "type": "crosschainQiStablecoinV2",
+            "chain": "avalanche"
+        },
+        {
+            "name": "Ethereum",
+            "address": "0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
+            "type": "unknown",
+            "chain": "moonriver"
+        },
+        {
+            "name": "Moonriver",
+            "address": "0x5dB6617DDF077d76CFD9d7fC0Fa91aAabc3da683",
+            "type": "unknown",
+            "chain": "moonriver"
+        },
+        {
+            "name": "Harmony One",
+            "address": "0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
+            "type": "unknown",
+            "chain": "harmony"
+        },
+        {
+            "name": "Wrapped Ether",
+            "address": "0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
+            "type": "unknown",
+            "chain": "harmony"
+        },
+        {
+            "name": "Wrapped Bitcoin",
+            "address": "0x4592e0bcf01121757e70404915F220a77Ffb4E15",
+            "type": "unknown",
+            "chain": "harmony"
         }
     ]
 }

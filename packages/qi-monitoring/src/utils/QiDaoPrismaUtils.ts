@@ -32,11 +32,13 @@ export const updateVaultData = async (params: UpdateVaultParams): Promise<QiVaul
         vaultChain
     } = params;
 
-    let vault = manager.find(QiVault, {
+    let vaults = await manager.find(QiVault, {
         where: {
             tokenAddress: params.tokenAddress
         },
-    })[0]
+    })
+
+    let vault = vaults[0];
 
     const gainRationAsNumber = gainRatio.toNumber();
     const minimumRatioAsNumber = minimumRatio.toNumber();
@@ -87,7 +89,7 @@ export const updateVaultUserData = async (params: UpdateVaultDataParams) => {
 
     let vaultData = (await manager.find(QiVaultData, {
         where: {
-            vault: { vaultName: vault.vaultName },
+            vault: { vaultName: vault.vaultName, vaultChain: vault.vaultChain },
             vaultId: vaultId
         },
         relations: ['vault']

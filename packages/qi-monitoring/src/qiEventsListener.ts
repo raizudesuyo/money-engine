@@ -1,6 +1,3 @@
-import { config } from 'dotenv'
-config();
-
 import { getConnection } from 'typeorm'
 import { ethers, BigNumber } from 'ethers';
 
@@ -15,9 +12,9 @@ import {
     IQiDaoSmartContractListener } from 'qi-common';
 import { QiVault, QiVaultData } from 'qi-db';
 
-import { LoggerSingleton } from './providers/LoggerSingleton';
-import { MaticWebSockerSingleton } from './providers/MaticWebSocketSingleton';
+import { LoggerSingleton } from 'qi-common/providers/LoggerSingleton';
 import { updateVaultUserData } from './utils/QiDaoPrismaUtils';
+import { Web3WebSocketFactory, Web3Chain } from 'qi-common/providers/web3/Web3WebsocketFactory';
 
 // Sets up listener for each, assume everything is a erc20QiStablecoin event, coz they mostly are
 // Only update support for cross-chain vaults
@@ -34,11 +31,18 @@ export const listen = async () => {
     log.info('Starting to Listen');
     const data = require('../config.json') as IData;
 
-    const provider = MaticWebSockerSingleton.getInstance();
-
+    
     data.maiVaultContracts.forEach((vault) => {
         log.info(`Listening to Events ${vault.name}`)
         // const contract = Erc20QiStablecoin__factory.connect(vault.address, provider);
+
+        const provider = Web3WebSocketFactory.getProvider(vault.chain as Web3Chain);
+
+        if(!provider) {
+            log.info(`Unssuported vault ${vault.chain}-${vault.name}`)
+            return;
+        }
+
         const vaultAdapter = QiDaoVaultContractAdapterFactory.getProvider({
             contractAddress: vault.address,
             contractProvider: provider,
@@ -65,7 +69,7 @@ export const listen = async () => {
         listenToVaultLiquidations(params);
     })
 
-    log.info(provider.listenerCount())
+    // log.info(provider.listenerCount())
 }
 
 // Gets vault via vault address (address of the vault in their chain, most probably unique)
@@ -95,7 +99,14 @@ const listenToCreateVault = (params: ListenerParams) => {
         getConnection().manager.save(QiVaultData, {
             owner: ownerAddress,
             vaultId: id.toNumber(),
-            vault: qiVault
+            vault: qiVault,
+            collateralRatio: 0,
+            collateralAmount: '0',
+            maiDebt: '0',
+            predictedCollateralAmount: '0',
+            predictedCollateralRatio: 0,
+            predictedTotalCollateralValue: '0',
+            totalCollateralValue: '0',
         })
     });
 }
@@ -121,7 +132,15 @@ const listenToCollateralDeposits = (params: ListenerParams) => {
         // TODO: update algorithm to include latest dollar price of asset?
         const predictedCollateralAmount = BigNumber.from(vaultData.predictedCollateralAmount).add(amount);
         const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault.dollarValue));
-        const predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
+        
+        let predictedDebtRatio = BigNumber.from(0);
+
+        try {
+            predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
+        } catch (E) {
+            log.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
+            log.prettyError(E);
+        }
 
         getConnection().manager.update(QiVaultData, vaultData.id, {
             predictedCollateralAmount: predictedCollateralAmount.toString(),
@@ -152,7 +171,15 @@ const listenToCollateralWithdrawals = (params: ListenerParams) => {
         // TODO: update algorithm to include latest dollar price of asset?
         const predictedCollateralAmount = BigNumber.from(vaultData.predictedCollateralAmount).sub(amount);
         const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault.dollarValue));
-        const predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
+        let predictedDebtRatio = BigNumber.from(0)
+
+        try {
+            predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
+        } catch (E) {
+            log.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
+            log.prettyError(E);
+        }
+
 
         // Make a guess work for now, on deposit update predicted values,
         getConnection().manager.update(QiVaultData, vaultData.id, {
@@ -182,7 +209,15 @@ const listenToTokenBorrows = (params: ListenerParams) => {
 
         // TODO: update algorithm to include latest dollar price of asset?
         const newMaiDebt = BigNumber.from(vaultData.maiDebt).add(amount);
-        const predictedDebtRatio = BigNumber.from(vaultData.predictedCollateralAmount).mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
+        let predictedDebtRatio = BigNumber.from(0)
+
+        try {
+            predictedDebtRatio = BigNumber.from(vaultData.predictedCollateralAmount).mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
+
+        } catch (E) {
+            log.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
+            log.prettyError(E);
+        }
 
         // Make a guess work for now, on deposit update predicted values,
         getConnection().manager.update(QiVaultData, vaultData.id, {
@@ -213,7 +248,15 @@ const listenToTokenRepayments = (params: ListenerParams) => {
         const newMaiDebt = BigNumber.from(vaultData.maiDebt).sub(amount);
         const predictedCollateralAmount = BigNumber.from(vaultData.collateralAmount).sub(BigNumber.from(closingFee));
         const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault.dollarValue));
-        const predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
+
+        let predictedDebtRatio = BigNumber.from(0)
+
+        try {
+            predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
+        } catch (E) {
+            log.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
+            log.prettyError(E);
+        }
 
         // Make a guess work for now, on deposit update predicted values,
 

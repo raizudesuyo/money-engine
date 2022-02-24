@@ -1,0 +1,42 @@
+# Repo: docker build --tag 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qidao-monitoring-api:latest-amd64 -f Dockerfile.qi-monitoring-api .
+
+# Find a way to remove 2nd ts-node shiet
+FROM node:lts-alpine as builder
+RUN npm install -g ts-node
+
+WORKDIR /usr/src/qi-money-engine
+
+# Copy common package
+COPY --chown=1001:1001 ./lerna.json ./
+COPY --chown=1001:1001 ./package.json ./
+COPY --chown=1001:1001 ./packages/qi-common ./packages/qi-common
+COPY --chown=1001:1001 ./packages/qi-db ./packages/qi-db
+COPY --chown=1001:1001 ./packages/qi-monitoring ./packages/qi-monitoring
+
+# Goes into each one of the package and installs shit
+RUN yarn install --network-timeout=3600000 && yarn run lerna bootstrap
+
+# Go around and prune things
+WORKDIR /usr/src/qi-money-engine/packages/qi-common
+RUN npm prune --production
+
+WORKDIR /usr/src/qi-money-engine/packages/qi-db
+RUN npm prune --production
+
+WORKDIR /usr/src/qi-money-engine/packages/qi-monitoring
+RUN npm prune --production
+
+FROM node:lts-alpine as runner
+RUN npm install -g ts-node
+
+EXPOSE 8432
+
+WORKDIR /usr/src/qi-money-engine
+COPY --chown=1001:1001 --from=builder /usr/src/qi-money-engine /usr/src/qi-money-engine
+
+WORKDIR /usr/src/qi-money-engine/packages/qi-monitoring
+
+USER 1001:1001
+
+ENTRYPOINT [ "yarn", "run"]
+CMD [ "sync", "-T" ]

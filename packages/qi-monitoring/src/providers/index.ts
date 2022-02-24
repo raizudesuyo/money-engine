@@ -1,4 +1,4 @@
 // created from ctix
 
-export * from './LoggerSingleton';
-export * from './MaticWebSocketSingleton';
+export * from 'qi-common/providers/LoggerSingleton';
+export * from 'qi-common/providers/MaticWebSocketSingleton';

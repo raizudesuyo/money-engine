@@ -3,6 +3,9 @@ FROM node:lts-alpine
 RUN npm install -g ts-node
 WORKDIR /qidao-monitoring-backend
 COPY . .
+
+# Copy package dependencies
+
 RUN yarn install --network-timeout=3600000 && yarn build
 
 EXPOSE 7070
