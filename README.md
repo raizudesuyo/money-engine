@@ -29,18 +29,25 @@ Monitors QiDao to look for vaults that can be liquidated, also acts as my practi
 docker buildx build --tag qidao-monitoring-backend:latest --platform linux/amd64 .
 
 # To build to the for the right repository
-docker buildx build --tag 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qidao-monitoring-backend:latest-amd64 -f Dockerfile.amd64  .
+docker build --tag 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring:latest-amd64 -f Dockerfile.qi-monitoring .
+docker build --tag 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring-api:latest-amd64 -f Dockerfile.qi-monitoring-api .
 
-docker build --tag 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qidao-monitoring-backend:latest-armv7 -f Dockerfile.armv7 .
+# or when building on an ARM
+docker build --tag 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring:latest-arm64v8 -f Dockerfile.qi-monitoring .
+docker build --tag 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring-api:latest-arm64v8 -f Dockerfile.qi-monitoring-api .
 
-#Just build it on the right platform
-docker build --tag 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qidao-monitoring-backend:latest-arm64v8 -f Dockerfile.arm64v8 .
+# ARM32 not supported until I get a orange pi pc as a jenkins agent
 
-# to push
-docker push 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qidao-monitoring-backend:latest-amd64
+# To push
+docker push 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring:latest-amd64
+
+docker push 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring:latest-arm64v8
+
 
 # Create manifests for platforms, execute on each
-docker manifest create 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qidao-monitoring-backend:latest 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qidao-monitoring-backend:latest-amd64 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qidao-monitoring-backend:latest-arm64v8
+docker manifest create 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring:latest 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring:latest-amd64 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring:latest-arm64v8
+
+docker manifest create 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring-api:latest 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring-api:latest-amd64 218547968715.dkr.ecr.ap-southeast-2.amazonaws.com/qi-monitoring-api:latest-arm64v8
 
 ```
 

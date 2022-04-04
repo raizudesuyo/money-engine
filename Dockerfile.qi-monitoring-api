@@ -11,7 +11,7 @@ COPY --chown=1001:1001 ./lerna.json ./
 COPY --chown=1001:1001 ./package.json ./
 COPY --chown=1001:1001 ./packages/qi-common ./packages/qi-common
 COPY --chown=1001:1001 ./packages/qi-db ./packages/qi-db
-COPY --chown=1001:1001 ./packages/qi-monitoring ./packages/qi-monitoring
+COPY --chown=1001:1001 ./packages/qi-monitoring ./packages/qi-monitoring-api
 
 # Goes into each one of the package and installs shit
 RUN yarn install --network-timeout=3600000 && yarn run lerna bootstrap
@@ -23,7 +23,7 @@ RUN npm prune --production
 WORKDIR /usr/src/qi-money-engine/packages/qi-db
 RUN npm prune --production
 
-WORKDIR /usr/src/qi-money-engine/packages/qi-monitoring
+WORKDIR /usr/src/qi-money-engine/packages/qi-monitoring-api
 RUN npm prune --production
 
 FROM node:lts-alpine as runner
@@ -34,9 +34,9 @@ EXPOSE 8432
 WORKDIR /usr/src/qi-money-engine
 COPY --chown=1001:1001 --from=builder /usr/src/qi-money-engine /usr/src/qi-money-engine
 
-WORKDIR /usr/src/qi-money-engine/packages/qi-monitoring
+WORKDIR /usr/src/qi-money-engine/packages/qi-monitoring-api
 
 USER 1001:1001
 
 ENTRYPOINT [ "yarn", "run"]
-CMD [ "sync", "-T" ]
+CMD [ "serve", "-T" ]

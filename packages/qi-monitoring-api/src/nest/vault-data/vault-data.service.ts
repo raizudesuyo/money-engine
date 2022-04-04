@@ -38,7 +38,7 @@ export class VaultDataService {
         })
 
         return {
-            pageCount: Math.ceil(params.pageSize / resultCount),
+            pageCount: Math.ceil(resultCount / params.pageSize),
             vaultData
         }
     }

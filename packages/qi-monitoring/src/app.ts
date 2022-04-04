@@ -11,3 +11,8 @@ export const syncAndListenToEvents = () => createConnection().then(async () => {
 export const listenToEvents = () => createConnection().then(async () => {
     listen()
 })
+
+
+export const syncOnly = () => createConnection().then(async () => {
+    reloadAll()
+});

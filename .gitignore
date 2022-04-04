@@ -6,3 +6,6 @@ packages/*/lib
 
 typechain
 *.log
+
+.k8s
+*.private.yaml

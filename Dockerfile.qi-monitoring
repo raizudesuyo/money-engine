@@ -36,5 +36,7 @@ COPY --chown=1001:1001 --from=builder /usr/src/qi-money-engine /usr/src/qi-money
 
 WORKDIR /usr/src/qi-money-engine/packages/qi-monitoring
 
+USER 1001:1001
+
 ENTRYPOINT [ "yarn", "run"]
 CMD [ "sync", "-T" ]
