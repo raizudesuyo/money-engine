@@ -8,21 +8,7 @@ importers:
     devDependencies:
       ctix: 0.4.5
 
-  packages/price-monitor:
-    specifiers:
-      '@nestjs/microservices': ^8.4.3
-      '@nestjs/typeorm': ^8.0.3
-      nestjs: ^0.0.1
-      pg: ^8.7.3
-      typeorm: ^0.2.43
-    dependencies:
-      '@nestjs/microservices': 8.4.4
-      '@nestjs/typeorm': 8.0.3_typeorm@0.2.45
-      nestjs: 0.0.1
-      pg: 8.7.3
-      typeorm: 0.2.45_pg@8.7.3
-
-  packages/qi-common:
+  '@money-engine/common':
     specifiers:
       '@typechain/ethers-v5': ^9.0.0
       '@types/node': ^17.0.21
@@ -37,7 +23,21 @@ importers:
       '@typechain/ethers-v5': 9.0.0_6pwu5ivaqia2gv47h43vcsu774
       typechain: 7.0.0
 
-  packages/qi-db:
+  '@money-engine/oracle-watcher':
+    specifiers:
+      '@nestjs/microservices': ^8.4.3
+      '@nestjs/typeorm': ^8.0.3
+      nestjs: ^0.0.1
+      pg: ^8.7.3
+      typeorm: ^0.2.43
+    dependencies:
+      '@nestjs/microservices': 8.4.4
+      '@nestjs/typeorm': 8.0.3_typeorm@0.2.45
+      nestjs: 0.0.1
+      pg: 8.7.3
+      typeorm: 0.2.45_pg@8.7.3
+
+  '@money-engine/qi-db':
     specifiers:
       pg: ^8.7.3
       ts-node: ^10.5.0
@@ -47,8 +47,10 @@ importers:
       ts-node: 10.7.0
       typeorm: 0.2.45_pg@8.7.3
 
-  packages/qi-monitoring:
+  '@money-engine/qi-monitoring':
     specifiers:
+      '@money-engine/common': workspace:^
+      '@money-engine/qi-db': workspace:^
       '@nestjs/common': ^8.4.3
       '@nestjs/core': ^8.4.3
       '@nestjs/microservices': ^8.4.3
@@ -66,8 +68,6 @@ importers:
       mysql: ^2.14.1
       nestjs-pino: ^2.5.2
       pg: ^8.7.3
-      qi-common: 1.0.0
-      qi-db: 1.0.0
       reflect-metadata: ^0.1.13
       rxjs: ^7.5.2
       source-map-support: ^0.5.21
@@ -80,6 +80,8 @@ importers:
       typeorm: ^0.2.43
       typescript: 4.5.2
     dependencies:
+      '@money-engine/common': link:../common
+      '@money-engine/qi-db': link:../qi-db
       '@nestjs/common': 8.4.4_47vcjb2de6lyibr6g4enoa5lyu
       '@nestjs/core': 8.4.4_vekplu76vkbvw5hmxu5qy7inke
       '@nestjs/microservices': 8.4.4_eqolnjailvrsgpjwojmchkclhe
@@ -89,8 +91,6 @@ importers:
       mysql: 2.18.1
       nestjs-pino: 2.5.2_@nestjs+common@8.4.4
       pg: 8.7.3
-      qi-common: link:../qi-common
-      qi-db: link:../qi-db
       reflect-metadata: 0.1.13
       rxjs: 7.5.5
       tslog: 3.3.2
@@ -112,8 +112,10 @@ importers:
       typechain: 7.0.0_typescript@4.5.2
       typescript: 4.5.2
 
-  packages/qi-monitoring-api:
+  '@money-engine/qi-monitoring-api':
     specifiers:
+      '@money-engine/common': workspace:^
+      '@money-engine/qi-db': workspace:^
       '@nestjs/common': ^8.3.1
       '@nestjs/core': ^8.3.1
       '@nestjs/platform-express': ^8.3.1
@@ -125,13 +127,13 @@ importers:
       nestjs-pino: ^2.5.0
       pg: ^8.7.3
       pino-http: ^6.6.0
-      qi-common: 1.0.0
-      qi-db: 1.0.0
       reflect-metadata: ^0.1.13
       rxjs: ^7.5.4
       swagger-ui-express: ^4.3.0
       typeorm: ^0.2.43
     dependencies:
+      '@money-engine/common': link:../common
+      '@money-engine/qi-db': link:../qi-db
       '@nestjs/common': 8.4.4_47vcjb2de6lyibr6g4enoa5lyu
       '@nestjs/core': 8.4.4_wy6cne2gpevj2v6pvodnemcq2i
       '@nestjs/platform-express': 8.4.4_u6bxr3c7htwmhq2t5wi3k6ht4y
@@ -141,8 +143,6 @@ importers:
       nestjs-pino: 2.5.2_x47msqn3c2wyfydtswd2okfdqa
       pg: 8.7.3
       pino-http: 6.6.0
-      qi-common: link:../qi-common
-      qi-db: link:../qi-db
       reflect-metadata: 0.1.13
       rxjs: 7.5.5
       swagger-ui-express: 4.3.0
@@ -1605,6 +1605,7 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
+    dev: true
 
   /debug/4.3.3_supports-color@8.1.1:
     resolution: {integrity: sha512-/zxw5+vh1Tfv+4Qn7a5nsbcJKPaSvCDhojn6FEl9vupwK2VCSDtEiEtqr8DFtzYFOdz63LBkxec7DYuc2jon6Q==}
@@ -1618,6 +1619,17 @@ packages:
       ms: 2.1.2
       supports-color: 8.1.1
     dev: true
+
+  /debug/4.3.4:
+    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+    dependencies:
+      ms: 2.1.2
 
   /deep-extend/0.6.0:
     resolution: {integrity: sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==}
@@ -3481,7 +3493,7 @@ packages:
       typescript: '>=4.1.0'
     dependencies:
       '@types/prettier': 2.4.4
-      debug: 4.3.3
+      debug: 4.3.4
       fs-extra: 7.0.1
       glob: 7.2.0
       js-sha3: 0.8.0
@@ -3501,7 +3513,7 @@ packages:
       typescript: '>=4.1.0'
     dependencies:
       '@types/prettier': 2.4.4
-      debug: 4.3.3
+      debug: 4.3.4
       fs-extra: 7.0.1
       glob: 7.2.0
       js-sha3: 0.8.0
@@ -3575,7 +3587,7 @@ packages:
       buffer: 6.0.3
       chalk: 4.1.2
       cli-highlight: 2.1.11
-      debug: 4.3.3
+      debug: 4.3.4
       dotenv: 8.6.0
       glob: 7.2.0
       js-yaml: 4.1.0

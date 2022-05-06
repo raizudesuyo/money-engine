@@ -1,0 +1,19 @@
+{
+  "name": "@money-engine/oracle-watcher",
+  "version": "1.0.0",
+  "description": "Monitors crypto price changes and spreads events if anything changes. - Your single place for all on-chain and off chain price updates",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nestjs/microservices": "^8.4.3",
+    "@nestjs/typeorm": "^8.0.3",
+    "nestjs": "^0.0.1",
+    "pg": "^8.7.3",
+    "typeorm": "^0.2.43"
+  }
+}

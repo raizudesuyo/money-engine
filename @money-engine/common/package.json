@@ -1,0 +1,20 @@
+{
+  "name": "@money-engine/common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx typechain --glob \"./abi/**/*.json\" --target ethers-v5 --out-dir ./typechain/"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^17.0.21",
+    "ethers": "^5.5.4",
+    "tslog": "^3.3.2"
+  },
+  "devDependencies": {
+    "@typechain/ethers-v5": "^9.0.0",
+    "typechain": "^7.0.0"
+  }
+}
