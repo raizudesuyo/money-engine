@@ -8,6 +8,9 @@
       "listen": "ts-node -e 'require(\"./src/server.ts\").listenToEvents()'"
    },
    "devDependencies": {
+      "@ethersproject/abi": "^5.0.0",
+      "@ethersproject/bytes": "^5.0.0",
+      "@ethersproject/providers": "^5.0.0",
       "@typechain/ethers-v5": "^9.0.0",
       "@types/bn.js": "^5.1.0",
       "@types/dotenv": "^8.2.0",
@@ -16,29 +19,40 @@
       "@types/lodash": "^4.14.178",
       "@types/node": "^16.11.10",
       "@types/supertest": "^2.0.11",
+      "jest": "^27.0.0",
+      "pino-http": "^6.4.0",
       "source-map-support": "^0.5.21",
       "ts-jest": "^27.1.3",
       "ts-loader": "^9.2.6",
       "ts-node": "10.4.0",
       "tsconfig-paths": "^3.12.0",
       "typechain": "^7.0.0",
-      "typescript": "4.5.2"
+      "typescript": "4.5.2",
+      "webpack": "^5.0.0"
    },
    "dependencies": {
+      "@money-engine/common": "workspace:^",
+      "@money-engine/qi-db": "workspace:^",
       "@nestjs/common": "^8.4.3",
       "@nestjs/core": "^8.4.3",
       "@nestjs/microservices": "^8.4.3",
       "@nestjs/schematics": "^8.0.9",
-      "@money-engine/common": "workspace:^",
       "ethers": "^5.5.4",
       "lodash": "^4.17.21",
       "mysql": "^2.14.1",
       "nestjs-pino": "^2.5.2",
       "pg": "^8.7.3",
-      "@money-engine/qi-db": "workspace:^",
       "reflect-metadata": "^0.1.13",
       "rxjs": "^7.5.2",
       "tslog": "^3.3.1",
       "typeorm": "^0.2.43"
+   },
+   "peerDependencies": {
+      "@ethersproject/abi": "^5.0.0",
+      "@ethersproject/bytes": "^5.0.0",
+      "@ethersproject/providers": "^5.0.0",
+      "jest": "^27.0.0",
+      "pino-http": "^6.4.0",
+      "webpack": "^5.0.0"
    }
 }

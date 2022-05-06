@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@money-engine/common": "workspace:^",
+    "@money-engine/qi-db": "workspace:^",
     "@nestjs/common": "^8.3.1",
     "@nestjs/core": "^8.3.1",
     "@nestjs/platform-express": "^8.3.1",
@@ -18,8 +20,6 @@
     "nestjs-pino": "^2.5.0",
     "pg": "^8.7.3",
     "pino-http": "^6.6.0",
-    "@money-engine/common": "workspace:^",
-    "@money-engine/qi-db": "workspace:^",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.4",
     "swagger-ui-express": "^4.3.0",
@@ -27,6 +27,10 @@
   },
   "devDependencies": {
     "@nestjs/testing": "^8.3.1",
-    "@types/jest": "^27.4.0"
+    "@types/jest": "^27.4.0",
+    "express": "^4.18.1"
+  },
+  "peerDependencies": {
+    "express": "^4.18.1"
   }
 }
