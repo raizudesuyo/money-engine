@@ -1,4 +1,4 @@
-import { QiStablecoin, QiStablecoin__factory } from '../../../../typechain';
+import { QiStablecoin, QiStablecoin__factory } from '../../../../../typechain';
 import { IQiDaoVaultContractAdapter, ContractTransactionParams } from '../IQiDaoVaultContractAdapter';
 import { BigNumber, providers } from 'ethers';
 

@@ -1,5 +1,4 @@
-import { QiVault } from "qi-db/src/entity/QiVault.entity"
-import { QiVaultData } from "qi-db/src/entity/QiVaultData.entity"
+import { QiVault, QiVaultData } from "src/entity"
 
 export interface VaultsResult {
     vaults: QiVault[],

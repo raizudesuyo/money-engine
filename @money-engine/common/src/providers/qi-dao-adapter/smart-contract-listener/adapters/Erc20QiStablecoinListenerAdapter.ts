@@ -1,6 +1,6 @@
 import { BigNumber, providers } from 'ethers';
 import { IQiDaoSmartContractListener } from '../IQiDaoSmartContractListener';
-import { Erc20QiStablecoin, Erc20QiStablecoin__factory } from '../../../../typechain';
+import { Erc20QiStablecoin, Erc20QiStablecoin__factory } from '../../../../../typechain';
 
 export class Erc20QiStablecoinListenerAdapter implements IQiDaoSmartContractListener {
 

@@ -1,5 +1,5 @@
 import { BigNumber, providers } from 'ethers';
-import { Erc20QiStablecoinwbtc, Erc20QiStablecoincamwbtc, Erc20QiStablecoinwbtc__factory } from '../../../../typechain';
+import { Erc20QiStablecoinwbtc, Erc20QiStablecoincamwbtc, Erc20QiStablecoinwbtc__factory } from '../../../../../typechain';
 import Erc20QiStablecoinService from './Erc20QiStablecoinService';
 
 export default class Erc20QiStablecoinWbtcService extends Erc20QiStablecoinService {

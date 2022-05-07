@@ -1,6 +1,6 @@
 import { IQiDaoVaultContractAdapter, ContractTransactionParams } from '../IQiDaoVaultContractAdapter';
 import { BigNumber, providers } from 'ethers';
-import { CrosschainQiStablecoinV2, CrosschainQiStablecoinV2__factory } from '../../../../typechain';
+import { CrosschainQiStablecoinV2, CrosschainQiStablecoinV2__factory } from '../../../../../typechain';
 
 export class CrosschainQiStablecoinV2Service implements IQiDaoVaultContractAdapter {
 

@@ -1,5 +1,5 @@
 import { BigNumber, providers } from 'ethers';
-import { CrosschainQiStablecoin, Erc20QiStablecoin, Erc20QiStablecoincamwbtc, Erc20QiStablecoinwbtc, Erc20QiStablecoin__factory } from '../../../../typechain';
+import { CrosschainQiStablecoin, Erc20QiStablecoin, Erc20QiStablecoincamwbtc, Erc20QiStablecoinwbtc, Erc20QiStablecoin__factory } from '../../../../../typechain';
 import { IQiDaoVaultContractAdapter, ContractTransactionParams } from '../IQiDaoVaultContractAdapter';
 
 

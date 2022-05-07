@@ -14,7 +14,7 @@
     "@nestjs/typeorm": "^8.0.3",
     "nestjs": "^0.0.1",
     "pg": "^8.7.3",
-    "typeorm": "^0.2.43"
+    "typeorm": "^0.3.6"
   },
   "devDependencies": {
     "@nestjs/common": ">=8.0.0 <9.0.0",

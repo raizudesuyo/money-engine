@@ -5,7 +5,8 @@
    "license": "MIT",
    "scripts": {
       "sync": "ts-node -e 'require(\"./src/server.ts\").syncAndListenToEvents()'",
-      "listen": "ts-node -e 'require(\"./src/server.ts\").listenToEvents()'"
+      "listen": "ts-node -e 'require(\"./src/server.ts\").listenToEvents()'",
+      "typeorm": "typeorm-ts-node-commonjs"
    },
    "devDependencies": {
       "@ethersproject/abi": "^5.0.0",
@@ -32,11 +33,11 @@
    },
    "dependencies": {
       "@money-engine/common": "workspace:^",
-      "@money-engine/qi-db": "workspace:^",
       "@nestjs/common": "^8.4.3",
       "@nestjs/core": "^8.4.3",
       "@nestjs/microservices": "^8.4.3",
       "@nestjs/schematics": "^8.0.9",
+      "@nestjs/swagger": "^5.2.0",
       "ethers": "^5.5.4",
       "lodash": "^4.17.21",
       "mysql": "^2.14.1",
@@ -45,7 +46,8 @@
       "reflect-metadata": "^0.1.13",
       "rxjs": "^7.5.2",
       "tslog": "^3.3.1",
-      "typeorm": "^0.2.43"
+      "typeorm": "^0.3.6",
+      "ts-node": "^10.5.0"
    },
    "peerDependencies": {
       "@ethersproject/abi": "^5.0.0",
