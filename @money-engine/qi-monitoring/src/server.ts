@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import { RestApiModule } from './nest/app/app.module';
-import { createConnection } from 'typeorm';
+import { dataSource } from './data-source';
 import { reloadAll } from './reloadAll';
 import { listen } from './qiEventsListener';
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
@@ -10,44 +10,40 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export class Server {
   static bootstrap = async () => {
-    const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    // Creates REST API end
+    const app = await NestFactory.create(
       RestApiModule, 
       { 
         bufferLogs: true,
-        transport: Transport.RMQ
       }
     );
 
-    // const config = new DocumentBuilder()
-    //   .setTitle('QiDAO Monitoring')
-    //   .setDescription('money making engine 1.0')
-    //   .setVersion('1.0')
-    //   .build();
+    const config = new DocumentBuilder()
+      .setTitle('QiDAO Monitoring')
+      .setDescription('Money Making Engine for QiDAO')
+      .setVersion('1.0')
+      .build();
 
-    // const document = SwaggerModule.createDocument(app, config);
-    // SwaggerModule.setup('api', app, document);  
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);  
 
     app.useLogger(app.get(Logger));
 
-    await app.listen()
+    await app.listen(3000)
   }
 }
 
-export const syncAndListenToEvents = () => createConnection().then(async () => {
+export const syncAndListenToEvents = () => dataSource.initialize().then(async () => {
   reloadAll()
   listen()
   Server.bootstrap()
 })
 
-export const listenToEvents = () => createConnection().then(async () => {
+export const listenToEvents = () => dataSource.initialize().then(async () => {
   listen()
   Server.bootstrap()
 })
 
-export const syncOnly = () => createConnection().then(async () => {
+export const syncOnly = () => dataSource.initialize().then(async () => {
   reloadAll()
 });
-
-createConnection().then(() => {
-  Server.bootstrap()
-})

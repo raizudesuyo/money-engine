@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { VaultDataResult, VaultsResult, SortType } from '../app/app.definitions';
 import { MoreThan } from 'typeorm';
-import { QiVault, QiVaultData } from 'qi-db';
-import { getConnection } from 'typeorm'
+import { QiVault, QiVaultData } from '../../entity';
+import { dataSource } from '../../data-source'
 
 @Injectable()
 export class VaultsService {
@@ -14,11 +14,11 @@ export class VaultsService {
     pageNumber: number
   ): Promise<VaultsResult> {
 
-    const collateralCount = await getConnection().manager.count(QiVault);
+    const collateralCount = await dataSource.manager.count(QiVault);
     const totalNumberOfPages = Math.ceil(collateralCount / pageSize);
 
     return {
-      vaults: await getConnection().manager.find(QiVault, {
+      vaults: await dataSource.manager.find(QiVault, {
         take: pageSize,
         skip: pageNumber * pageSize
       }),
@@ -45,7 +45,7 @@ export class VaultsService {
         break;
     }
 
-    const vaultData = await getConnection().manager.find(QiVaultData, {
+    const vaultData = await dataSource.manager.find(QiVaultData, {
       where: {
         vault: { id: params.vaultId },
         collateralRatio: MoreThan(1)
@@ -56,9 +56,9 @@ export class VaultsService {
       relations: ['vault']
     })
 
-    const vault = await getConnection().manager.findOne(QiVault, params.vaultId);
+    const vault = await dataSource.manager.findOne(QiVault, params.vaultId);
 
-    const resultCount = await getConnection().manager.count(QiVaultData, {
+    const resultCount = await dataSource.manager.count(QiVaultData, {
       where: {
         vault: { id: params.vaultId } 
       }, 

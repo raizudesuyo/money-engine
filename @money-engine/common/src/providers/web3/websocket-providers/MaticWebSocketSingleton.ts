@@ -1,4 +1,6 @@
 import { providers } from 'ethers';
+import { config } from '../../../../config'
+
 export class MaticWebSockerSingleton {
 
     private static instance: providers.WebSocketProvider;
@@ -7,7 +9,7 @@ export class MaticWebSockerSingleton {
 
     public static getInstance(): providers.WebSocketProvider {
         if(!MaticWebSockerSingleton.instance) {
-            MaticWebSockerSingleton.instance = new providers.WebSocketProvider(process.env.MATIC_RPC);
+            MaticWebSockerSingleton.instance = new providers.WebSocketProvider(config.web3ProviderUrls.MATIC_RPC);
         }
 
         return MaticWebSockerSingleton.instance;

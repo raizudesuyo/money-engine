@@ -6,6 +6,7 @@ import {
   QiDaoVaultService,
   QiDaoVaultContractAdapterFactory,
   Web3WebSocketFactory,
+  Web3HttpFactory,
   LoggerSingleton,
   Web3Chain,
 } from "@money-engine/common";
@@ -22,7 +23,7 @@ export const reloadAll = async () => {
 
   // prints check collateral percentage for each
   validContracts.forEach(async (contract) => {
-    const web3Provider = Web3WebSocketFactory.getProvider(
+    const web3Provider = Web3HttpFactory.getProvider(
       contract.chain as Web3Chain
     );
 

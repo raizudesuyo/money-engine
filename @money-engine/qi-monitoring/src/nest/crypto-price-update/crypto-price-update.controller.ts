@@ -1,8 +1,8 @@
 import { Controller } from "@nestjs/common";
 import { EventPattern } from "@nestjs/microservices";
 import { UpdatePriceEvent, LoggerSingleton } from "@money-engine/common";
-import { getManager } from "typeorm";
-import { QiVault } from 'qi-db/src/entity/QiVault.entity';
+import { QiVault } from '../../entity';
+import { dataSource } from '../../data-source'
 
 @Controller()
 export class CryptoPriceUpdateController {
@@ -16,7 +16,7 @@ export class CryptoPriceUpdateController {
       priceSourceData: { priceSourceType, price, decimals },
     } = data;
   
-    const vault = await getManager().findOne(QiVault, {
+    const vault = await dataSource.manager.findOne(QiVault, {
       where: {
         tokenSymbol: symbol,
         tokenAddress: address,
@@ -26,7 +26,7 @@ export class CryptoPriceUpdateController {
 
     vault.dollarValue = price;
 
-    await getManager().save(vault)
+    await dataSource.manager.save(vault)
 
     LoggerSingleton.getInstance().info(`Updated ${symbol} to price ${price}`)
   }

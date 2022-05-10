@@ -16,40 +16,22 @@ export class QiDaoVaultService implements IQiDaoVaultService {
     ) { }
 
     getVault = async (): Promise<IQiDaoVault> => {
-        const tokenAddressPromise = this.smartContractAdapter.collateral(); // returns the address of the collateral token
-        const priceOracleAddressPromise = this.smartContractAdapter.ethPriceSource();
-        const dollarValuePromise = this.smartContractAdapter.getEthPriceSource()
-        const vaultCountPromise = this.smartContractAdapter.vaultCount()
-        const stabilityPoolAddressPromise = this.smartContractAdapter.stabilityPool()
-        const gainRatioPromise = this.smartContractAdapter.gainRatio()
-        const minimumRatioPromise = this.smartContractAdapter._minimumCollateralPercentage()
+        const tokenAddress = this.smartContractAdapter.collateral() // returns the address of the collateral token
+        const priceOracleAddress = this.smartContractAdapter.ethPriceSource()
+        const dollarValue = this.smartContractAdapter.getEthPriceSource()
+        const vaultCount = this.smartContractAdapter.vaultCount()
+        const stabilityPoolAddress = this.smartContractAdapter.stabilityPool()
+        const gainRatio = this.smartContractAdapter.gainRatio()
+        const minimumRatio = this.smartContractAdapter._minimumCollateralPercentage()
     
-        const [ 
-            tokenAddress,
-            priceOracleAddress,
-            dollarValue,
-            vaultCount,
-            stabilityPoolAddress,
-            gainRatio,
-            minimumRatio
-        ] = await Promise.all([
-            tokenAddressPromise,
-            priceOracleAddressPromise,
-            dollarValuePromise,
-            vaultCountPromise,
-            stabilityPoolAddressPromise,
-            gainRatioPromise,
-            minimumRatioPromise
-        ]);
-
         return {
-            tokenAddress,
-            priceOracleAddress,
-            dollarValue,
-            vaultCount,
-            stabilityPoolAddress,
-            gainRatio,
-            minimumRatio
+            tokenAddress: await tokenAddress,
+            priceOracleAddress: await priceOracleAddress,
+            dollarValue: await dollarValue,
+            vaultCount: await vaultCount,
+            stabilityPoolAddress: await stabilityPoolAddress,
+            gainRatio: await gainRatio,
+            minimumRatio: await minimumRatio
         }
     }
     

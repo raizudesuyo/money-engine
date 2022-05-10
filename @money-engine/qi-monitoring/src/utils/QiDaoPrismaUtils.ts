@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers';
-import { QiVault, QiVaultData } from 'qi-db';
-import { getConnection } from 'typeorm'
+import { QiVault, QiVaultData } from '../entity';
+import { dataSource } from '../data-source/'
 
 export interface UpdateVaultParams {
     vaultName?: string
@@ -17,7 +17,7 @@ export interface UpdateVaultParams {
 
 export const updateVaultData = async (params: UpdateVaultParams): Promise<QiVault> => {
 
-    const manager = getConnection().manager;
+    const manager = dataSource.manager;
 
     const {
         vaultName,
@@ -75,7 +75,7 @@ export interface UpdateVaultDataParams {
 
 export const updateVaultUserData = async (params: UpdateVaultDataParams) => {
 
-    const manager = getConnection().manager;
+    const manager = dataSource.manager;
 
     const { 
         vaultId,

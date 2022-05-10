@@ -1,5 +1,5 @@
-import { getConnection } from 'typeorm'
-import { ethers, BigNumber } from 'ethers';
+import { ethers, BigNumber, providers } from 'ethers';
+import { dataSource } from './data-source'
 
 import { 
     IData, 
@@ -12,11 +12,12 @@ import {
     IQiDaoSmartContractListener,
     LoggerSingleton,
     Web3WebSocketFactory, 
-    Web3Chain } from '@money-engine/common';
-import { QiVault, QiVaultData } from 'qi-db';
+    Web3Chain,
+    Web3HttpFactory
+} from '@money-engine/common';
+import { QiVault, QiVaultData } from './entity';
 
 import { updateVaultUserData } from './utils/QiDaoPrismaUtils';
-
 // Sets up listener for each, assume everything is a erc20QiStablecoin event, coz they mostly are
 // Only update support for cross-chain vaults
 
@@ -37,8 +38,15 @@ export const listen = async () => {
         log.info(`Listening to Events ${vault.name}`)
         // const contract = Erc20QiStablecoin__factory.connect(vault.address, provider);
 
-        const provider = Web3WebSocketFactory.getProvider(vault.chain as Web3Chain);
+        let provider: providers.BaseProvider;
+        const chain = vault.chain as Web3Chain;
 
+        if(chain == 'polygon'){
+            provider = Web3HttpFactory.getProvider(chain)
+        } else {
+            provider = Web3WebSocketFactory.getProvider(chain);
+        }
+    
         if(!provider) {
             log.info(`Unssuported vault ${vault.chain}-${vault.name}`)
             return;
@@ -74,10 +82,10 @@ export const listen = async () => {
 }
 
 // Gets vault via vault address (address of the vault in their chain, most probably unique)
-const getQiVault = async (vaultAddress: string) => (await getConnection().manager.find(QiVault, { where: { vaultAddress: vaultAddress } }))[0];
+const getQiVault = async (vaultAddress: string) => (await dataSource.manager.find(QiVault, { where: { vaultAddress: vaultAddress } }))[0];
 
 // Gets vault data based from what vault it is and its id on chain (not the id, don't be mistaken, vaultId is based from the chain)
-const getQiVaultData = async (vault: QiVault, vaultId: number) => (await getConnection().manager.find(QiVaultData, { where: { vaultId: vaultId, vault: { id: vault.id } }, relations: ['vault'] }))[0];
+const getQiVaultData = async (vault: QiVault, vaultId: number) => (await dataSource.manager.find(QiVaultData, { where: { vaultId: vaultId, vault: { id: vault.id } }, relations: ['vault'] }))[0];
 
 const safeConvertBigNumberToNumber = (n: BigNumber) => {
     try {
@@ -97,7 +105,7 @@ const listenToCreateVault = (params: ListenerParams) => {
 
         const qiVault = await getQiVault(vault.address);
 
-        getConnection().manager.save(QiVaultData, {
+        dataSource.manager.save(QiVaultData, {
             owner: ownerAddress,
             vaultId: id.toNumber(),
             vault: qiVault,
@@ -143,7 +151,7 @@ const listenToCollateralDeposits = (params: ListenerParams) => {
             log.prettyError(E);
         }
 
-        getConnection().manager.update(QiVaultData, vaultData.id, {
+        dataSource.manager.update(QiVaultData, vaultData.id, {
             predictedCollateralAmount: predictedCollateralAmount.toString(),
             predictedCollateralRatio: safeConvertBigNumberToNumber(predictedDebtRatio),
             predictedTotalCollateralValue: predictedCollateralValue.toString(),
@@ -183,7 +191,7 @@ const listenToCollateralWithdrawals = (params: ListenerParams) => {
 
 
         // Make a guess work for now, on deposit update predicted values,
-        getConnection().manager.update(QiVaultData, vaultData.id, {
+        dataSource.manager.update(QiVaultData, vaultData.id, {
             predictedCollateralAmount: predictedCollateralAmount.toString(),
             predictedCollateralRatio: safeConvertBigNumberToNumber(predictedDebtRatio),
             predictedTotalCollateralValue: predictedCollateralValue.toString(),
@@ -221,7 +229,7 @@ const listenToTokenBorrows = (params: ListenerParams) => {
         }
 
         // Make a guess work for now, on deposit update predicted values,
-        getConnection().manager.update(QiVaultData, vaultData.id, {
+        dataSource.manager.update(QiVaultData, vaultData.id, {
             predictedCollateralRatio: safeConvertBigNumberToNumber(predictedDebtRatio),
             maiDebt: newMaiDebt.toString(),
         })
@@ -261,7 +269,7 @@ const listenToTokenRepayments = (params: ListenerParams) => {
 
         // Make a guess work for now, on deposit update predicted values,
 
-        getConnection().manager.update(QiVaultData, vaultData.id, {
+        dataSource.manager.update(QiVaultData, vaultData.id, {
             predictedCollateralRatio: safeConvertBigNumberToNumber(predictedDebtRatio),
             predictedTotalCollateralValue: predictedCollateralValue.toString(),
             predictedCollateralAmount: predictedCollateralAmount.toString(),
