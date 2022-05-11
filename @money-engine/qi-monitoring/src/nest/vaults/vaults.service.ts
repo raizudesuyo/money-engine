@@ -28,7 +28,7 @@ export class VaultsService {
         id: v.id,
         chain: v.vaultChain,
         canPublicLiquidate: v.canPublicLiquidate,
-        dollarValue: BigNumber.from(v.dollarValue),
+        dollarValue: v.dollarValue,
         gainRatio: v.gainRatio,
         minimumRatio: v.minimumRatio,
         name: v.vaultName,
@@ -91,7 +91,7 @@ export class VaultsService {
         id: vault.id,
         chain: vault.vaultChain,
         canPublicLiquidate: vault.canPublicLiquidate,
-        dollarValue: BigNumber.from(vault.dollarValue),
+        dollarValue: vault.dollarValue,
         gainRatio: vault.gainRatio,
         minimumRatio: vault.minimumRatio,
         name: vault.vaultName,
@@ -102,11 +102,11 @@ export class VaultsService {
       },
       vaultData: vaultData.map((v) => ({
         id: v.vaultId,
-        collateralAmount: BigNumber.from(v.collateralAmount),
+        collateralAmount: v.collateralAmount,
         collateralRatio: v.collateralRatio,
-        maiDebt: BigNumber.from(v.maiDebt),
+        maiDebt: v.maiDebt,
         owner: v.owner,
-        totalCollateralValue: BigNumber.from(v.totalCollateralValue),
+        totalCollateralValue: v.totalCollateralValue,
     }))
     }
   }

@@ -44,11 +44,11 @@ export class VaultDataService {
             pageCount: Math.ceil(resultCount / params.pageSize),
             vaultData: vaultData.map((v) => ({
                 id: v.vaultId,
-                collateralAmount: BigNumber.from(v.collateralAmount),
+                collateralAmount: v.collateralAmount,
                 collateralRatio: v.collateralRatio,
-                maiDebt: BigNumber.from(v.maiDebt),
+                maiDebt: v.maiDebt,
                 owner: v.owner,
-                totalCollateralValue: BigNumber.from(v.totalCollateralValue),
+                totalCollateralValue: v.totalCollateralValue,
                 vaultId: v.qiVaultId
             }))
         }

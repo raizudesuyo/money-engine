@@ -1,13 +1,28 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { QiVault } from "./QiVault.dto";
-import { BigNumber } from 'ethers';
 
-export interface QiVaultData {
+export class QiVaultData {
+    @ApiPropertyOptional()
     id?: number
+
+    @ApiProperty()
     collateralRatio: number;
-    collateralAmount: BigNumber;
-    totalCollateralValue: BigNumber;
-    maiDebt: BigNumber;
+
+    @ApiProperty()
+    collateralAmount: string;
+
+    @ApiProperty()
+    totalCollateralValue: string;
+
+    @ApiProperty()
+    maiDebt: string;
+
+    @ApiProperty()
     owner: string;
+
+    @ApiProperty()
     vault?: QiVault
+
+    @ApiPropertyOptional()
     vaultId?: number
 }

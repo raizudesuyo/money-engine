@@ -1,6 +1,6 @@
 import { QiVault } from '../QiVault.dto';
 
-export interface QiVaultsOnlyResponse {
-  vaults: QiVault[],
+export class QiVaultsOnlyResponse {
+  vaults: QiVault[]
   pageCount: number
 }

@@ -1,6 +1,5 @@
 
 import { QiVaultData } from './QiVaultData.dto'
-import { BigNumber } from 'ethers';
 
 export class QiVault {
 
@@ -10,7 +9,7 @@ export class QiVault {
     tokenAddress: string;
     tokenSymbol: string;
     vaultAddress: string;
-    dollarValue: BigNumber;
+    dollarValue: string;
     priceOracleAddress: string;
     minimumRatio: number;
     gainRatio: number;

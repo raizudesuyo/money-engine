@@ -10,7 +10,7 @@ export class QiVaultData {
     @Column()
     vaultId: number
 
-    @Column()
+    @Column({ type: "decimal" })
     @Index()
     collateralRatio: number;
 
@@ -24,7 +24,7 @@ export class QiVaultData {
     @Index()
     maiDebt: string;
 
-    @Column()
+    @Column({ type: "decimal" })
     predictedCollateralRatio: number;
 
     @Column()

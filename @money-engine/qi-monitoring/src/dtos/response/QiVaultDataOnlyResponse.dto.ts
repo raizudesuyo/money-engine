@@ -1,6 +1,6 @@
 import { QiVaultData } from '../QiVaultData.dto';
 
-export interface QiVaultDataOnlyResponse {
-  vaultData: QiVaultData[],
+export class QiVaultDataOnlyResponse {
+  vaultData: QiVaultData[]
   pageCount: number
 }
