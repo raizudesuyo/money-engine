@@ -65,6 +65,7 @@ importers:
       '@nestjs/microservices': ^8.4.4
       '@nestjs/schematics': ^8.0.11
       '@nestjs/swagger': ^5.2.1
+      '@nestjs/testing': ^8.4.4
       '@typechain/ethers-v5': ^9.0.0
       '@types/bn.js': ^5.1.0
       '@types/dotenv': ^8.2.0
@@ -113,6 +114,7 @@ importers:
       '@ethersproject/abi': 5.6.1
       '@ethersproject/bytes': 5.6.1
       '@ethersproject/providers': 5.6.5
+      '@nestjs/testing': 8.4.4_genshes52pfjmme5zhxtju2ziy
       '@typechain/ethers-v5': 9.0.0_nsybssspdckglgzew7pe3o5vfu
       '@types/bn.js': 5.1.0
       '@types/dotenv': 8.2.0
@@ -1392,6 +1394,26 @@ packages:
       - class-transformer
       - class-validator
     dev: false
+
+  /@nestjs/testing/8.4.4_genshes52pfjmme5zhxtju2ziy:
+    resolution: {integrity: sha512-eGj0Lbi0ONMkjDKbKQHoGX+ecGdrGRZ81I8i6fH4dx9jIR0p4MsBlW964f6Swn1MGkPm/xxomJmBWLPqZEjF7g==}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0
+      '@nestjs/core': ^8.0.0
+      '@nestjs/microservices': ^8.0.0
+      '@nestjs/platform-express': ^8.0.0
+    peerDependenciesMeta:
+      '@nestjs/microservices':
+        optional: true
+      '@nestjs/platform-express':
+        optional: true
+    dependencies:
+      optional: 0.1.4
+      '@nestjs/common': 8.4.4_47vcjb2de6lyibr6g4enoa5lyu
+      '@nestjs/core': 8.4.4_vekplu76vkbvw5hmxu5qy7inke
+      '@nestjs/microservices': 8.4.4_eqolnjailvrsgpjwojmchkclhe
+      tslib: 2.3.1
+    dev: true
 
   /@nestjs/typeorm/8.0.3_s6kf2wxaqx7c7ghapepprqoxna:
     resolution: {integrity: sha512-tf9rTXP6LeFInkwd+tktQhtLRsKp4RRYImprqT8gcHcJDx+xMP1IygnXELOKwF5vo2/mnhrGtBlRQ/iiS6170g==}
@@ -4208,6 +4230,10 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       mimic-fn: 2.1.0
+
+  /optional/0.1.4:
+    resolution: {integrity: sha512-gtvrrCfkE08wKcgXaVwQVgwEQ8vel2dc5DDBn9RLQZ3YtmtkBss6A2HY6BnJH4N/4Ku97Ri/SF8sNWE2225WJw==}
+    dev: true
 
   /optionator/0.8.3:
     resolution: {integrity: sha512-+IW9pACdk3XWmmTXG8m3upGUJst5XRGzxMRjXzAuJ1XnIFNvfhjjIuYkDvysnPQ7qzqVzLt78BCruntqRhWQbA==}

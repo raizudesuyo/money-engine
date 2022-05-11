@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
-import { RestApiModule } from './nest/app/app.module';
+import { RestApiModule } from './nest/app/RestApi.module';
 import { dataSource } from './data-source';
 import { reloadAll } from './reloadAll';
 import { listen } from './qiEventsListener';

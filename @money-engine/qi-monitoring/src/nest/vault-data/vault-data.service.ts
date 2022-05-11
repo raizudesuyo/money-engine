@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { QiVaultData } from '../../entity';
 import { dataSource } from '../../data-source'
 import { MoreThan } from 'typeorm';
-import { VaultDataOnlyResult, SortType } from '../app/app.definitions';
+import { SortType } from '../app/RestApi.definitions';
+import { QiVaultDataOnlyResponse } from '../../dtos'
+import { BigNumber } from 'ethers';
 
 @Injectable()
 export class VaultDataService {
@@ -11,7 +13,7 @@ export class VaultDataService {
     
     async getVaultData(
         params: GetVaultDataParams
-    ): Promise<VaultDataOnlyResult> {
+    ): Promise<QiVaultDataOnlyResponse> {
 
         let orderObject;
         
@@ -40,7 +42,15 @@ export class VaultDataService {
 
         return {
             pageCount: Math.ceil(resultCount / params.pageSize),
-            vaultData
+            vaultData: vaultData.map((v) => ({
+                id: v.vaultId,
+                collateralAmount: BigNumber.from(v.collateralAmount),
+                collateralRatio: v.collateralRatio,
+                maiDebt: BigNumber.from(v.maiDebt),
+                owner: v.owner,
+                totalCollateralValue: BigNumber.from(v.totalCollateralValue),
+                vaultId: v.qiVaultId
+            }))
         }
     }
 }
