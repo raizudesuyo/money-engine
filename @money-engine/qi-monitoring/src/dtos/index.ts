@@ -1,3 +1,3 @@
 export * from './response'
-export * from './QiVaultDTO'
-export * from './QiVaultDataDTO'
+export * from './QiVault.dto'
+export * from './QiVaultData.dto'

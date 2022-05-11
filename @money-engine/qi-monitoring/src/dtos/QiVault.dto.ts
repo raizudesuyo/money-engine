@@ -1,8 +1,8 @@
 
-import { QiVaultDataDTO } from './QiVaultDataDTO'
+import { QiVaultData } from './QiVaultData.dto'
 import { BigNumber } from 'ethers';
 
-export class QiVaultDTO {
+export class QiVault {
 
     id?: number;
     name: string;
@@ -15,6 +15,6 @@ export class QiVaultDTO {
     minimumRatio: number;
     gainRatio: number;
     canPublicLiquidate: boolean;
-    vaultData?: QiVaultDataDTO[]
+    vaultData?: QiVaultData[]
 
 }

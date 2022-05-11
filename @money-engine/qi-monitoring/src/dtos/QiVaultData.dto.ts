@@ -1,13 +1,13 @@
-import { QiVaultDTO } from "./QiVaultDTO";
+import { QiVault } from "./QiVault.dto";
 import { BigNumber } from 'ethers';
 
-export interface QiVaultDataDTO {
+export interface QiVaultData {
     id?: number
     collateralRatio: number;
     collateralAmount: BigNumber;
     totalCollateralValue: BigNumber;
     maiDebt: BigNumber;
     owner: string;
-    vault?: QiVaultDTO
+    vault?: QiVault
     vaultId?: number
 }
