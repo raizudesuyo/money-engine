@@ -9,3 +9,6 @@ typechain
 
 .k8s
 *.private.yaml
+
+packages/*/config.ts
+packages/*/config.json

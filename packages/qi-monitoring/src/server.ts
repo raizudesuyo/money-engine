@@ -1,12 +1,13 @@
 import "reflect-metadata";
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
-import { RestApiModule } from './nest/app/RestApi.module';
+import { RestApiModule, MicroServiceModule } from './nest/app/';
 import { dataSource } from './data-source';
 import { reloadAll } from './reloadAll';
 import { listen } from './qiEventsListener';
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 
 export class Server {
   static bootstrap = async () => {
@@ -29,7 +30,21 @@ export class Server {
 
     app.useLogger(app.get(Logger));
 
-    await app.listen(3000)
+    const restApiPromise = app.listen(3000)
+
+    const microservice = await NestFactory.createMicroservice<MicroserviceOptions>(
+      MicroServiceModule,
+      {
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.RMQ_URL || 'amqp://localhost:5672']
+        }
+      }
+    )
+
+    const microservicePromise = microservice.listen();
+
+    await Promise.all([restApiPromise, microservicePromise])
   }
 }
 

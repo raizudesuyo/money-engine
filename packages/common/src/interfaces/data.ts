@@ -6,7 +6,8 @@ export interface IMaiVaultContractData {
     name: string;
     address: string;
     chain: string
-    type: MaiVaultContractType
+    type: MaiVaultContractType,
+    priceSourceType: string
 }
 
 export type MaiVaultContractType = 'erc20QiStablecoin' 

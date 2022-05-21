@@ -7,7 +7,8 @@
       "sync": "ts-node -e 'require(\"./src/server.ts\").syncAndListenToEvents()'",
       "listen": "ts-node -e 'require(\"./src/server.ts\").listenToEvents()'",
       "syncOnly": "ts-node -e 'require(\"./src/server.ts\").syncOnly()'",
-      "typeorm": "typeorm-ts-node-commonjs"
+      "typeorm": "typeorm-ts-node-commonjs",
+      "updateConfig": "ts-node -e 'require(\"./tools/config-updater.ts\").updateConfig()'"
    },
    "devDependencies": {
       "@ethersproject/abi": "^5.6.1",
@@ -41,6 +42,7 @@
       "@nestjs/microservices": "^8.4.4",
       "@nestjs/platform-express": "^8.4.4",
       "@nestjs/swagger": "^5.2.1",
+      "axios": "^0.27.2",
       "ethers": "^5.6.5",
       "lodash": "^4.17.21",
       "mysql": "^2.18.1",

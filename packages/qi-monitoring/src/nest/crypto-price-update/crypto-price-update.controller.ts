@@ -1,12 +1,12 @@
 import { Controller } from "@nestjs/common";
 import { EventPattern } from "@nestjs/microservices";
-import { UpdatePriceEvent, LoggerSingleton } from "@money-engine/common";
+import { UpdatePriceEvent, LoggerSingleton, PriceOracleEvents } from "@money-engine/common";
 import { QiVault } from '../../entity';
 import { dataSource } from '../../data-source'
 
 @Controller()
 export class CryptoPriceUpdateController {
-  @EventPattern("price-updated")
+  @EventPattern(PriceOracleEvents.priceUpdate)
   async updatePrice(data: UpdatePriceEvent) {
     // Get vault from data address + chain + price source
     // Update ratios based from pricing, only update ratios with only a few percentage above liquidation price
