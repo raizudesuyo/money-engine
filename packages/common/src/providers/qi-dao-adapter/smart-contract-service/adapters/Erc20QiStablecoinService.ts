@@ -2,7 +2,7 @@ import { BigNumber, providers } from 'ethers';
 import { CrosschainQiStablecoin, Erc20QiStablecoin, Erc20QiStablecoincamwbtc, Erc20QiStablecoinwbtc, Erc20QiStablecoin__factory } from '../../../../../typechain';
 import { IQiDaoVaultContractAdapter, ContractTransactionParams } from '../IQiDaoVaultContractAdapter';
 
-
+// Actually an Adapter
 export default class Erc20QiStablecoinService implements IQiDaoVaultContractAdapter {
     
     protected smartContract: Erc20QiStablecoin | Erc20QiStablecoinwbtc | Erc20QiStablecoincamwbtc | CrosschainQiStablecoin

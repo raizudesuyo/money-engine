@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  pg:
+    image: postgres:alpine
+    volumes: 
+      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+  redis:
+    image: redis:7-alpine
+    
+  rabbitmq:
+    image: rabbitmq:3.10-management
+volumes:
+  dbVol:

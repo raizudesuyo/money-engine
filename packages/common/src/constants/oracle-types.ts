@@ -1,8 +1,7 @@
-export const OracleType = {
-  chainLink: {
-    aggregatorV3Interface: 'AggregatorV3Interface'
-  },
-  defi: {
-    qiShareOracle: 'qiShareOracle'
-  }
-}
+export type OracleType =
+  | "EACAggregatorProxy"
+  | "IPriceSource"
+  | "mooRacleSingle"
+  | "qiDoubleOracle"
+  | "qiShareOracle"
+  | "yvOracle";
