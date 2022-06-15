@@ -1,12 +1,13 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ASSET_DELTA_ALERT_REPOSITORY, ASSET_PRICE_DATA_REPOSITORY, ASSET_REPOSITORY } from '../database';
-import { Asset, AssetPriceData, AssetDeltaAlert } from 'src/entity';
+import { Asset, AssetPriceData, AssetDeltaAlert } from '../..//entity';
 import { Repository } from 'typeorm';
 import { OnEvent } from '@nestjs/event-emitter';
 import { BigNumber } from 'ethers';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { ClientProxy } from '@nestjs/microservices';
 import { DeltaAlertEvent, DELTA_ALERT_PATTERN } from '@money-engine/common'
+import { MONEY_ENGINE } from '../money-engine/money-engine.provider';
 
 @Injectable()
 export class DeltaService implements OnApplicationBootstrap {
@@ -16,13 +17,14 @@ export class DeltaService implements OnApplicationBootstrap {
     @Inject(ASSET_REPOSITORY) private readonly assetRepository: Repository<Asset>,
     @Inject(ASSET_DELTA_ALERT_REPOSITORY) private readonly assetDeltaAlertRepository: Repository<AssetDeltaAlert>,
     @InjectPinoLogger(DeltaService.name) private readonly logger: PinoLogger,
-    @Inject('CLIENT') private client: ClientProxy,
+    @Inject(MONEY_ENGINE) private client: ClientProxy,
   ) {
 
   }
 
   async onApplicationBootstrap() {
-    await this.client.connect();
+    await this.client.connect()
+      .catch((err) => console.error(err))
   }
 
   async create(createDeltaDto: CreateDeltaRequestDto) {

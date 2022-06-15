@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Asset } from 'src/entity';
+import { Asset } from '../../entity';
 import { Repository } from 'typeorm';
 import { ASSET_REPOSITORY } from '../database'
 

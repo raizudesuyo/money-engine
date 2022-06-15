@@ -70,13 +70,7 @@ export class PricesourceService implements OnApplicationBootstrap {
   }
 
   private async reloadPollJobs() {
-    const pollJobs = await this.priceSourcePollJobRepository.find({
-      relations: {
-        priceSource: {
-          asset: true,
-        }
-      }
-    })
+    const pollJobs = await this.priceSourcePollJobRepository.find()
     pollJobs.forEach(pollJob => {
       this.startPollJob(pollJob);
     });

@@ -8,31 +8,18 @@ import { PricesourceModule } from '../pricesource/pricesource.module';
 import { DeltaModule } from '../delta/delta.module';
 import { LoggerModule } from 'nestjs-pino';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-
+import { MoneyEngineModule } from '../money-engine/money-engine.module';
 @Module({
   controllers: [AppController],
   providers: [AppService],
-  imports: [ ScheduleModule.forRoot(),
+  imports: [ScheduleModule.forRoot(),
     LoggerModule.forRoot(),
     EventEmitterModule.forRoot(),
-    DatabaseModule,
     AssetModule,
     PricesourceModule,
     DeltaModule,
-    ClientsModule.register([
-      {
-        name: 'CLIENT',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://localhost:5672'],
-          queue: 'money-engine',
-          queueOptions: {
-            durable: false
-          },
-        },
-      },
-    ]),
-  ]
+    DatabaseModule,
+    MoneyEngineModule
+  ],
 })
 export class AppModule {}
