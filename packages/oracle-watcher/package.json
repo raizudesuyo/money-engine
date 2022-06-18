@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@money-engine/common": "workspace:^1.0.0",
+    "@money-engine/common-nest": "workspace:^1.0.0",
     "@nestjs/event-emitter": "^1.1.1",
     "@nestjs/mapped-types": "*",
     "@nestjs/microservices": "^8.4.4",

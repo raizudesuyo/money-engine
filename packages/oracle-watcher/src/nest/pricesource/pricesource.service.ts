@@ -11,6 +11,7 @@ import { AssetPriceData } from '../../entity/AssetPriceData.entity';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { ASSET_PRICE_DATA_REPOSITORY, ASSET_REPOSITORY } from '../database/database.provider';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { RegisterPricesourceRequest } from '@money-engine/common-nest';
 
 @Injectable()
 export class PricesourceService implements OnApplicationBootstrap {
@@ -30,7 +31,7 @@ export class PricesourceService implements OnApplicationBootstrap {
     this.reloadPollJobs();
   }
 
-  async create(registerPricesourceRequestDto: RegisterPricesourceRequestDto) {
+  async create(registerPricesourceRequestDto: RegisterPricesourceRequest) {
     // if asset exists, continue, else throw an error
     const asset = await this.assetRepository.findOne({ 
       where: { deleteFlag: false, uuid: registerPricesourceRequestDto.assetId },
@@ -133,12 +134,4 @@ export class PricesourceService implements OnApplicationBootstrap {
   }
 }
 
-export interface RegisterPricesourceRequestDto {
-  oracleType: string
-  oracleAddress: string
-  assetId: string 
-}
 
-export interface RegisterPricesourceResponseDto extends RegisterPricesourceRequestDto{
-  uuid: string
-}

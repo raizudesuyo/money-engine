@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Asset } from '../../entity';
 import { Repository } from 'typeorm';
 import { ASSET_REPOSITORY } from '../database'
+import { CreateAssetRequest } from '@money-engine/common-nest';
 
 @Injectable()
 export class AssetService {
@@ -10,7 +11,7 @@ export class AssetService {
     @Inject(ASSET_REPOSITORY) private assetRepository: Repository<Asset>
   ) {}
 
-  async create(createAssetDto: CreateAssetRequestDto): Promise<string> {
+  async create(createAssetDto: CreateAssetRequest): Promise<string> {
     const newAsset = new Asset();
     
     newAsset.address = createAssetDto.address;
@@ -58,15 +59,4 @@ export class AssetService {
     toBeRemoved.deleteFlag = true;
     this.assetRepository.save(toBeRemoved);
   }
-}
-
-export interface CreateAssetRequestDto {
-  name: string
-  chain: string
-  address: string
-  oracles?: [string]
-}
-
-export interface CreateAssetResponseDto extends CreateAssetRequestDto {
-  uuid: string
 }

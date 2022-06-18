@@ -2,9 +2,26 @@ lockfileVersion: 5.4
 
 importers:
 
+  packages/common-nest:
+    specifiers:
+      '@money-engine/common': workspace:^1.0.0
+      '@nestjs/common': ^8.4.7
+      '@nestjs/core': ^8.4.4
+      '@nestjs/microservices': ^8.4.4
+      reflect-metadata: ^0.1.13
+      rxjs: ^7.5.5
+    dependencies:
+      '@money-engine/common': link:../common
+      '@nestjs/common': 8.4.7_47vcjb2de6lyibr6g4enoa5lyu
+      '@nestjs/core': 8.4.4_czsfqdndmwwvaohs544nuseb7e
+      '@nestjs/microservices': 8.4.4_xya2gycd455c3liazriatl7xqe
+      reflect-metadata: 0.1.13
+      rxjs: 7.5.5
+
   packages/oracle-watcher:
     specifiers:
       '@money-engine/common': workspace:^1.0.0
+      '@money-engine/common-nest': workspace:^1.0.0
       '@nestjs/common': '>=8.0.0 <9.0.0'
       '@nestjs/core': ^8.4.4
       '@nestjs/event-emitter': ^1.1.1
@@ -29,6 +46,7 @@ importers:
       typescript: ^4.7.3
     dependencies:
       '@money-engine/common': link:../common
+      '@money-engine/common-nest': link:../common-nest
       '@nestjs/event-emitter': 1.1.1_ri7uarpfhib2ateqzcw7uno7zy
       '@nestjs/mapped-types': 1.0.1_q7zqblbumkdytftubivmiqkfgi
       '@nestjs/microservices': 8.4.4_bzkqns34tavnetlgj3omryiodu
@@ -1057,6 +1075,32 @@ packages:
     transitivePeerDependencies:
       - debug
 
+  /@nestjs/common/8.4.7_47vcjb2de6lyibr6g4enoa5lyu:
+    resolution: {integrity: sha512-m/YsbcBal+gA5CFrDpqXqsSfylo+DIQrkFY3qhVIltsYRfu8ct8J9pqsTO6OPf3mvqdOpFGrV5sBjoyAzOBvsw==}
+    peerDependencies:
+      cache-manager: '*'
+      class-transformer: '*'
+      class-validator: '*'
+      reflect-metadata: ^0.1.12
+      rxjs: ^7.1.0
+    peerDependenciesMeta:
+      cache-manager:
+        optional: true
+      class-transformer:
+        optional: true
+      class-validator:
+        optional: true
+    dependencies:
+      axios: 0.27.2
+      iterare: 1.2.1
+      reflect-metadata: 0.1.13
+      rxjs: 7.5.5
+      tslib: 2.4.0
+      uuid: 8.3.2
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /@nestjs/core/8.4.4_4cgiwfrqossrqfu53answ3dqhi:
     resolution: {integrity: sha512-Ef3yJPuzAttpNfehnGqIV5kHIL9SHptB5F4ERxoU7pT61H3xiYpZw6hSjx68cJO7cc6rm7/N+b4zeuJvFHtvBg==}
     requiresBuild: true
@@ -1078,6 +1122,39 @@ packages:
       '@nestjs/common': 8.4.4_47vcjb2de6lyibr6g4enoa5lyu
       '@nestjs/microservices': 8.4.4_eqolnjailvrsgpjwojmchkclhe
       '@nestjs/platform-express': 8.4.4_u6bxr3c7htwmhq2t5wi3k6ht4y
+      '@nuxtjs/opencollective': 0.3.2
+      fast-safe-stringify: 2.1.1
+      iterare: 1.2.1
+      object-hash: 3.0.0
+      path-to-regexp: 3.2.0
+      reflect-metadata: 0.1.13
+      rxjs: 7.5.5
+      tslib: 2.3.1
+      uuid: 8.3.2
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@nestjs/core/8.4.4_czsfqdndmwwvaohs544nuseb7e:
+    resolution: {integrity: sha512-Ef3yJPuzAttpNfehnGqIV5kHIL9SHptB5F4ERxoU7pT61H3xiYpZw6hSjx68cJO7cc6rm7/N+b4zeuJvFHtvBg==}
+    requiresBuild: true
+    peerDependencies:
+      '@nestjs/common': ^8.0.0
+      '@nestjs/microservices': ^8.0.0
+      '@nestjs/platform-express': ^8.0.0
+      '@nestjs/websockets': ^8.0.0
+      reflect-metadata: ^0.1.12
+      rxjs: ^7.1.0
+    peerDependenciesMeta:
+      '@nestjs/microservices':
+        optional: true
+      '@nestjs/platform-express':
+        optional: true
+      '@nestjs/websockets':
+        optional: true
+    dependencies:
+      '@nestjs/common': 8.4.7_47vcjb2de6lyibr6g4enoa5lyu
+      '@nestjs/microservices': 8.4.4_xya2gycd455c3liazriatl7xqe
       '@nuxtjs/opencollective': 0.3.2
       fast-safe-stringify: 2.1.1
       iterare: 1.2.1
@@ -1239,6 +1316,51 @@ packages:
     dependencies:
       '@nestjs/common': 8.4.4_47vcjb2de6lyibr6g4enoa5lyu
       '@nestjs/core': 8.4.4_vekplu76vkbvw5hmxu5qy7inke
+      iterare: 1.2.1
+      json-socket: 0.3.0
+      reflect-metadata: 0.1.13
+      rxjs: 7.5.5
+      tslib: 2.3.1
+    dev: false
+
+  /@nestjs/microservices/8.4.4_xya2gycd455c3liazriatl7xqe:
+    resolution: {integrity: sha512-V1xBs5mBFaWGF7RuLSQBG9ydcvX+j8RxHnk9pYF2I5kBdWt7AyTuG2qMt7es06HXEbgUmavw/zn+P6Q2WQIS5A==}
+    peerDependencies:
+      '@grpc/grpc-js': '*'
+      '@nestjs/common': ^8.0.0
+      '@nestjs/core': ^8.0.0
+      '@nestjs/websockets': ^8.0.0
+      amqp-connection-manager: '*'
+      amqplib: '*'
+      cache-manager: '*'
+      kafkajs: '*'
+      mqtt: '*'
+      nats: '*'
+      redis: '*'
+      reflect-metadata: ^0.1.12
+      rxjs: ^7.1.0
+    peerDependenciesMeta:
+      '@grpc/grpc-js':
+        optional: true
+      '@nestjs/websockets':
+        optional: true
+      amqp-connection-manager:
+        optional: true
+      amqplib:
+        optional: true
+      cache-manager:
+        optional: true
+      kafkajs:
+        optional: true
+      mqtt:
+        optional: true
+      nats:
+        optional: true
+      redis:
+        optional: true
+    dependencies:
+      '@nestjs/common': 8.4.7_47vcjb2de6lyibr6g4enoa5lyu
+      '@nestjs/core': 8.4.4_czsfqdndmwwvaohs544nuseb7e
       iterare: 1.2.1
       json-socket: 0.3.0
       reflect-metadata: 0.1.13
@@ -2517,7 +2639,7 @@ packages:
     dev: true
 
   /delayed-stream/1.0.0:
-    resolution: {integrity: sha1-3zrhmayt+31ECqrgsp4icrJOxhk=}
+    resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
 
   /depd/1.1.2:
@@ -5051,7 +5173,7 @@ packages:
     dev: true
 
   /tr46/0.0.3:
-    resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=}
+    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
 
   /tr46/1.0.1:
     resolution: {integrity: sha1-qLE/1r/SSJUZZ0zN5VujaTtwbQk=}
@@ -5472,7 +5594,7 @@ packages:
     dev: true
 
   /webidl-conversions/3.0.1:
-    resolution: {integrity: sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=}
+    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
 
   /webidl-conversions/4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
@@ -5544,7 +5666,7 @@ packages:
     dev: true
 
   /whatwg-url/5.0.0:
-    resolution: {integrity: sha1-lmRU6HZUYuN2RNNib2dCzotwll0=}
+    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
     dependencies:
       tr46: 0.0.3
       webidl-conversions: 3.0.1
