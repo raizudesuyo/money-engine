@@ -6,8 +6,8 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { BigNumber } from 'ethers';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { ClientProxy } from '@nestjs/microservices';
-import { DeltaAlertEvent, DELTA_ALERT_PATTERN } from '@money-engine/common'
-import { CreateDeltaRequest, UpdateDeltaRequest } from '@money-engine/common-nest';
+import { DeltaAlertEvent, ORACLE_WATCHER_DELTA_ALERT } from '@money-engine/common'
+import { CreateDeltaRequest, MONEY_ENGINE, UpdateDeltaRequest } from '@money-engine/common-nest';
 
 @Injectable()
 export class DeltaService implements OnApplicationBootstrap {
@@ -17,7 +17,7 @@ export class DeltaService implements OnApplicationBootstrap {
     @Inject(ASSET_REPOSITORY) private readonly assetRepository: Repository<Asset>,
     @Inject(ASSET_DELTA_ALERT_REPOSITORY) private readonly assetDeltaAlertRepository: Repository<AssetDeltaAlert>,
     @InjectPinoLogger(DeltaService.name) private readonly logger: PinoLogger,
-    @Inject(MONEY_ENGINE) private client: ClientProxy,
+    @Inject(MONEY_ENGINE) private readonly client: ClientProxy,
   ) {
 
   }
@@ -101,7 +101,7 @@ export class DeltaService implements OnApplicationBootstrap {
 
       if(Math.abs(actualDelta) >= Math.abs(delta.delta)) {
         this.logger.info(`Sending Delta Event ${delta.uuid} to money-engine queue`)
-        this.client.emit<void, DeltaAlertEvent>(DELTA_ALERT_PATTERN, {
+        this.client.emit<void, DeltaAlertEvent>(ORACLE_WATCHER_DELTA_ALERT, {
           deltaId: delta.uuid,
           previousPrice: reference.toString(),
           newPrice: newPrice.toString(),

@@ -1,33 +1,17 @@
 import { Controller } from "@nestjs/common";
 import { EventPattern } from "@nestjs/microservices";
-import { UpdatePriceEvent, LoggerSingleton, PriceOracleEvents } from "@money-engine/common";
-import { QiVault } from '../../entity';
-import { dataSource } from '../../data-source'
+import { UpdatePriceEvent, ORACLE_WATCHER_DELTA_ALERT } from "@money-engine/common";
+import { CryptoPriceUpdateService } from "./crypto-price-update.service";
 
 @Controller()
 export class CryptoPriceUpdateController {
-  @EventPattern(PriceOracleEvents.priceUpdate)
+
+  constructor(
+    private readonly cryptoPriceUpdateService: CryptoPriceUpdateService
+  ) { }
+
+  @EventPattern(ORACLE_WATCHER_DELTA_ALERT)
   async updatePrice(data: UpdatePriceEvent) {
-    // Get vault from data address + chain + price source
-    // Update ratios based from pricing, only update ratios with only a few percentage above liquidation price
-
-    const {
-      crypto: { chain, symbol, address },
-      priceSourceData: { priceSourceType, price, decimals },
-    } = data;
-  
-    const vault = await dataSource.manager.findOne(QiVault, {
-      where: {
-        tokenSymbol: symbol,
-        tokenAddress: address,
-        vaultChain: chain,
-      }
-    })
-
-    vault.dollarValue = price;
-
-    await dataSource.manager.save(vault)
-
-    LoggerSingleton.getInstance().info(`Updated ${symbol} to price ${price}`)
+    this.cryptoPriceUpdateService.updatePrice(data);
   }
 }

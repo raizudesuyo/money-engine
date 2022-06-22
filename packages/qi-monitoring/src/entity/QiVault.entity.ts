@@ -4,8 +4,12 @@ import { QiVaultData } from './QiVaultData.entity';
 @Entity()
 export class QiVault {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    constructor(init?: Partial<QiVault>) {
+      Object.assign(this, init);
+    }
+
+    @PrimaryGeneratedColumn('uuid')
+    uuid: string;
 
     @Column()
     vaultName: string;
@@ -37,7 +41,7 @@ export class QiVault {
     @Column()
     canPublicLiquidate: boolean;
 
-    @OneToMany(type => QiVaultData, vaultData => vaultData.vault)
+    @OneToMany(type => QiVaultData, vaultData => vaultData.vault, { eager: true })
     vaultData: QiVaultData[]
 
     @CreateDateColumn()

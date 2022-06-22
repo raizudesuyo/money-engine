@@ -3,7 +3,7 @@ import { QiVaultData } from './QiVaultData.dto'
 
 export class QiVault {
 
-    id?: number;
+    uuid?: string;
     name: string;
     chain: string;
     tokenAddress: string;

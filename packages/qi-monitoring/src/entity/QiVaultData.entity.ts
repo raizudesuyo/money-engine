@@ -4,11 +4,15 @@ import { QiVault } from "./QiVault.entity";
 @Entity()
 export class QiVaultData {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    constructor(init?: Partial<QiVaultData>) {
+        Object.assign(this, init);
+    }
+
+    @PrimaryGeneratedColumn('uuid')
+    uuid: string;
 
     @Column()
-    vaultId: number
+    vaultNumber: number
 
     @Column({ type: "decimal" })
     @Index()
@@ -36,12 +40,11 @@ export class QiVaultData {
     @Column()
     owner: string;
 
-    @ManyToOne(type => QiVault, vault => vault.vaultData)
-    @JoinColumn({ name: 'qiVaultId', referencedColumnName: 'id' })
-    vault: QiVault
+    @ManyToOne(type => QiVault, vault => vault.vaultData, { lazy: true })
+    vault: Promise<QiVault>
 
     @Column()
-    qiVaultId: number
+    vaultUuid: string
 
     @CreateDateColumn()
     @Index()

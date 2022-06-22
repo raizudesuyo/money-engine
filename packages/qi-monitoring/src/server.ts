@@ -1,10 +1,9 @@
 import "reflect-metadata";
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
-import { RestApiModule, MicroServiceModule } from './nest/app/';
+import { RestApiModule, MicroServiceModule } from './nest/app';
 import { dataSource } from './data-source';
 import { reloadAll } from './reloadAll';
-import { listen } from './qiEventsListener';
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -50,12 +49,10 @@ export class Server {
 
 export const syncAndListenToEvents = () => dataSource.initialize().then(async () => {
   reloadAll()
-  listen()
   Server.bootstrap()
 })
 
 export const listenToEvents = () => dataSource.initialize().then(async () => {
-  listen()
   Server.bootstrap()
 })
 

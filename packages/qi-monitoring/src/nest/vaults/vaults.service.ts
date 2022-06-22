@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SortType } from '../app/RestApi.definitions';
 import { MoreThan } from 'typeorm';
 import { QiVault, QiVaultData } from '../../entity';
 import { dataSource } from '../../data-source'
 import { QiVaultsOnlyResponse, QiVaultDataResponse } from '../../dtos'
-import { BigNumber } from 'ethers';
+import { QI_VAULT_REPOSITORY, QI_VAULT_DATA_REPOSITORY, TQiVaultDataRepository, TQiVaultRepository } from '../database';
 
 @Injectable()
 export class VaultsService {
 
-  constructor() {}
+  constructor(
+    @Inject(QI_VAULT_REPOSITORY) private readonly vaultRepository: TQiVaultRepository,
+    @Inject(QI_VAULT_DATA_REPOSITORY) private readonly vaultDataRepository: TQiVaultDataRepository
+  ) {}
 
   async getAllVaults(
     pageSize: number,
@@ -18,14 +21,14 @@ export class VaultsService {
 
     const collateralCount = await dataSource.manager.count(QiVault);
     const totalNumberOfPages = Math.ceil(collateralCount / pageSize);
-    const vaults = await dataSource.manager.find(QiVault, {
+    const vaults = await this.vaultRepository.find({
       take: pageSize,
       skip: pageNumber * pageSize
     });
 
     return {
       vaults: vaults.map((v) => ({
-        id: v.id,
+        uuid: v.uuid,
         chain: v.vaultChain,
         canPublicLiquidate: v.canPublicLiquidate,
         dollarValue: v.dollarValue,
@@ -60,9 +63,9 @@ export class VaultsService {
         break;
     }
 
-    const vaultData = await dataSource.manager.find(QiVaultData, {
+    const vaultData = await this.vaultDataRepository.find({
       where: {
-        vault: { id: params.vaultId },
+        vault: { uuid: params.vaultUuid },
         collateralRatio: MoreThan(1)
       },
       order: orderObject,
@@ -71,15 +74,15 @@ export class VaultsService {
       relations: ['vault']
     })
 
-    const vault = await dataSource.manager.findOne(QiVault, {
+    const vault = await this.vaultRepository.findOne({
       where: {
-        id: params.vaultId
+        uuid: params.vaultUuid
       }
     });
 
-    const resultCount = await dataSource.manager.count(QiVaultData, {
+    const resultCount = await this.vaultDataRepository.count({
       where: {
-        vault: { id: params.vaultId } 
+        vault: { uuid: params.vaultUuid } 
       }, 
       relations: ['vault']
     });
@@ -88,7 +91,7 @@ export class VaultsService {
     return {
       pageCount: Math.ceil(params.pageSize / resultCount),
       vault: {
-        id: vault.id,
+        uuid: vault.uuid,
         chain: vault.vaultChain,
         canPublicLiquidate: vault.canPublicLiquidate,
         dollarValue: vault.dollarValue,
@@ -101,7 +104,9 @@ export class VaultsService {
         vaultAddress: vault.vaultAddress
       },
       vaultData: vaultData.map((v) => ({
-        id: v.vaultId,
+        uuid: v.uuid,
+        vaultNumber: v.vaultNumber,
+        vaultUuid: vault.uuid,
         collateralAmount: v.collateralAmount,
         collateralRatio: v.collateralRatio,
         maiDebt: v.maiDebt,
@@ -113,7 +118,7 @@ export class VaultsService {
 }
 
 export interface GetVaultDataParams {
-  vaultId: number
+  vaultUuid: string
   sortType: SortType
   pageSize: number
   pageNumber: number

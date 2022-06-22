@@ -3,7 +3,7 @@ import { QiVault } from "./QiVault.dto";
 
 export class QiVaultData {
     @ApiPropertyOptional()
-    id?: number
+    uuid?: string
 
     @ApiProperty()
     collateralRatio: number;
@@ -15,6 +15,9 @@ export class QiVaultData {
     totalCollateralValue: string;
 
     @ApiProperty()
+    vaultNumber: number
+
+    @ApiProperty()
     maiDebt: string;
 
     @ApiProperty()
@@ -24,5 +27,5 @@ export class QiVaultData {
     vault?: QiVault
 
     @ApiPropertyOptional()
-    vaultId?: number
+    vaultUuid?: string
 }

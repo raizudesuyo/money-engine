@@ -18,7 +18,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     PricesourceModule,
     DeltaModule,
     DatabaseModule,
-    
   ],
 })
 export class AppModule {}

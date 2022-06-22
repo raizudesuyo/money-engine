@@ -8,13 +8,13 @@ import { MONEY_ENGINE} from '../money-engine'
 export abstract class OracleWatcherIntegrationController implements OnApplicationBootstrap {
   
   constructor(
-    @Inject(MONEY_ENGINE) private client: ClientProxy,
+    private readonly __client: ClientProxy,
   ) {}
   
   async onApplicationBootstrap() {
     // check if oracle watcher is initialized
-    await this.client.connect();
-    const observable = this.client.send<IsOracleWatcherInitializeResponse>('IS_ORACLE_WATCHER_INITIALIZED', {})
+    await this.__client.connect();
+    const observable = this.__client.send<IsOracleWatcherInitializeResponse>('IS_ORACLE_WATCHER_INITIALIZED', {})
     observable.subscribe(async (response) => {
       if(response.isInitialized) {
         await this.registerAssetsToOracleWatcher();
