@@ -1,24 +1,34 @@
 import { IData, QiDaoVaultContractAdapterFactory, QiDaoVaultService, Web3Chain, Web3HttpFactory } from '@money-engine/common';
 import { InjectQueue } from '@nestjs/bull';
-import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
 import { Queue } from 'bull';
 import { filter } from 'lodash';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { QI_VAULT_DATA_REPOSITORY, QI_VAULT_REPOSITORY, TQiVaultDataRepository, TQiVaultRepository } from '../database';
+import { QI_VAULT_REPOSITORY, TQiVaultRepository } from '../database';
 import { TGetVaultData } from './qi-reload.processor';
+import { GLOBAL_STATE_REPOSITORY } from '../database/database.provider';
+import { TGlobalStateRepository } from '../database/repositories/GlobalState.repository';
 
 @Injectable()
-export class QiReloadService implements OnApplicationBootstrap {
+export class QiReloadService implements OnApplicationBootstrap, OnModuleDestroy {
 
   constructor(
     @InjectPinoLogger(QiReloadService.name) private readonly logger: PinoLogger,
     @InjectQueue('qi-reload') private readonly reloadQueue: Queue<TGetVaultData>,
-    @Inject(QI_VAULT_REPOSITORY) private readonly vaultRepository: TQiVaultRepository
+    @Inject(QI_VAULT_REPOSITORY) private readonly vaultRepository: TQiVaultRepository,
+    @Inject(GLOBAL_STATE_REPOSITORY) private readonly globalStateRepository: TGlobalStateRepository
+    
   ) {
 
   }
 
   async onApplicationBootstrap() {
+
+    const isJobsCreated = (await this.globalStateRepository.findByConfigName('IS_SYNC_JOBS_CREATED')) === 'true'
+    this.logger.info(`Is jobs created?: ${isJobsCreated}`)
+
+    if(isJobsCreated) return;
+    
     this.logger.info("Starting reload all data");
     const data = require("../../../config.json") as IData;
 
@@ -76,7 +86,16 @@ export class QiReloadService implements OnApplicationBootstrap {
           contract
         })
       }
+
+      this.globalStateRepository.setConfigBoolean('IS_SYNC_JOBS_CREATED', true)
     });
+  }
+
+  onModuleDestroy() {
+    this.logger.info('Cleaning Queue')
+    this.reloadQueue.clean(1000, 'wait');
+    this.reloadQueue.clean(1000, 'active');  
+    this.reloadQueue.clean(1000, 'paused');  
   }
 
 }

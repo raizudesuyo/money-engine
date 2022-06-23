@@ -1,7 +1,7 @@
 import { Web3Provider } from '@ethersproject/providers';
 import { IMaiVaultContractData, IQiDaoVaultContractAdapter, IQiDaoVaultData, QiDaoVaultContractAdapterFactory, QiDaoVaultService, Web3Chain, Web3HttpFactory } from '@money-engine/common';
 import { Processor, Process } from '@nestjs/bull';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { Job } from 'bull';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { QiVault } from '../../entity';
@@ -19,7 +19,7 @@ export class QiReloadConsumer {
   }
 
   @Process({
-    concurrency: 24
+    concurrency: 12
   })
   async getVaultData(job: Job<TGetVaultData>) {
 
