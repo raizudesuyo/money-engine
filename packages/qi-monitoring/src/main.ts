@@ -1,9 +1,10 @@
 import "reflect-metadata";
 import { NestFactory } from '@nestjs/core';
-import { Logger } from 'nestjs-pino';
+import { Logger,  } from 'nestjs-pino';
 import { RestApiModule, MicroServiceModule } from './nest/app';
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { program } from 'commander'
 
 
 export class Server {
@@ -38,6 +39,9 @@ export class Server {
         }
       }
     )
+    microservice.useLogger(microservice.get(Logger));
+    microservice.enableShutdownHooks();
+
 
     const microservicePromise = await microservice.listen();
 
@@ -46,3 +50,10 @@ export class Server {
 }
 
 Server.bootstrap();
+
+program
+  .option('-s, --sync', 'Generate sync commands')
+  .option('-l, --listen', 'listens', true)
+  .action(() => {
+
+  })
