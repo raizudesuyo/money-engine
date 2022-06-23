@@ -24,14 +24,14 @@ export class VaultsController {
     @Query('pageSize', new DefaultValuePipe(100), ParseIntPipe) pageSize: number,
     @Query('pageNumber', new DefaultValuePipe(0), ParseIntPipe) pageNumber: number,
     @Query('sortType', new DefaultValuePipe('debtRatio')) sortType: SortType, // we will just assume we got it correctly somehow for now
-    @Param('vaultId', ParseIntPipe) vaultId: number     
+    @Param('vaultUuid', ParseIntPipe) vaultUuid: string     
   ): Promise<QiVaultDataResponse> {
 
     return await this.vaultsService.getVaultData({
         pageSize,
         pageNumber,
         sortType,
-        vaultId
+        vaultUuid
       }
     )
   }

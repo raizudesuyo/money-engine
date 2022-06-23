@@ -14,7 +14,7 @@ import { Inject, Injectable,
 import { BigNumber, ethers, providers } from 'ethers';
 import { InjectPinoLogger, 
   PinoLogger } from 'nestjs-pino';
-import { QiVaultData, QiVault } from 'src/entity';
+import { QiVaultData, QiVault } from '../../entity';
 import { QI_VAULT_DATA_REPOSITORY, 
   QI_VAULT_REPOSITORY, 
   TQiVaultDataRepository, 
@@ -31,7 +31,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() {
     this.logger.info('Starting to Listen');
-    const data = require('../config.json') as IData;
+    const data = require('../../../config.json') as IData;
     this.listen(data);
   }
 
@@ -91,7 +91,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       this.vaultDataRepository.save(new QiVaultData({
         owner: ownerAddress,
         vaultNumber: id.toNumber(),
-        vaultUuid: qiVault.uuid,
+        vaultUuid: qiVault?.uuid,
         collateralRatio: 0,
         collateralAmount: '0',
         maiDebt: '0',
@@ -120,7 +120,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
 
       // TODO: update algorithm to include latest dollar price of asset?
       const predictedCollateralAmount = BigNumber.from(vaultData.predictedCollateralAmount).add(amount);
-      const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault.dollarValue));
+      const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault?.dollarValue));
       
       let predictedDebtRatio = BigNumber.from(0);
 
@@ -157,7 +157,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
 
       // TODO: update algorithm to include latest dollar price of asset?
       const predictedCollateralAmount = BigNumber.from(vaultData.predictedCollateralAmount).sub(amount);
-      const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault.dollarValue));
+      const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault?.dollarValue));
       let predictedDebtRatio = BigNumber.from(0)
 
       try {
@@ -219,6 +219,12 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       const logMessage = `Vault ${vault.name} # ${id} Repayed ${ethers.utils.commify(ethers.utils.formatEther(amount))}`;
 
       const qiVault = await this.getQiVault(vault.address);
+
+      if(qiVault === null) {
+        // Handle it,
+        return;
+      }
+
       const vaultData = await this.getQiVaultData(qiVault, id.toNumber());
 
       if (!vaultData) {
@@ -260,7 +266,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       const logMessage = `Vault ${vault.name} # ${id} Liquidated by ${buyer}`;
 
       const qiVault = await this.getQiVault(vault.address);
-      const vaultUserData: IQiDaoVaultData = await contractGateway.getVaultUserData(id.toNumber()).catch(() => null);
+      const vaultUserData: IQiDaoVaultData | null = await contractGateway.getVaultUserData(id.toNumber()).catch(() => null);
 
       if (!vaultUserData) {
         this.logger.info(`${logMessage} but it hasn't been synced yet 😥`)
@@ -284,7 +290,9 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
   }
 
   private async getQiVault(vaultAddress: string) {
-    return await this.vaultRepository.findOne({ where: { vaultAddress: vaultAddress } });
+    const qiVault = await this.vaultRepository.findOne({ where: { vaultAddress: vaultAddress } });
+    if(qiVault === null) throw new Error(`Null Qi Vault ${vaultAddress}`)
+    return qiVault
   }
 
   private async getQiVaultData(vault: QiVault, vaultNumber: number) {

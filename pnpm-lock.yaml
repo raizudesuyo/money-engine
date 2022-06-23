@@ -37,6 +37,7 @@ importers:
       '@nestjs/common': ^8.4.7
       '@nestjs/core': ^8.4.4
       '@nestjs/microservices': ^8.4.4
+      ethers: ^5.6.5
       reflect-metadata: ^0.1.13
       rxjs: ^7.5.5
     dependencies:
@@ -44,6 +45,7 @@ importers:
       '@nestjs/common': 8.4.7_47vcjb2de6lyibr6g4enoa5lyu
       '@nestjs/core': 8.4.4_czsfqdndmwwvaohs544nuseb7e
       '@nestjs/microservices': 8.4.4_xya2gycd455c3liazriatl7xqe
+      ethers: 5.6.5
       reflect-metadata: 0.1.13
       rxjs: 7.5.5
 
@@ -6556,19 +6558,3 @@ packages:
   /yn/3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
-
-  github.com/nestjs/event-emitter/2a5b8e803a1b87da038fffe28f8d14d5d965560a_ri7uarpfhib2ateqzcw7uno7zy:
-    resolution: {registry: https://registry.npmjs.org/, tarball: https://codeload.github.com/nestjs/event-emitter/tar.gz/2a5b8e803a1b87da038fffe28f8d14d5d965560a}
-    id: github.com/nestjs/event-emitter/2a5b8e803a1b87da038fffe28f8d14d5d965560a
-    name: '@nestjs/event-emitter'
-    version: 1.1.1
-    peerDependencies:
-      '@nestjs/common': ^7.0.0 || ^8.0.0
-      '@nestjs/core': ^7.0.0 || ^8.0.0
-      reflect-metadata: ^0.1.12
-    dependencies:
-      '@nestjs/common': 8.4.4_47vcjb2de6lyibr6g4enoa5lyu
-      '@nestjs/core': 8.4.4_4cgiwfrqossrqfu53answ3dqhi
-      eventemitter2: 6.4.5
-      reflect-metadata: 0.1.13
-    dev: false

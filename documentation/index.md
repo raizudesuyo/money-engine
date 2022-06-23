@@ -16,7 +16,7 @@ Microservice shiet
 
 ```shell
 # To run Migrations
-npm run typeorm migration:run -- -d="src/data-source/data-source.ts"
+pnpm run typeorm migration:run -d="src/data-source/data-source.ts"
 ```
 
 

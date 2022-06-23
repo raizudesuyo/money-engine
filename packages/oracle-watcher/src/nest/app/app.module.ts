@@ -8,6 +8,7 @@ import { PricesourceModule } from '../pricesource/pricesource.module';
 import { DeltaModule } from '../delta/delta.module';
 import { LoggerModule } from 'nestjs-pino';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { MoneyEngineModule } from '@money-engine/common-nest';
 @Module({
   controllers: [AppController],
   providers: [AppService],
@@ -18,6 +19,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     PricesourceModule,
     DeltaModule,
     DatabaseModule,
+    MoneyEngineModule
   ],
 })
 export class AppModule {}

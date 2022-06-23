@@ -9,12 +9,12 @@ import { QiReloadModule } from '../qi-reload/qi-reload.module';
 
 @Module({
   imports: [LoggerModule.forRoot(),
-    EventEmitterModule.forRoot(),
+    // EventEmitterModule.forRoot(),
     BullModule.forRoot({
       redis: {
         host: 'localhost',
         port: 6379,
-      },
+      }
     }), 
     CryptoPriceUpdateModule,
     QiEventsListenerModule,

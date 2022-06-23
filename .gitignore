@@ -12,3 +12,5 @@ typechain
 
 packages/*/config.ts
 packages/*/config.json
+
+**/**/dist/

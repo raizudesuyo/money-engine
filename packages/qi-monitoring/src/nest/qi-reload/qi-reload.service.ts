@@ -18,9 +18,9 @@ export class QiReloadService implements OnApplicationBootstrap {
 
   }
 
-  onApplicationBootstrap() {
+  async onApplicationBootstrap() {
     this.logger.info("Starting reload all data");
-    const data = require("../config.json") as IData;
+    const data = require("../../../config.json") as IData;
 
     const validContracts = filter(data.maiVaultContracts, (d) => !!d.type);
 

@@ -4,7 +4,7 @@ import { Processor, Process } from '@nestjs/bull';
 import { Inject, Injectable } from '@nestjs/common';
 import { Job } from 'bull';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { QiVault } from 'src/entity';
+import { QiVault } from '../../entity';
 import { QI_VAULT_DATA_REPOSITORY, QI_VAULT_REPOSITORY, TQiVaultDataRepository, TQiVaultRepository } from '../database';
 
 @Injectable()
@@ -19,13 +19,13 @@ export class QiReloadConsumer {
   }
 
   @Process({
-    concurrency: 4
+    concurrency: 24
   })
   async getVaultData(job: Job<TGetVaultData>) {
 
     const { data: { contract, vaultNumber, vault } } = job
 
-    const [vaultService] = this.getStuff(contract);
+    const [vaultService] = this.getVaultService(contract);
 
     // If things doesn't exist, just log and return
     if(!vaultService) {
@@ -34,7 +34,7 @@ export class QiReloadConsumer {
     }
 
     this.logger.info(`Syncing ${contract.name} # ${vaultNumber}`);
-    const vaultUserData: IQiDaoVaultData = await vaultService
+    const vaultUserData: IQiDaoVaultData | null = await vaultService
       .getVaultUserData(vaultNumber)
       .catch((e) => {
         this.logger.error(e);
@@ -58,13 +58,13 @@ export class QiReloadConsumer {
     }
   }
 
-  private getStuff(contract: IMaiVaultContractData): [QiDaoVaultService] {
+  private getVaultService(contract: IMaiVaultContractData): [QiDaoVaultService?] {
     const web3Provider = Web3HttpFactory.getProvider(
       contract.chain as Web3Chain
     );
 
     if (!web3Provider) {
-      return;
+      return [undefined];
     }
 
     const vaultAdapter = QiDaoVaultContractAdapterFactory.getProvider({

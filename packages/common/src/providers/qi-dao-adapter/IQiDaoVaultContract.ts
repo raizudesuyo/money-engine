@@ -9,7 +9,7 @@ export interface IQiDaoVaultService {
      */
     getVault: () => Promise<IQiDaoVault>
     
-    getVaultUserData: (vaultId: number) => Promise<IQiDaoVaultData | false> 
+    getVaultUserData: (vaultId: number) => Promise<IQiDaoVaultData> 
 
     calculatePredictedVaultAmount: (collateralAmount: BigNumber, tokenDollarValue: BigNumber) => Promise<BigNumber>
 

@@ -1,9 +1,10 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { AssetService, CreateAssetRequestDto, CreateAssetResponse } from '../asset';
-import { RegisterPricesourceRequest, RegisterPricesourceResponse, PricesourceService } from '../pricesource';
 import { ClientProxy } from '@nestjs/microservices';
-import { MONEY_ENGINE } from '../money-engine';
+import { MONEY_ENGINE } from '@money-engine/common-nest';
 import { ORACLE_WATCHER_INITIALIZED } from '@money-engine/common';
+import { AssetService } from '../asset';
+import { PricesourceService } from '../pricesource';
+import { CreateAssetRequest, CreateAssetResponse, RegisterPricesourceRequest, RegisterPricesourceResponse } from '@money-engine/common-nest';
 
 @Injectable()
 export class AppService implements OnApplicationBootstrap {
@@ -20,7 +21,7 @@ export class AppService implements OnApplicationBootstrap {
   }
 
   async registerAsset(
-    registerAssetDto: CreateAssetRequestDto[]
+    registerAssetDto: CreateAssetRequest[]
   ): Promise<CreateAssetResponse[]> 
   {
     const assetWithUuid = registerAssetDto.map(async (assetDto) => {

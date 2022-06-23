@@ -7,7 +7,7 @@ Monitors QiDao to look for vaults that can be liquidated, also acts as my practi
 ## TODO:
 
 - ✅ Initialize database by reading all vault data.
-- ❌ Parallelize reading all vault data, through queues
+- ✅ Parallelize reading all vault data, through queues
 - ✅ Enable monitoring of events Withdraw, deposit, repayment, borrow, liquidate, vault creation 
 - ❌ Create Frontend (As part of Money Engine - QiDAO Monitoring UI)
 - ✅ Create API for queries on monitoring data   

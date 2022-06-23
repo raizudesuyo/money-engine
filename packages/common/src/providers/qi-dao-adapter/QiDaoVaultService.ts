@@ -35,7 +35,7 @@ export class QiDaoVaultService implements IQiDaoVaultService {
         }
     }
     
-    getVaultUserData = async (vaultNumber: number): Promise<false | IQiDaoVaultData> => {
+    getVaultUserData = async (vaultNumber: number): Promise<IQiDaoVaultData> => {
         const collateralRatioPromise = this.smartContractAdapter.checkCollateralPercentage(vaultNumber);
         const collateralAmountPromise = this.smartContractAdapter.vaultCollateral(vaultNumber);
         const ownerPromise = this.smartContractAdapter.ownerOf(vaultNumber);

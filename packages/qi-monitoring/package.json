@@ -4,6 +4,7 @@
    "main": "index.js",
    "license": "MIT",
    "scripts": {
+      "run": "ts-node ./src/main.ts",
       "sync": "ts-node -e 'require(\"./src/server.ts\").syncAndListenToEvents()'",
       "listen": "ts-node -e 'require(\"./src/server.ts\").listenToEvents()'",
       "syncOnly": "ts-node -e 'require(\"./src/server.ts\").syncOnly()'",

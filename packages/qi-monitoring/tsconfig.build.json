@@ -1,11 +1,10 @@
 {
     "compilerOptions": {
       "module": "CommonJS",
-      //"declaration": true,
       "removeComments": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
-      // "allowSyntheticDefaultImports": true,
+      "allowSyntheticDefaultImports": true,
       "target": "ES6",
       "sourceMap": false,
       "outDir": "dist",
@@ -14,13 +13,17 @@
       // "skipLibCheck": true,
       "strictNullChecks": false,
       "noImplicitAny": false,
-      // "strictBindCallApply": false,
+      "strictBindCallApply": false,
       // "forceConsistentCasingInFileNames": false,
       // "noFallthroughCasesInSwitch": false,
-      // "esModuleInterop": true,
+      "esModuleInterop": true,
       "moduleResolution": "node",
       //"resolveJsonModule": true,
-      
+      "isolatedModules": true,
+      "paths": {
+        "@money-engine/common": ["node_modules/@money-engine/common/dist"],
+        "@money-engine/common-nest": ["node_modules/@money-engine/common-nest/dist"]
+      }
     },
     "lib": ["es2015"],
 }
