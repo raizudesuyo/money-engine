@@ -1,4 +1,4 @@
-import { UpdatePriceEvent2 } from '@money-engine/common';
+import { OracleType, UpdatePriceEvent2 } from '@money-engine/common';
 import { CreateAssetRequest, MONEY_ENGINE, OracleWatcherIntegrationService, RegisterPricesourceRequest } from '@money-engine/common-nest';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -47,7 +47,7 @@ export class OracleWatcherService extends OracleWatcherIntegrationService {
     const priceSourceRequest: RegisterPricesourceRequest[] = vaults.map((vault) => ({
       assetId: vault.oracleWatcherIntegration.assetUuid,
       oracleAddress: vault.priceOracleAddress,
-      oracleType: "IPriceSource"
+      oracleType: vault.oracleType as OracleType
     }))
 
     this.logger.info(`Registering PriceSources: ${JSON.stringify(priceSourceRequest)}`)

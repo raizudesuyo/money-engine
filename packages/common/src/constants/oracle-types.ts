@@ -4,4 +4,5 @@ export type OracleType =
   | "mooRacleSingle"
   | "qiDoubleOracle"
   | "qiShareOracle"
-  | "yvOracle";
+  | "yvOracle"
+  | "PriceSourceHybridSd3crv";

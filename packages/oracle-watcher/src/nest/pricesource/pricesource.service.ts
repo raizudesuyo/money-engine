@@ -105,6 +105,7 @@ export class PricesourceService implements OnApplicationBootstrap {
       })
 
       // Get latest price from oracle
+      
       const oraclePrice = priceSourceAdapter.latestRoundData().catch((err) => {
         this.logger.error("Error on Asset: %s Chain: %s OracleAddress %s \nerr: %s",
           asset.name, asset.chain, pollJob.priceSource.oracleAddress, err)
@@ -126,23 +127,25 @@ export class PricesourceService implements OnApplicationBootstrap {
       if(!actualOraclePrice) return;
       const actualLastPrice = await lastPriceDb;
       // if that price and this price were different, then emit price.updated event
+
+      const oraclePriceAnswer = "answer" in actualOraclePrice ? actualOraclePrice.answer : actualOraclePrice;
       
-      if(actualOraclePrice.answer.toString() != actualLastPrice?.price) {
+      if(oraclePriceAnswer.toString() != actualLastPrice?.price) {
 
         const asset = await pollJob.priceSource.asset;
 
         const newAssetPriceData = new AssetPriceData({
           asset,
           oracle: Promise.resolve(pollJob.priceSource),
-          price: actualOraclePrice.answer.toString()
+          price: oraclePriceAnswer.toString()
         });
 
         await this.assetPriceDataRepository.insert(newAssetPriceData);
 
         const priceUpdateData: AssetPriceDataUpdatedEvent = {
           assetUuid: asset.uuid,
-          newPrice: actualOraclePrice.answer,
-          delta: BigNumberMath.GetDelta(actualOraclePrice.answer, BigNumber.from(actualLastPrice?.price)),
+          newPrice: oraclePriceAnswer,
+          delta: BigNumberMath.GetDelta(oraclePriceAnswer, BigNumber.from(actualLastPrice?.price)),
           oldPrice: BigNumber.from(actualLastPrice?.price),
           priceSourceUuid: pollJob.priceSource.uuid
         }
@@ -150,7 +153,7 @@ export class PricesourceService implements OnApplicationBootstrap {
         this.eventEmitter.emit(PRICE_UPDATED, priceUpdateData)
         const end = process.hrtime.bigint();
 
-        this.logger.info(`Price Changed: Asset: ${newAssetPriceData.asset.name} Chain: ${newAssetPriceData.asset.chain} Last Price: ${actualLastPrice?.price} New Price: ${actualOraclePrice.answer.toString()} Process Time: ${end - start}`)
+        this.logger.info(`Price Changed: Asset: ${newAssetPriceData.asset.name} Chain: ${newAssetPriceData.asset.chain} Last Price: ${actualLastPrice?.price} New Price: ${oraclePriceAnswer.toString()} Process Time: ${end - start}`)
       }
     }
 
