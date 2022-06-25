@@ -12,7 +12,6 @@ export type IPriceSourceOrdinaryLatestRoundDataResponse = {
   answeredInRound: BigNumber;
 }
 
-export type IPriceSourceCurveLatestRoundDataResponse = {
-} & BigNumber
+export type IPriceSourceCurveLatestRoundDataResponse = BigNumber
 
 export type LatestRoundDataResponse = IPriceSourceOrdinaryLatestRoundDataResponse | IPriceSourceCurveLatestRoundDataResponse
