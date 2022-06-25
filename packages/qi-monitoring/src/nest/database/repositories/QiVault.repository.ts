@@ -19,7 +19,8 @@ export const QiVaultRepository = (dataSource: DataSource): TQiVaultRepository =>
       gainRatio,
       minimumRatio,
       vaultAddress,
-      vaultChain
+      vaultChain,
+      oracleType
     } = params;
 
     const vault = await fakeThis.findOne({
@@ -43,12 +44,14 @@ export const QiVaultRepository = (dataSource: DataSource): TQiVaultRepository =>
         priceOracleAddress,
         canPublicLiquidate,
         vaultChain,
+        oracleType,
       });
       
       await fakeThis.insert(newVault);
       return newVault;
     } else {
       vault.dollarValue = dollarValue;
+      vault.oracleType = oracleType
       return fakeThis.save(vault);
     }
   }
@@ -70,4 +73,5 @@ interface UpdateVaultParams {
   minimumRatio?: BigNumber
   vaultAddress: string
   vaultChain: string
+  oracleType?: string
 }

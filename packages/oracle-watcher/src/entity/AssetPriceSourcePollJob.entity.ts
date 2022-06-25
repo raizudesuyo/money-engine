@@ -6,6 +6,10 @@ import { Timestamp } from './embedded/Timestamp';
 @Entity()
 export class AssetPriceSourcePollJob {
 
+    constructor(init?: Partial<AssetPriceSourcePollJob>) {
+        Object.assign(this, init);
+    }
+
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
 

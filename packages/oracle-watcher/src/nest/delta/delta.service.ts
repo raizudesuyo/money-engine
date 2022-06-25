@@ -8,6 +8,8 @@ import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { ClientProxy } from '@nestjs/microservices';
 import { DeltaAlertEvent, ORACLE_WATCHER_DELTA_ALERT } from '@money-engine/common'
 import { CreateDeltaRequest, MONEY_ENGINE, UpdateDeltaRequest } from '@money-engine/common-nest';
+import { AssetPriceDataUpdatedEvent, PRICE_UPDATED } from '../../constants/events';
+import { BigNumberMath } from '../../../../common/src/helpers/BigNumberMath';
 
 @Injectable()
 export class DeltaService implements OnApplicationBootstrap {
@@ -72,39 +74,30 @@ export class DeltaService implements OnApplicationBootstrap {
   }
 
   // Receive events, 
-  @OnEvent('price.updated', { async: true })
-  async handlePriceUpdatedEvent(payload: AssetPriceData) {
+  @OnEvent(PRICE_UPDATED, { async: true })
+  async handlePriceUpdatedEvent(payload: AssetPriceDataUpdatedEvent) {
     // if delta is met, then alert
     // Get asset deltas
     const deltas = (await this.assetRepository.findOne({
       where: {
-        uuid: payload.asset.uuid,
+        uuid: payload.assetUuid,
         deleteFlag: false,
       },
     }))?.deltaAlerts;
     // Get reference prices
     
     deltas.forEach(delta => {
-      const newPrice = BigNumber.from(payload.price);
+      const newPrice = payload.newPrice;
       const reference = BigNumber.from(delta.referencePrice.price);
 
-      // Do percentage integer math
-      const increased = newPrice.gte(reference);
-      
-      const increase = increased 
-        ? newPrice.sub(reference) 
-        : reference.sub(newPrice);
-      
-      const actualDelta = increased 
-        ? increase.div(reference.mul(100)).toNumber() 
-        : reference.div(increase.mul(100)).toNumber() * -1;
+      const actualDelta = BigNumberMath.GetDelta(newPrice, reference);
 
       if(Math.abs(actualDelta) >= Math.abs(delta.delta)) {
         this.logger.info(`Sending Delta Event ${delta.uuid} to money-engine queue`)
         this.client.emit<void, DeltaAlertEvent>(ORACLE_WATCHER_DELTA_ALERT, {
           deltaId: delta.uuid,
-          previousPrice: reference.toString(),
-          newPrice: newPrice.toString(),
+          previousPrice: reference,
+          newPrice: newPrice,
           priceDelta: actualDelta
         })
       }

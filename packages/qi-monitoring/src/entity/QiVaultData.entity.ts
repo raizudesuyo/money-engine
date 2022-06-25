@@ -1,4 +1,5 @@
 import {Entity, PrimaryGeneratedColumn, Column, Timestamp, ManyToOne, Index, UpdateDateColumn, CreateDateColumn, JoinColumn} from "typeorm";
+import { AssetOracleWatcherIntegration } from "./integration/AssetOracleWatcherIntegration";
 import { QiVault } from "./QiVault.entity";
 
 @Entity()

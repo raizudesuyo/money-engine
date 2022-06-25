@@ -1,4 +1,5 @@
 import {Entity, PrimaryGeneratedColumn, Column, OneToMany, UpdateDateColumn, CreateDateColumn, Index} from "typeorm";
+import { AssetOracleWatcherIntegration } from "./integration/AssetOracleWatcherIntegration";
 import { QiVaultData } from './QiVaultData.entity';
 
 @Entity()
@@ -40,6 +41,12 @@ export class QiVault {
 
     @Column()
     canPublicLiquidate: boolean;
+
+    @Column()
+    oracleType: string;
+
+    @Column(() => AssetOracleWatcherIntegration)
+    oracleWatcherIntegration: AssetOracleWatcherIntegration;
 
     @OneToMany(type => QiVaultData, vaultData => vaultData.vault, { eager: true })
     vaultData: QiVaultData[]

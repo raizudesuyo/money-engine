@@ -5,6 +5,7 @@ import { RestApiModule, MicroServiceModule } from './nest/app';
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { program } from 'commander'
+import { MONEY_ENGINE_QUEUE_NAME } from "@money-engine/common-nest";
 
 
 export class Server {
@@ -35,15 +36,17 @@ export class Server {
       {
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.RMQ_URL || 'amqp://localhost:5672']
-        }
+          urls: [process.env.RMQ_URL || 'amqp://localhost:5672'],
+          queue: MONEY_ENGINE_QUEUE_NAME,
+        },
+        bufferLogs: true,
+        abortOnError: false,
       }
     )
     microservice.useLogger(microservice.get(Logger));
     microservice.enableShutdownHooks();
 
-
-    const microservicePromise = await microservice.listen();
+    await microservice.listen();
 
     // await Promise.all([restApiPromise, microservicePromise])
   }

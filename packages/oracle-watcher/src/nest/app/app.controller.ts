@@ -30,7 +30,7 @@ export class AppController {
   async registerAsset(
     createAssetDto: CreateAssetRequest[]
   ): Promise<CreateAssetResponse[]> {
-    return this.appService.registerAsset(createAssetDto);
+    return await this.appService.registerAsset(createAssetDto);
   }
 
   @MessagePattern(ORACLE_WATCHER_REGISTER_PRICE_SOURCE)

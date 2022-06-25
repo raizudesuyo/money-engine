@@ -8,15 +8,19 @@ import { QI_VAULT_REPOSITORY, TQiVaultRepository } from '../database';
 import { TGetVaultData } from './qi-reload.processor';
 import { GLOBAL_STATE_REPOSITORY } from '../database/database.provider';
 import { TGlobalStateRepository } from '../database/repositories/GlobalState.repository';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ALL_VAULT_DATA_SYNCED } from '../../constants/events';
+import _ = require('lodash');
 
 @Injectable()
-export class QiReloadService implements OnApplicationBootstrap, OnModuleDestroy {
+export class QiReloadService implements OnApplicationBootstrap {
 
   constructor(
     @InjectPinoLogger(QiReloadService.name) private readonly logger: PinoLogger,
     @InjectQueue('qi-reload') private readonly reloadQueue: Queue<TGetVaultData>,
     @Inject(QI_VAULT_REPOSITORY) private readonly vaultRepository: TQiVaultRepository,
-    @Inject(GLOBAL_STATE_REPOSITORY) private readonly globalStateRepository: TGlobalStateRepository
+    @Inject(GLOBAL_STATE_REPOSITORY) private readonly globalStateRepository: TGlobalStateRepository,
+    private readonly eventEmitter: EventEmitter2
     
   ) {
 
@@ -75,27 +79,33 @@ export class QiReloadService implements OnApplicationBootstrap, OnModuleDestroy 
         vaultName: contract.name,
         vaultAddress: contract.address,
         vaultChain: contract.chain,
+        oracleType: contract.priceSourceType
       });
 
       const vaultCountN = vaultCount.toNumber();
 
+      const allWaitingJobs = await this.reloadQueue.getWaiting()
+
       for (let vaultNumber = 0; vaultNumber < vaultCountN; vaultNumber++) {
-        this.reloadQueue.add({
-          vault,
-          vaultNumber,
-          contract
-        })
+        // If job doesn't exist yet, then add
+        const jobAlreadyExist = _.find(allWaitingJobs, (job) => job.data.vault == vault && job.data.vaultNumber == vaultNumber);
+        if(!jobAlreadyExist) {
+          this.reloadQueue.add({
+            vault,
+            vaultNumber,
+            contract
+          })
+        }
       }
-
-      this.globalStateRepository.setConfigBoolean('IS_SYNC_JOBS_CREATED', true)
     });
-  }
 
-  onModuleDestroy() {
-    this.logger.info('Cleaning Queue')
-    this.reloadQueue.clean(1000, 'wait');
-    this.reloadQueue.clean(1000, 'active');  
-    this.reloadQueue.clean(1000, 'paused');  
-  }
+    // If all vault data got, then emit an event that it is so
+    const waiting = await this.reloadQueue.getWaitingCount();
+    const active = await this.reloadQueue.getActiveCount();
 
+    if(waiting + active == 0) {
+      this.logger.info('Event; All vault data synced')
+      this.eventEmitter.emit(ALL_VAULT_DATA_SYNCED)
+    }
+  }
 }

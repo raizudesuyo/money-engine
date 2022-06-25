@@ -1,6 +1,4 @@
-import { Global, Module } from '@nestjs/common';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
-import { providers } from 'ethers';
+import { Module } from '@nestjs/common';
 import { moneyEngineProvider } from './money-engine.provider';
 
 @Module({

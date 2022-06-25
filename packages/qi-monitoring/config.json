@@ -96,7 +96,7 @@
       "address": "0x57Cbf36788113237D64E46f25A88855c3dff1691",
       "type": "crosschainQiStablecoinV2",
       "chain": "polygon",
-      "priceSourceType": "IPriceSource"
+      "priceSourceType": "PriceSourceHybridSd3crv"
     },
     {
       "name": "Compounding Aave Market DAI",
@@ -222,7 +222,7 @@
       "address": "0x13A7fE3Ab741ea6301Db8B164290bE711f546A73",
       "type": "crosschainQiStablecoinV2",
       "chain": "avalanche",
-      "priceSourceType": "IPriceSource"
+      "priceSourceType": "PriceSourceHybridSd3crv"
     },
     {
       "name": "Ethereum",

@@ -10,6 +10,10 @@ import { Timestamp } from './embedded/Timestamp';
 @Entity()
 export class AssetDeltaAlert {
 
+    constructor(init?: Partial<AssetDeltaAlert>) {
+        Object.assign(this, init);
+    }
+
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
 

@@ -1,17 +1,16 @@
+import { BigNumberMath, OracleType, ORACLE_WATCHER_PRICE_UPDATED, PriceSourceAdapterFactory, UpdatePriceEvent2, Web3Chain, Web3HttpFactory } from '@money-engine/common';
+import { MONEY_ENGINE, RegisterPricesourceRequest } from '@money-engine/common-nest';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { Asset, AssetPriceSource, AssetPriceSourcePollJob } from '../../entity';
-import { PRICE_SOURCE_ORACLE_REPOSITORY, PRICE_SOURCE_POLL_JOB_REPOSITORY } from '../database';
-import { Repository } from 'typeorm';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { ClientProxy } from '@nestjs/microservices';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { PriceSourceAdapterFactory } from '../../../../common/src/adapters/oracles/PriceSourceAdapterFactory';
-import { OracleType } from '../../../../common/src/constants/oracle-types';
-import { Web3HttpFactory } from '../../../../common/src/providers/web3/Web3HttpFactory';
-import { Web3Chain } from '../../../../common/src/providers/web3/Web3WebsocketFactory';
-import { AssetPriceData } from '../../entity/AssetPriceData.entity';
+import { BigNumber } from 'ethers';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { ASSET_PRICE_DATA_REPOSITORY, ASSET_REPOSITORY } from '../database/database.provider';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { RegisterPricesourceRequest } from '@money-engine/common-nest';
+import { Repository } from 'typeorm';
+import { AssetPriceDataUpdatedEvent, PRICE_UPDATED } from '../../constants/events';
+import { Asset, AssetPriceSource, AssetPriceSourcePollJob } from '../../entity';
+import { AssetPriceData } from '../../entity/AssetPriceData.entity';
+import { ASSET_PRICE_DATA_REPOSITORY, ASSET_REPOSITORY, PRICE_SOURCE_ORACLE_REPOSITORY, PRICE_SOURCE_POLL_JOB_REPOSITORY } from '../database';
 
 @Injectable()
 export class PricesourceService implements OnApplicationBootstrap {
@@ -21,8 +20,9 @@ export class PricesourceService implements OnApplicationBootstrap {
     @Inject(ASSET_PRICE_DATA_REPOSITORY) private readonly assetPriceDataRepository: Repository<AssetPriceData>,
     @Inject(ASSET_REPOSITORY) private readonly assetRepository: Repository<Asset>,
     @InjectPinoLogger(PricesourceService.name) private readonly logger: PinoLogger,
+    @Inject(MONEY_ENGINE) private readonly client: ClientProxy,
     private readonly schedulerRegistry: SchedulerRegistry,
-    private readonly eventEmitter: EventEmitter2
+    private readonly eventEmitter: EventEmitter2,
   ) { 
 
   }
@@ -71,7 +71,13 @@ export class PricesourceService implements OnApplicationBootstrap {
   }
 
   private async reloadPollJobs() {
-    const pollJobs = await this.priceSourcePollJobRepository.find()
+    const pollJobs = await this.priceSourcePollJobRepository.find({
+      relations: {
+        priceSource: {
+          asset: true
+        }
+      }
+    })
     pollJobs.forEach(pollJob => {
       this.startPollJob(pollJob);
     });
@@ -80,9 +86,9 @@ export class PricesourceService implements OnApplicationBootstrap {
   private async addPollJob(priceSource: AssetPriceSource) {
     const newPollJob = new AssetPriceSourcePollJob();
     newPollJob.priceSource = priceSource;
-    await this.priceSourcePollJobRepository.insert(newPollJob);
+    await this.priceSourcePollJobRepository.save(newPollJob);
     this.logger.info(`Added Poll Job ${newPollJob.uuid}`);
-    this.startPollJob(newPollJob);
+    this.reloadPollJobs();
   }
 
   private startPollJob(pollJob: AssetPriceSourcePollJob) {
@@ -90,8 +96,8 @@ export class PricesourceService implements OnApplicationBootstrap {
     const callback = async () => {
       const start = process.hrtime.bigint();
       // Create adapters,
-      const assetChain = (await pollJob.priceSource.asset).chain as Web3Chain
-      const web3HttpProvider = Web3HttpFactory.getProvider(assetChain);
+      const asset = await pollJob.priceSource.asset;
+      const web3HttpProvider = Web3HttpFactory.getProvider(asset.chain as Web3Chain);
       const priceSourceAdapter = PriceSourceAdapterFactory.getProvider({
         contractAddress: pollJob.priceSource.oracleAddress,
         contractProvider: web3HttpProvider,
@@ -99,7 +105,11 @@ export class PricesourceService implements OnApplicationBootstrap {
       })
 
       // Get latest price from oracle
-      const oraclePrice = priceSourceAdapter.latestRoundData();
+      const oraclePrice = priceSourceAdapter.latestRoundData().catch((err) => {
+        this.logger.error("Error on Asset: %s Chain: %s OracleAddress %s \nerr: %s",
+          asset.name, asset.chain, pollJob.priceSource.oracleAddress, err)
+      });
+
       const lastPriceDb = this.assetPriceDataRepository.findOne({ 
         where: { 
           deleteFlag: false, 
@@ -111,27 +121,52 @@ export class PricesourceService implements OnApplicationBootstrap {
           }
         }
       })
-      
-      const newAssetPriceData = new AssetPriceData();
-      newAssetPriceData.asset = await pollJob.priceSource.asset;
-      newAssetPriceData.oracle = Promise.resolve(pollJob.priceSource);
-      newAssetPriceData.price = (await oraclePrice).answer.toString();
-      await this.assetPriceDataRepository.insert(newAssetPriceData);
 
+      const actualOraclePrice = await oraclePrice;
+      if(!actualOraclePrice) return;
+      const actualLastPrice = await lastPriceDb;
       // if that price and this price were different, then emit price.updated event
-      if((await oraclePrice).answer.toString() !== (await lastPriceDb).price) {
-        this.eventEmitter.emit('price.updated', newAssetPriceData)
+      
+      if(actualOraclePrice.answer.toString() != actualLastPrice?.price) {
+
+        const asset = await pollJob.priceSource.asset;
+
+        const newAssetPriceData = new AssetPriceData({
+          asset,
+          oracle: Promise.resolve(pollJob.priceSource),
+          price: actualOraclePrice.answer.toString()
+        });
+
+        await this.assetPriceDataRepository.insert(newAssetPriceData);
+
+        const priceUpdateData: AssetPriceDataUpdatedEvent = {
+          assetUuid: asset.uuid,
+          newPrice: actualOraclePrice.answer,
+          delta: BigNumberMath.GetDelta(actualOraclePrice.answer, BigNumber.from(actualLastPrice?.price)),
+          oldPrice: BigNumber.from(actualLastPrice?.price),
+          priceSourceUuid: pollJob.priceSource.uuid
+        }
+
+        this.eventEmitter.emit(PRICE_UPDATED, priceUpdateData)
+        const end = process.hrtime.bigint();
+
+        this.logger.info(`Price Changed: Asset: ${newAssetPriceData.asset.name} Chain: ${newAssetPriceData.asset.chain} Last Price: ${actualLastPrice?.price} New Price: ${actualOraclePrice.answer.toString()} Process Time: ${end - start}`)
       }
-
-      const end = process.hrtime.bigint();
-
-      // Getting price time is logged
-      this.logger.info(`Price Data: ${newAssetPriceData.uuid} Time: ${end - start}`)
     }
 
+    try { this.schedulerRegistry.deleteInterval(pollJob.uuid); } catch(err) {}
+    this.logger.info('Creating interval %s', pollJob.priceSource.uuid)
     const interval = setInterval(callback, 500)
     this.schedulerRegistry.addInterval(pollJob.uuid, interval)
   }
+
+  @OnEvent(PRICE_UPDATED)
+  async onPriceUpdated(newPrice: AssetPriceDataUpdatedEvent) {
+    this.client.emit<void, UpdatePriceEvent2>(ORACLE_WATCHER_PRICE_UPDATED, {
+      assetUuid: newPrice.assetUuid,
+      price: newPrice.newPrice,
+      priceDelta: newPrice.delta,
+      priceSourceUuid: newPrice.priceSourceUuid
+    })
+  }
 }
-
-

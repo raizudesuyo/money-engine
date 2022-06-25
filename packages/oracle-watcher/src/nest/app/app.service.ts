@@ -33,8 +33,7 @@ export class AppService implements OnApplicationBootstrap {
         ...assetDto
       }
     })
-
-    return Promise.all(assetWithUuid).then((asset) => asset.map((asset) => ({ ...asset })))
+    return await Promise.all(assetWithUuid).then((asset) => asset.map((asset) => ({ ...asset })));
   }
 
   async registerPriceSource(

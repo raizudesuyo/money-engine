@@ -17,6 +17,7 @@ export class Server {
           queue: MONEY_ENGINE_QUEUE_NAME,
         },
         bufferLogs: true,
+        abortOnError: false,
       }
     )
 

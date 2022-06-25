@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, UpdateDateColumn, CreateDateColumn, Index, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, UpdateDateColumn, CreateDateColumn, Index, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { Asset } from './Asset.entity';
 import { AssetPriceSourcePollJob } from './AssetPriceSourcePollJob.entity';
 import { AssetDeltaAlert } from './AssetDeltaAlert.entity';
@@ -7,6 +7,10 @@ import { AssetPriceData } from './AssetPriceData.entity';
 
 @Entity()
 export class AssetPriceSource {
+
+    constructor(init?: Partial<AssetPriceSource>) {
+        Object.assign(this, init);
+    }
 
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
@@ -26,6 +30,7 @@ export class AssetPriceSource {
     @OneToMany(type => AssetPriceData, priceData => priceData.oracle)
     priceData: Promise<AssetPriceData[]>
 
+    @JoinColumn()
     @OneToOne(type => AssetPriceSourcePollJob, pollJob => pollJob.priceSource, { eager: true })
     pollJob: AssetPriceSourcePollJob
 

@@ -7,6 +7,10 @@ import { Timestamp } from "./embedded/Timestamp";
 @Entity()
 export class Asset {
 
+    constructor(init?: Partial<Asset>) {
+        Object.assign(this, init);
+    }
+
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
 

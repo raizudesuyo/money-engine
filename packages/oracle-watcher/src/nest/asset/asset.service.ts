@@ -16,7 +16,7 @@ export class AssetService {
     
     newAsset.address = createAssetDto.address;
     newAsset.chain = createAssetDto.chain;
-    newAsset.name = newAsset.name;
+    newAsset.name = createAssetDto.name;
 
     await this.assetRepository.insert(newAsset);
     return newAsset.uuid;

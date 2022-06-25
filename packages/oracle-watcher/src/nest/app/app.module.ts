@@ -1,5 +1,5 @@
+import { Reflector } from '@nestjs/core';
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { DatabaseModule } from '../database'
 import { ScheduleModule } from '@nestjs/schedule';
@@ -9,17 +9,20 @@ import { DeltaModule } from '../delta/delta.module';
 import { LoggerModule } from 'nestjs-pino';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MoneyEngineModule } from '@money-engine/common-nest';
+import { AppService } from './app.service';
 @Module({
   controllers: [AppController],
   providers: [AppService],
-  imports: [ScheduleModule.forRoot(),
-    LoggerModule.forRoot(),
-    EventEmitterModule.forRoot(),
+  exports: [AppService],
+  imports: [
     AssetModule,
     PricesourceModule,
     DeltaModule,
     DatabaseModule,
-    MoneyEngineModule
+    MoneyEngineModule,
+    LoggerModule.forRoot(),
+    EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot()
   ],
 })
 export class AppModule {}

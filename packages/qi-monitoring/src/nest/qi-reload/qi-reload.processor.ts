@@ -1,11 +1,12 @@
-import { Web3Provider } from '@ethersproject/providers';
 import { IMaiVaultContractData, IQiDaoVaultContractAdapter, IQiDaoVaultData, QiDaoVaultContractAdapterFactory, QiDaoVaultService, Web3Chain, Web3HttpFactory } from '@money-engine/common';
-import { Processor, Process } from '@nestjs/bull';
+import { Processor, Process, InjectQueue } from '@nestjs/bull';
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { Job } from 'bull';
+import { Job, Queue } from 'bull';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { QiVault } from '../../entity';
-import { QI_VAULT_DATA_REPOSITORY, QI_VAULT_REPOSITORY, TQiVaultDataRepository, TQiVaultRepository } from '../database';
+import { QI_VAULT_DATA_REPOSITORY, TQiVaultDataRepository } from '../database';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ALL_VAULT_DATA_SYNCED } from '../../constants/events';
 
 @Injectable()
 @Processor('qi-reload')
@@ -13,7 +14,10 @@ export class QiReloadConsumer {
 
   constructor(
     @InjectPinoLogger(QiReloadConsumer.name) private readonly logger: PinoLogger,
-    @Inject(QI_VAULT_DATA_REPOSITORY) private readonly vaultDataRepository: TQiVaultDataRepository
+    @Inject(QI_VAULT_DATA_REPOSITORY) private readonly vaultDataRepository: TQiVaultDataRepository,
+
+    @InjectQueue('qi-reload') private readonly reloadQueue: Queue<TGetVaultData>,
+    private readonly eventEmitter: EventEmitter2
   ) {
 
   }
@@ -55,6 +59,15 @@ export class QiReloadConsumer {
         vaultNumber,
         vault
       });
+    }
+
+    // If all vault data got, then emit an event that it is so
+    const waiting = await this.reloadQueue.getWaitingCount();
+    const active = await this.reloadQueue.getActiveCount();
+
+    if(waiting + active == 0) {
+      this.logger.info('Event; All vault data synced')
+      this.eventEmitter.emit(ALL_VAULT_DATA_SYNCED)
     }
   }
 
