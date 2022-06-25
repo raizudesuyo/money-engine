@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { AppModule } from "./nest/app/app.module";
-import { MONEY_ENGINE_QUEUE_NAME } from './nest/money-engine/money-engine.provider';
+import { MONEY_ENGINE_QUEUE_NAME } from "@money-engine/common-nest";
 
 
 export class Server {

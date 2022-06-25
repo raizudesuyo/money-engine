@@ -77,7 +77,7 @@ export class OracleWatcherService extends OracleWatcherIntegrationService {
   @Cron('*/5 * * * *')
   async registerDataAlerts() {
     // For all vaults, get vault data with lowest deltas
-    this.logger.info('Resending Deltas', JSON.stringify(payload))
+    this.logger.info('Resending Deltas')
   }
 
   async onOracleWatcherPriceUpdated(payload: UpdatePriceEvent2) {
