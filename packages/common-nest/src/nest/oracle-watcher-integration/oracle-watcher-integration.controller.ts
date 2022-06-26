@@ -22,7 +22,7 @@ export abstract class OracleWatcherIntegrationController implements OnApplicatio
       await this.__client.connect();
       const observable = this.__client.send<IsOracleWatcherInitializeResponse>('IS_ORACLE_WATCHER_INITIALIZED', {})
       observable.subscribe({
-        async next(response) {
+        next: async (response) => {
           if(response.isInitialized) {
             this.__logger.info('Oracle Watcher Initialized via Queue')
             await this.registerAssetsToOracleWatcher();
@@ -30,8 +30,8 @@ export abstract class OracleWatcherIntegrationController implements OnApplicatio
             this.__schedulerRegistry.deleteInterval('poll-oracle-watcher') 
           }
         },
-        async error(err) {
-          this.__logger.err(err)
+        error: async (err) => {
+          this.__logger.error(err)
         }
       })
     }, 10000))
