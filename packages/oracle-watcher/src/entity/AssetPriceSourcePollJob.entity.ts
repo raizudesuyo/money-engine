@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, UpdateDateColumn, CreateDateColumn, Index, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
 import { Asset } from './Asset.entity';
 import { AssetPriceSource } from './AssetPriceSource.entity';
 import { Timestamp } from './embedded/Timestamp';
+import { PollPriority } from '@money-engine/common';
 
 @Entity()
 export class AssetPriceSourcePollJob {
@@ -12,6 +13,9 @@ export class AssetPriceSourcePollJob {
 
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
+
+    @Column({ type: 'number'})
+    pollPriority: PollPriority
 
     @OneToOne(type => AssetPriceSource, priceSourceOracle => priceSourceOracle.pollJob)
     priceSource: AssetPriceSource 

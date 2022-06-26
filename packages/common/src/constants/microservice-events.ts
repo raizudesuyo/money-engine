@@ -5,3 +5,4 @@ export const ORACLE_WATCHER_REGISTER_PRICE_SOURCE = 'oracle-watcher.register-pri
 export const ORACLE_WATCHER_CREATE_DELTA_ALERT = 'oracle-watcher.create-delta-alert'
 export const ORACLE_WATCHER_UPDATE_DELTA_ALERT = 'oracle-watcher.update-delta-alert'
 export const ORACLE_WATCHER_PRICE_UPDATED = 'oracle-watcher.price-updated'
+export const ORACLE_WATCHER_UPDATE_PRICE_SOURCE = 'oracle-watcher.update-price-source'

@@ -6,9 +6,11 @@ import {
   ORACLE_WATCHER_REGISTER_ASSET,
   ORACLE_WATCHER_REGISTER_PRICE_SOURCE,
   ORACLE_WATCHER_UPDATE_DELTA_ALERT,
-  IS_ORACLE_WATCHER_INITIALIZED
+  IS_ORACLE_WATCHER_INITIALIZED,
+  ORACLE_WATCHER_UPDATE_PRICE_SOURCE
 } from "@money-engine/common";
 import { DeltaService } from '../delta'
+import { UpdatePriceSourceRequest } from '../../../../common-nest/src/nest/oracle-watcher-integration/dtos/UpdatePriceSourceRequest.dto';
 import { 
   CreateAssetRequest,
   CreateAssetResponse,
@@ -40,6 +42,11 @@ export class AppController {
     return this.appService.registerPriceSource(registerPriceSourceDto);
   }
 
+  @MessagePattern(ORACLE_WATCHER_UPDATE_PRICE_SOURCE)
+  async updatePriceSource(updatePriceSourceRequest: UpdatePriceSourceRequest) {
+    return this.appService.updatePriceSource(updatePriceSourceRequest);
+  }
+
   @MessagePattern(ORACLE_WATCHER_CREATE_DELTA_ALERT)
   async createDeltaAlert(createDeltaAlertRequest: CreateDeltaRequest): Promise<string> {
     return this.deltaService.create(createDeltaAlertRequest)
@@ -51,9 +58,10 @@ export class AppController {
   }
 
   @MessagePattern(IS_ORACLE_WATCHER_INITIALIZED)
-  isOracleWatcherInitialized(params: any): IsOracleWatcherInitializeResponse {
+  isOracleWatcherInitialized(): IsOracleWatcherInitializeResponse {
     return {
       isInitialized: true
     }
   }
+
 }

@@ -5,6 +5,7 @@ import { ORACLE_WATCHER_INITIALIZED } from '@money-engine/common';
 import { AssetService } from '../asset';
 import { PricesourceService } from '../pricesource';
 import { CreateAssetRequest, CreateAssetResponse, RegisterPricesourceRequest, RegisterPricesourceResponse } from '@money-engine/common-nest';
+import { UpdatePriceSourceRequest } from '../../../../common-nest/src/nest/oracle-watcher-integration/dtos/UpdatePriceSourceRequest.dto';
 
 @Injectable()
 export class AppService implements OnApplicationBootstrap {
@@ -16,8 +17,8 @@ export class AppService implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
-      this.client.connect();
-      this.client.emit(ORACLE_WATCHER_INITIALIZED, {})
+    this.client.connect();
+    this.client.emit(ORACLE_WATCHER_INITIALIZED, {})
   }
 
   async registerAsset(
@@ -50,5 +51,9 @@ export class AppService implements OnApplicationBootstrap {
     })
 
     return Promise.all(priceSourceWithUuid).then((priceSource) => priceSource.map((priceSource) => ({ ...priceSource })))
+  }
+
+  async updatePriceSource(updatePriceSourceRequest: UpdatePriceSourceRequest) {
+    return this.priceSourceService.updatePollPriority(updatePriceSourceRequest);
   }
 }

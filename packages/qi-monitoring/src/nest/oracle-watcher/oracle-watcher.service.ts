@@ -7,6 +7,7 @@ import { head } from 'lodash';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { CAN_START_SYNC_ORACLE } from '../../constants/global-configs';
 import { GLOBAL_STATE_REPOSITORY, QI_VAULT_DATA_REPOSITORY, QI_VAULT_REPOSITORY, TGlobalStateRepository, TQiVaultDataRepository, TQiVaultRepository } from '../database';
+import { PollPriority } from '../../../../common/src/constants/PollPriority';
 
 @Injectable()
 export class OracleWatcherService extends OracleWatcherIntegrationService {
@@ -47,7 +48,8 @@ export class OracleWatcherService extends OracleWatcherIntegrationService {
     const priceSourceRequest: RegisterPricesourceRequest[] = vaults.map((vault) => ({
       assetId: vault.oracleWatcherIntegration.assetUuid,
       oracleAddress: vault.priceOracleAddress,
-      oracleType: vault.oracleType as OracleType
+      oracleType: vault.oracleType as OracleType,
+      pollPriority: PollPriority.MEDIUM
     }))
 
     this.logger.info(`Registering PriceSources: ${JSON.stringify(priceSourceRequest)}`)
@@ -82,10 +84,8 @@ export class OracleWatcherService extends OracleWatcherIntegrationService {
 
   @Cron('0 0 * * *')
   async resyncEverything() {
-    // Resync everything once a day
+    // Resync everything once a day                                                                                                 
     this.logger.info('Starting resync everything job')
-
-    
   }
 
   async onOracleWatcherPriceUpdated(payload: UpdatePriceEvent2) {

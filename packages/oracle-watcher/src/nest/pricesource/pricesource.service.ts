@@ -11,6 +11,8 @@ import { AssetPriceDataUpdatedEvent, PRICE_UPDATED } from '../../constants/event
 import { Asset, AssetPriceSource, AssetPriceSourcePollJob } from '../../entity';
 import { AssetPriceData } from '../../entity/AssetPriceData.entity';
 import { ASSET_PRICE_DATA_REPOSITORY, ASSET_REPOSITORY, PRICE_SOURCE_ORACLE_REPOSITORY, PRICE_SOURCE_POLL_JOB_REPOSITORY } from '../database';
+import { PollPriority, PollPriorityTime } from '../../../../common/src/constants/PollPriority';
+import { UpdatePriceSourceRequest } from '../../../../common-nest/src/nest/oracle-watcher-integration/dtos/UpdatePriceSourceRequest.dto';
 
 @Injectable()
 export class PricesourceService implements OnApplicationBootstrap {
@@ -33,21 +35,39 @@ export class PricesourceService implements OnApplicationBootstrap {
 
   async create(registerPricesourceRequestDto: RegisterPricesourceRequest) {
     // if asset exists, continue, else throw an error
+
+    const { assetId, oracleAddress, oracleType, pollPriority } = registerPricesourceRequestDto
     const asset = await this.assetRepository.findOne({ 
-      where: { deleteFlag: false, uuid: registerPricesourceRequestDto.assetId },
+      where: { deleteFlag: false, uuid: assetId },
     })
     if(!asset) throw new Error("Asset ID not found, Create Asset first");
 
     const priceSource = new AssetPriceSource(); //Now only supports oracles
-    priceSource.oracleAddress = registerPricesourceRequestDto.oracleAddress;
-    priceSource.oracleType = registerPricesourceRequestDto.oracleType;
+    priceSource.oracleAddress = oracleAddress;
+    priceSource.oracleType = oracleType;
     priceSource.asset = Promise.resolve(asset);
 
     await this.priceSourceRepository.insert(priceSource);
 
-    this.addPollJob(priceSource);
+    this.addPollJob(priceSource, pollPriority);
 
     return priceSource.uuid;
+  }
+
+  async updatePollPriority(updatePriceSourceRequestDto: UpdatePriceSourceRequest) {
+    const { pollPriority, priceSourceUuid } = updatePriceSourceRequestDto;
+    const priceSource = await this.priceSourceRepository.findOne({
+      where: {
+        uuid: priceSourceUuid
+      }
+    })
+
+    // If same poll priorities, then don't update
+    if(priceSource.pollJob.pollPriority === pollPriority) return;
+    
+    priceSource.pollJob.pollPriority = pollPriority;
+    await this.priceSourceRepository.save(priceSource);
+    await this.reloadPollJobs();
   }
 
   async findAll(assetId?: string) {
@@ -83,9 +103,10 @@ export class PricesourceService implements OnApplicationBootstrap {
     });
   }
 
-  private async addPollJob(priceSource: AssetPriceSource) {
+  private async addPollJob(priceSource: AssetPriceSource, priority: PollPriority) {
     const newPollJob = new AssetPriceSourcePollJob();
     newPollJob.priceSource = priceSource;
+    newPollJob.pollPriority = priority;
     await this.priceSourcePollJobRepository.save(newPollJob);
     this.logger.info(`Added Poll Job ${newPollJob.uuid}`);
     this.reloadPollJobs();
@@ -161,7 +182,7 @@ export class PricesourceService implements OnApplicationBootstrap {
 
     try { this.schedulerRegistry.deleteInterval(pollJob.uuid); } catch(err) {}
     this.logger.info('Creating interval %s', pollJob.priceSource.uuid)
-    const interval = setInterval(callback, 500)
+    const interval = setInterval(callback, PollPriorityTime.getTime(pollJob.pollPriority))
     this.schedulerRegistry.addInterval(pollJob.uuid, interval)
   }
 
