@@ -106,12 +106,12 @@ export class PricesourceService implements OnApplicationBootstrap {
 
       // Get latest price from oracle
       
-      const oraclePrice = priceSourceAdapter.latestRoundData().catch((err) => {
+      const oraclePricePromise = priceSourceAdapter.latestRoundData().catch((err) => {
         this.logger.error("Error on Asset: %s Chain: %s OracleAddress %s \nerr: %s",
           asset.name, asset.chain, pollJob.priceSource.oracleAddress, err)
       });
 
-      const lastPriceDb = this.assetPriceDataRepository.findOne({ 
+      const lastPriceFromDbPromise = this.assetPriceDataRepository.findOne({ 
         where: { 
           deleteFlag: false, 
           oracle: { uuid: pollJob.priceSource.uuid }
@@ -123,14 +123,16 @@ export class PricesourceService implements OnApplicationBootstrap {
         }
       })
 
-      const actualOraclePrice = await oraclePrice;
-      if(!actualOraclePrice) return;
-      const actualLastPrice = await lastPriceDb;
+      const oraclePrice = await oraclePricePromise;
+      if(!oraclePrice) return;
+      const lastPriceFromDb = (await lastPriceFromDbPromise);
       // if that price and this price were different, then emit price.updated event
 
-      const oraclePriceAnswer = "answer" in actualOraclePrice ? actualOraclePrice.answer : actualOraclePrice;
+      const oraclePriceAnswer = "answer" in oraclePrice ? oraclePrice.answer : oraclePrice;
       
-      if(oraclePriceAnswer.toString() != actualLastPrice?.price) {
+      if(oraclePriceAnswer.toString() != lastPriceFromDb?.price) {
+
+        const actualLastPrice = !!lastPriceFromDb?.price ? BigNumber.from(lastPriceFromDb?.price) : oraclePriceAnswer
 
         const asset = await pollJob.priceSource.asset;
 
@@ -145,15 +147,15 @@ export class PricesourceService implements OnApplicationBootstrap {
         const priceUpdateData: AssetPriceDataUpdatedEvent = {
           assetUuid: asset.uuid,
           newPrice: oraclePriceAnswer,
-          delta: BigNumberMath.GetDelta(oraclePriceAnswer, BigNumber.from(actualLastPrice?.price)),
-          oldPrice: BigNumber.from(actualLastPrice?.price),
+          delta: BigNumberMath.GetDelta(oraclePriceAnswer, BigNumber.from(actualLastPrice)),
+          oldPrice: BigNumber.from(actualLastPrice),
           priceSourceUuid: pollJob.priceSource.uuid
         }
 
         this.eventEmitter.emit(PRICE_UPDATED, priceUpdateData)
         const end = process.hrtime.bigint();
 
-        this.logger.info(`Price Changed: Asset: ${newAssetPriceData.asset.name} Chain: ${newAssetPriceData.asset.chain} Last Price: ${actualLastPrice?.price} New Price: ${oraclePriceAnswer.toString()} Process Time: ${end - start}`)
+        this.logger.info(`Price Changed: Asset: ${newAssetPriceData.asset.name} Chain: ${newAssetPriceData.asset.chain} Last Price: ${lastPriceFromDb?.price} New Price: ${oraclePriceAnswer.toString()} Process Time: ${end - start}`)
       }
     }
 

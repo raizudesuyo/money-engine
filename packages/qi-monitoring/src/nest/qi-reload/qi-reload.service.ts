@@ -66,7 +66,7 @@ export class QiReloadService implements OnApplicationBootstrap {
         vaultCount,
       } = await vaultService.getVault();
 
-      const vault = await this.vaultRepository.updateVaultData({
+      const vault = await this.vaultRepository.updateVault({
         canPublicLiquidate: !!stabilityPoolAddress.match(
           "0x0000000000000000000000000000000000000000"
         ),

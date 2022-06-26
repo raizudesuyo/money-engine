@@ -41,6 +41,9 @@ export class QiVaultData {
     @Column()
     owner: string;
 
+    @Column()
+    isEmpty: boolean
+
     @ManyToOne(type => QiVault, vault => vault.vaultData, { lazy: true })
     vault: Promise<QiVault>
 

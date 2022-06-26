@@ -80,6 +80,14 @@ export class OracleWatcherService extends OracleWatcherIntegrationService {
     this.logger.info('Resending Deltas')
   }
 
+  @Cron('0 0 * * *')
+  async resyncEverything() {
+    // Resync everything once a day
+    this.logger.info('Starting resync everything job')
+
+    
+  }
+
   async onOracleWatcherPriceUpdated(payload: UpdatePriceEvent2) {
     this.logger.info('Payload Received %s', JSON.stringify(payload))
   }

@@ -99,6 +99,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
         predictedCollateralRatio: 0,
         predictedTotalCollateralValue: '0',
         totalCollateralValue: '0',
+        isEmpty: true
       }))
     });
   }
@@ -276,7 +277,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       }
 
       if (vaultUserData) {
-        this.vaultDataRepository.updateVaultUserData({
+        this.vaultDataRepository.updateVaultData({
           collateralAmount: vaultUserData.collateralAmount.toString(),
           collateralRatio: vaultUserData.collateralRatio.lt(1000) ? vaultUserData.collateralRatio.toNumber() : 1000,
           maiDebt: vaultUserData.maiDebt.toString(),

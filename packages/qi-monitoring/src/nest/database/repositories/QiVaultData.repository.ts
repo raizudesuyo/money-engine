@@ -3,7 +3,7 @@ import { QiVaultData } from '../../../entity/QiVaultData.entity';
 import { QiVault } from '../../../entity/QiVault.entity';
 
 export const QiVaultDataRepository = (dataSource: DataSource): TQiVaultDataRepository => dataSource.getRepository(QiVaultData).extend({
-  async updateVaultUserData (params: UpdateVaultDataParams) {
+  async updateVaultData (params: UpdateVaultDataParams) {
 
     // Because ThisType doesn't work on intellisense
     const fakeThis: Repository<QiVaultData> = this
@@ -36,7 +36,8 @@ export const QiVaultDataRepository = (dataSource: DataSource): TQiVaultDataRepos
         predictedCollateralAmount: collateralAmount,
         predictedTotalCollateralValue: totalCollateralValue,
         vaultNumber: vaultNumber,
-        vaultUuid: vault.uuid
+        vaultUuid: vault.uuid,
+        isEmpty: collateralAmount === '0'
       })
 
       await fakeThis.insert(newVaultData)
@@ -46,13 +47,29 @@ export const QiVaultDataRepository = (dataSource: DataSource): TQiVaultDataRepos
       vaultData.predictedCollateralAmount = collateralAmount;
       vaultData.predictedTotalCollateralValue = totalCollateralValue;
       vaultData.maiDebt = maiDebt
+      vaultData.collateralAmount === '0'
       return fakeThis.save(vaultData)
     }
+  },
+
+  async findNonEmptyVaults(params?: FindNonEmptyVaultsParams): Promise<QiVaultData[]> {
+    // Because ThisType doesn't work on intellisense
+    // const fakeThis: Repository<QiVaultData> = this
+
+    // if(!!params) {
+    //   return fakeThis.find({
+    //     where: {
+    //       collateralAmount: {}
+    //     }
+    //   })
+    // }
+    return [];
   }
 })
 
 export type TQiVaultDataRepository = Repository<QiVaultData> & {
-  updateVaultUserData(params: UpdateVaultDataParams): Promise<QiVaultData>;
+  updateVaultData(params: UpdateVaultDataParams): Promise<QiVaultData>;
+  findNonEmptyVaults(params: FindNonEmptyVaultsParams): Promise<QiVaultData[]>;
 }
 
 
@@ -64,4 +81,8 @@ interface UpdateVaultDataParams {
   maiDebt: string,
   owner: string
   vault: QiVault
+}
+
+interface FindNonEmptyVaultsParams {
+  vaultUuid: string[]
 }

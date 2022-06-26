@@ -48,7 +48,7 @@ export class QiReloadConsumer {
 
     this.logger.info(`synced ${JSON.stringify(vaultUserData)}`);
     if (vaultUserData) {
-      this.vaultDataRepository.updateVaultUserData({
+      this.vaultDataRepository.updateVaultData({
         collateralAmount: vaultUserData.collateralAmount.toString(),
         collateralRatio: vaultUserData.collateralRatio.lt(1000)
           ? vaultUserData.collateralRatio.toNumber()

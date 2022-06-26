@@ -19,17 +19,22 @@ export abstract class OracleWatcherIntegrationController implements OnApplicatio
     // check if oracle watcher is initialized
     this.__schedulerRegistry.addInterval('poll-oracle-watcher', setInterval(async () => {
       if (!await this.canStartRegister()) return;
-      this.__schedulerRegistry.deleteInterval('poll-oracle-watcher') 
       await this.__client.connect();
       const observable = this.__client.send<IsOracleWatcherInitializeResponse>('IS_ORACLE_WATCHER_INITIALIZED', {})
-      observable.subscribe(async (response) => {
-        if(response.isInitialized) {
-          this.__logger.info('Oracle Watcher Initialized via Queue')
-          await this.registerAssetsToOracleWatcher();
-          await this.registerPriceSourceToOracleWatcher();
+      observable.subscribe({
+        async next(response) {
+          if(response.isInitialized) {
+            this.__logger.info('Oracle Watcher Initialized via Queue')
+            await this.registerAssetsToOracleWatcher();
+            await this.registerPriceSourceToOracleWatcher();
+            this.__schedulerRegistry.deleteInterval('poll-oracle-watcher') 
+          }
+        },
+        async error(err) {
+          this.__logger.err(err)
         }
       })
-    }, 2000))
+    }, 10000))
   }
 
   @EventPattern(ORACLE_WATCHER_INITIALIZED)

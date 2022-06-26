@@ -4,7 +4,7 @@ import { BigNumber } from 'ethers';
 
 export const QiVaultRepository = (dataSource: DataSource): TQiVaultRepository => dataSource.getRepository(QiVault).extend({
 
-  async updateVaultData(params: UpdateVaultParams) {
+  async updateVault(params: UpdateVaultParams) {
     
     // Because ThisType doesn't work on intellisense
     const fakeThis: Repository<QiVault> = this
@@ -59,7 +59,7 @@ export const QiVaultRepository = (dataSource: DataSource): TQiVaultRepository =>
 })
 
 export type TQiVaultRepository = Repository<QiVault> & {
-  updateVaultData(params: UpdateVaultParams): Promise<QiVault>;
+  updateVault(params: UpdateVaultParams): Promise<QiVault>;
 }
 
 interface UpdateVaultParams {
