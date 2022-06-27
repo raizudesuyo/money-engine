@@ -40,7 +40,7 @@ export class OracleWatcherController extends OracleWatcherIntegrationController 
   }
 
   @EventPattern(ORACLE_WATCHER_PRICE_UPDATED)
-  async onOracleWatcherPriceUpdated(payload: UpdatePriceEvent2) {
-    await this.oracleWatcherService.onOracleWatcherPriceUpdated(payload);
+  async onOracleWatcherPriceUpdated(payload: UpdatePriceEvent2, ) {
+    return await this.oracleWatcherService.onOracleWatcherPriceUpdated(payload);
   }
 }
