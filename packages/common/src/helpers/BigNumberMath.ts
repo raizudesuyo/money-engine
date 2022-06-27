@@ -1,14 +1,13 @@
 import { BigNumber } from 'ethers';
+
 export class BigNumberMath {
-  static GetDelta(x: BigNumber, reference: BigNumber) {
-    const increased = x.gte(reference);
+  static GetDelta(x: BigNumber, reference: BigNumber): [boolean, BigNumber] {
+    const hasIncreased = x.gte(reference);
       
-    const increase = increased 
-      ? x.sub(reference) 
-      : reference.sub(x);
-    
-    return increased 
-      ? increase.div(reference.mul(100)).toNumber() 
-      : reference.div(increase.mul(100)).toNumber() * -1;
+    const increase = x.sub(reference) 
+
+    const delta = increase.div(reference.mul(100))
+
+    return [hasIncreased, delta]
   }
 }

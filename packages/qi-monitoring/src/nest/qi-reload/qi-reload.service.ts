@@ -88,7 +88,7 @@ export class QiReloadService implements OnApplicationBootstrap {
 
       for (let vaultNumber = 0; vaultNumber < vaultCountN; vaultNumber++) {
         // If job doesn't exist yet, then add
-        const jobAlreadyExist = _.find(allWaitingJobs, (job) => job.data.vault == vault && job.data.vaultNumber == vaultNumber);
+        const jobAlreadyExist = !!_.find(allWaitingJobs, (job) => job.data.vault.uuid === vault.uuid && job.data.vaultNumber == vaultNumber);
         if(!jobAlreadyExist) {
           this.reloadQueue.add({
             vault,

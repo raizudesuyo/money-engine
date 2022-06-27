@@ -1,10 +1,9 @@
-import { Controller, Inject, OnApplicationBootstrap } from '@nestjs/common';
-import { ClientProxy, EventPattern } from '@nestjs/microservices';
-import { RegisterPricesourceRequest, CreateAssetRequest, CreateAssetResponse, RegisterPricesourceResponse } from "./dtos";
 import { ORACLE_WATCHER_INITIALIZED } from '@money-engine/common';
-import { MONEY_ENGINE} from '../money-engine'
+import { Controller, OnApplicationBootstrap } from '@nestjs/common';
+import { ClientProxy, EventPattern } from '@nestjs/microservices';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { PinoLogger } from 'nestjs-pino';
+import { finalize, retry } from 'rxjs';
 
 @Controller()
 export abstract class OracleWatcherIntegrationController implements OnApplicationBootstrap {
@@ -16,25 +15,33 @@ export abstract class OracleWatcherIntegrationController implements OnApplicatio
   ) {}
   
   async onApplicationBootstrap() {
-    // check if oracle watcher is initialized
-    this.__schedulerRegistry.addInterval('poll-oracle-watcher', setInterval(async () => {
-      if (!await this.canStartRegister()) return;
-      await this.__client.connect();
+    // check if oracle watcher is initialized\
+    if (!await this.canStartRegister()) return;
+    try {
+      await this.__client.connect()
       const observable = this.__client.send<IsOracleWatcherInitializeResponse>('IS_ORACLE_WATCHER_INITIALIZED', {})
-      observable.subscribe({
-        next: async (response) => {
-          if(response.isInitialized) {
-            this.__logger.info('Oracle Watcher Initialized via Queue')
-            await this.registerAssetsToOracleWatcher();
-            await this.registerPriceSourceToOracleWatcher();
-            this.__schedulerRegistry.deleteInterval('poll-oracle-watcher') 
+      observable
+        .pipe(
+          retry({ delay: 10000, count: 10000 }),
+  
+        )
+        .subscribe({
+          next: async (response) => {
+            if(response.isInitialized) {
+              this.__logger.info('Oracle Watcher Initialized via Queue')
+              await this.registerAssetsToOracleWatcher();
+              await this.registerPriceSourceToOracleWatcher();
+            }
+          },
+          error: async (err) => {
+            this.__logger.error(err)
+          },
+          complete: async () => {
+            this.__logger.info('Complete')
           }
-        },
-        error: async (err) => {
-          this.__logger.error(err)
-        }
-      })
-    }, 10000))
+        })
+    } 
+    catch(err: any) { this.__logger.error(err); }
   }
 
   @EventPattern(ORACLE_WATCHER_INITIALIZED)

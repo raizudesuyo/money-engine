@@ -22,5 +22,8 @@
       //"resolveJsonModule": true,
       
     },
+    "ts-node": {
+      "swc": true
+    },
     "lib": ["es2015"],
 }

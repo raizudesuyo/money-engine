@@ -90,15 +90,15 @@ export class DeltaService implements OnApplicationBootstrap {
       const newPrice = payload.newPrice;
       const reference = BigNumber.from(delta.referencePrice.price);
 
-      const actualDelta = BigNumberMath.GetDelta(newPrice, reference);
+      const [,actualDelta] = BigNumberMath.GetDelta(newPrice, reference);
 
-      if(Math.abs(actualDelta) >= Math.abs(delta.delta)) {
+      if(Math.abs(actualDelta.toNumber()) >= Math.abs(delta.delta)) {
         this.logger.info(`Sending Delta Event ${delta.uuid} to money-engine queue`)
         this.client.emit<void, DeltaAlertEvent>(ORACLE_WATCHER_DELTA_ALERT, {
           deltaId: delta.uuid,
           previousPrice: reference,
           newPrice: newPrice,
-          priceDelta: actualDelta
+          priceDelta: actualDelta.toNumber()
         })
       }
     });

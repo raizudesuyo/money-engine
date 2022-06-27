@@ -14,7 +14,7 @@ export class AssetPriceSourcePollJob {
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
 
-    @Column({ type: 'number'})
+    @Column({ type: 'int', default: PollPriority.LOW })
     pollPriority: PollPriority
 
     @OneToOne(type => AssetPriceSource, priceSourceOracle => priceSourceOracle.pollJob)

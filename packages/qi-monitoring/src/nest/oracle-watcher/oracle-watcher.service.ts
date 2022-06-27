@@ -1,5 +1,5 @@
-import { OracleType, UpdatePriceEvent2 } from '@money-engine/common';
-import { CreateAssetRequest, MONEY_ENGINE, OracleWatcherIntegrationService, RegisterPricesourceRequest } from '@money-engine/common-nest';
+import { OracleType, ORACLE_WATCHER_UPDATE_PRICE_SOURCE, UpdatePriceEvent2 } from '@money-engine/common';
+import { CreateAssetRequest, MONEY_ENGINE, OracleWatcherIntegrationService, RegisterPricesourceRequest, UpdatePriceSourceRequest } from '@money-engine/common-nest';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron } from '@nestjs/schedule';
@@ -7,7 +7,9 @@ import { head } from 'lodash';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { CAN_START_SYNC_ORACLE } from '../../constants/global-configs';
 import { GLOBAL_STATE_REPOSITORY, QI_VAULT_DATA_REPOSITORY, QI_VAULT_REPOSITORY, TGlobalStateRepository, TQiVaultDataRepository, TQiVaultRepository } from '../database';
-import { PollPriority } from '../../../../common/src/constants/PollPriority';
+import { PollPriority, PollPriorityTime } from '../../../../common/src/constants/PollPriority';
+import * as _ from 'lodash';
+import { ignoreElements } from 'rxjs';
 
 @Injectable()
 export class OracleWatcherService extends OracleWatcherIntegrationService {
@@ -80,6 +82,38 @@ export class OracleWatcherService extends OracleWatcherIntegrationService {
   async registerDataAlerts() {
     // For all vaults, get vault data with lowest deltas
     this.logger.info('Resending Deltas')
+
+    // Get vaults,
+    const vaults = await this.vaultRepository.find({
+      relations: {
+        vaultData: {
+          isEmpty: false
+        },
+      }
+    });
+
+    vaults.forEach(async (vault) => {
+      const { minimumRatio, uuid, oracleWatcherIntegration: { priceSourceUuid } } = vault;
+      const vaultData = await vault.vaultData;
+      const vaultDataClosestToLiquidation = _(vaultData)
+        .filter((v) => v.collateralRatio > minimumRatio)
+        .map((v) => v.collateralRatio - minimumRatio)
+        .min()
+      const pollPriority = PollPriorityTime.deltaToPriority(vaultDataClosestToLiquidation)
+      await this.client.connect();
+      await this.client.send<void, UpdatePriceSourceRequest>(ORACLE_WATCHER_UPDATE_PRICE_SOURCE, {
+        priceSourceUuid,
+        pollPriority
+      })
+        .pipe(ignoreElements())
+        .subscribe({
+          error: (err) => this.logger.error(err),
+          complete: () => this.logger.info({
+            priceSourceUuid,
+            pollPriority
+          })
+      })
+    })
   }
 
   @Cron('0 0 * * *')

@@ -48,8 +48,8 @@ export class QiVault {
     @Column(() => AssetOracleWatcherIntegration)
     oracleWatcherIntegration: AssetOracleWatcherIntegration;
 
-    @OneToMany(type => QiVaultData, vaultData => vaultData.vault, { eager: true })
-    vaultData: QiVaultData[]
+    @OneToMany(type => QiVaultData, vaultData => vaultData.vault, { lazy: true })
+    vaultData: Promise<QiVaultData[]>
 
     @CreateDateColumn()
     @Index()

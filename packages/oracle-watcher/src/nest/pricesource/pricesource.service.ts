@@ -1,5 +1,5 @@
 import { BigNumberMath, OracleType, ORACLE_WATCHER_PRICE_UPDATED, PriceSourceAdapterFactory, UpdatePriceEvent2, Web3Chain, Web3HttpFactory } from '@money-engine/common';
-import { MONEY_ENGINE, RegisterPricesourceRequest } from '@money-engine/common-nest';
+import { MONEY_ENGINE, RegisterPricesourceRequest, UpdatePriceSourceRequest } from '@money-engine/common-nest';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
@@ -11,8 +11,7 @@ import { AssetPriceDataUpdatedEvent, PRICE_UPDATED } from '../../constants/event
 import { Asset, AssetPriceSource, AssetPriceSourcePollJob } from '../../entity';
 import { AssetPriceData } from '../../entity/AssetPriceData.entity';
 import { ASSET_PRICE_DATA_REPOSITORY, ASSET_REPOSITORY, PRICE_SOURCE_ORACLE_REPOSITORY, PRICE_SOURCE_POLL_JOB_REPOSITORY } from '../database';
-import { PollPriority, PollPriorityTime } from '../../../../common/src/constants/PollPriority';
-import { UpdatePriceSourceRequest } from '../../../../common-nest/src/nest/oracle-watcher-integration/dtos/UpdatePriceSourceRequest.dto';
+import { PollPriority, PollPriorityTime } from '@money-engine/common';
 
 @Injectable()
 export class PricesourceService implements OnApplicationBootstrap {
@@ -165,24 +164,39 @@ export class PricesourceService implements OnApplicationBootstrap {
 
         await this.assetPriceDataRepository.insert(newAssetPriceData);
 
+        const [,priceDelta] = BigNumberMath.GetDelta(oraclePriceAnswer, actualLastPrice);
+
         const priceUpdateData: AssetPriceDataUpdatedEvent = {
           assetUuid: asset.uuid,
           newPrice: oraclePriceAnswer,
-          delta: BigNumberMath.GetDelta(oraclePriceAnswer, BigNumber.from(actualLastPrice)),
+          delta: priceDelta.toNumber(),
           oldPrice: BigNumber.from(actualLastPrice),
           priceSourceUuid: pollJob.priceSource.uuid
         }
 
         this.eventEmitter.emit(PRICE_UPDATED, priceUpdateData)
         const end = process.hrtime.bigint();
+        const processTime = end - start;
+        const processTimeInMillis = processTime / BigInt(1000000);
+        
 
-        this.logger.info(`Price Changed: Asset: ${newAssetPriceData.asset.name} Chain: ${newAssetPriceData.asset.chain} Last Price: ${lastPriceFromDb?.price} New Price: ${oraclePriceAnswer.toString()} Process Time: ${end - start}`)
+        this.logger.info({
+          event: 'Price Changed',
+          asset: newAssetPriceData.asset.name,
+          chain: newAssetPriceData.asset.chain,
+          lastPrice: lastPriceFromDb?.price,
+          newPrice: oraclePriceAnswer.toString(),
+          priceDelta,
+          processTime,
+          processTimeInMillis
+        })
       }
     }
 
     try { this.schedulerRegistry.deleteInterval(pollJob.uuid); } catch(err) {}
-    this.logger.info('Creating interval %s', pollJob.priceSource.uuid)
-    const interval = setInterval(callback, PollPriorityTime.getTime(pollJob.pollPriority))
+    this.logger.info('Creating interval %s Priority: %d', pollJob.priceSource.uuid, pollJob.pollPriority)
+    const intervalTime = PollPriorityTime.getTime(pollJob.pollPriority)
+    const interval = setInterval(callback, intervalTime)
     this.schedulerRegistry.addInterval(pollJob.uuid, interval)
   }
 
