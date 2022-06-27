@@ -32,9 +32,6 @@ export const QiVaultDataRepository = (dataSource: DataSource): TQiVaultDataRepos
         totalCollateralValue,
         maiDebt,
         owner,
-        predictedCollateralRatio: collateralRatio,
-        predictedCollateralAmount: collateralAmount,
-        predictedTotalCollateralValue: totalCollateralValue,
         vaultNumber: vaultNumber,
         vaultUuid: vault.uuid,
         isEmpty: collateralAmount === '0'
@@ -43,11 +40,11 @@ export const QiVaultDataRepository = (dataSource: DataSource): TQiVaultDataRepos
       await fakeThis.insert(newVaultData)
       return newVaultData
    } else {
-      vaultData.predictedCollateralRatio = collateralRatio;
-      vaultData.predictedCollateralAmount = collateralAmount;
-      vaultData.predictedTotalCollateralValue = totalCollateralValue;
+      vaultData.collateralRatio = collateralRatio;
+      vaultData.collateralAmount = collateralAmount;
+      vaultData.totalCollateralValue = totalCollateralValue;
       vaultData.maiDebt = maiDebt
-      vaultData.collateralAmount === '0'
+      vaultData.isEmpty = collateralAmount === '0'
       return fakeThis.save(vaultData)
     }
   },

@@ -95,9 +95,6 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
         collateralRatio: 0,
         collateralAmount: '0',
         maiDebt: '0',
-        predictedCollateralAmount: '0',
-        predictedCollateralRatio: 0,
-        predictedTotalCollateralValue: '0',
         totalCollateralValue: '0',
         isEmpty: true
       }))
@@ -120,21 +117,21 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       }
 
       // TODO: update algorithm to include latest dollar price of asset?
-      const predictedCollateralAmount = BigNumber.from(vaultData.predictedCollateralAmount).add(amount);
-      const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault?.dollarValue));
+      const collateralAmount = BigNumber.from(vaultData.collateralAmount).add(amount);
+      const collateralValue = await contractGateway.calculatePredictedVaultAmount(collateralAmount, BigNumber.from(qiVault?.dollarValue));
       
-      let predictedDebtRatio = BigNumber.from(0);
+      let debtRatio = BigNumber.from(0);
 
       try {
-        predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
+        debtRatio = collateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
       } catch (E) {
         this.logger.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
         this.logger.error(E);
       }
 
-      vaultData.predictedCollateralAmount = predictedCollateralAmount.toString(),
-      vaultData.predictedCollateralRatio = this.safeConvertBigNumberToNumber(predictedDebtRatio),
-      vaultData.predictedTotalCollateralValue = predictedCollateralValue.toString(),
+      vaultData.collateralAmount = collateralAmount.toString(),
+      vaultData.collateralRatio = this.safeConvertBigNumberToNumber(debtRatio),
+      vaultData.totalCollateralValue = collateralValue.toString(),
 
       this.vaultDataRepository.save(vaultData);
     });
@@ -157,20 +154,20 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       }
 
       // TODO: update algorithm to include latest dollar price of asset?
-      const predictedCollateralAmount = BigNumber.from(vaultData.predictedCollateralAmount).sub(amount);
-      const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault?.dollarValue));
-      let predictedDebtRatio = BigNumber.from(0)
+      const collateralAmount = BigNumber.from(vaultData.collateralAmount).sub(amount);
+      const collateralValue = await contractGateway.calculatePredictedVaultAmount(collateralAmount, BigNumber.from(qiVault?.dollarValue));
+      let debtRatio = BigNumber.from(0)
 
       try {
-        predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
+        debtRatio = collateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
       } catch (E) {
         this.logger.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
         this.logger.error(E);
       }
 
-      vaultData.predictedCollateralAmount = predictedCollateralAmount.toString(),
-      vaultData.predictedCollateralRatio = this.safeConvertBigNumberToNumber(predictedDebtRatio),
-      vaultData.predictedTotalCollateralValue = predictedCollateralValue.toString(),
+      vaultData.collateralAmount = collateralAmount.toString(),
+      vaultData.collateralRatio = this.safeConvertBigNumberToNumber(debtRatio),
+      vaultData.totalCollateralValue = collateralValue.toString(),
 
       // Make a guess work for now, on deposit update predicted values,
       this.vaultDataRepository.save(vaultData);
@@ -195,17 +192,17 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
 
       // TODO: update algorithm to include latest dollar price of asset?
       const newMaiDebt = BigNumber.from(vaultData.maiDebt).add(amount);
-      let predictedDebtRatio = BigNumber.from(0)
+      let debtRatio = BigNumber.from(0)
 
       try {
-        predictedDebtRatio = BigNumber.from(vaultData.predictedCollateralAmount).mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
+        debtRatio = BigNumber.from(vaultData.collateralAmount).mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
 
       } catch (E) {
         this.logger.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
         this.logger.error(E);
       }
 
-      vaultData.predictedCollateralRatio = this.safeConvertBigNumberToNumber(predictedDebtRatio),
+      vaultData.collateralRatio = this.safeConvertBigNumberToNumber(debtRatio),
       vaultData.maiDebt = newMaiDebt.toString(),
 
       // Make a guess work for now, on deposit update predicted values,
@@ -237,22 +234,22 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
 
       // TODO: update algorithm to include latest dollar price of asset?
       const newMaiDebt = BigNumber.from(vaultData.maiDebt).sub(amount);
-      const predictedCollateralAmount = BigNumber.from(vaultData.collateralAmount).sub(BigNumber.from(closingFee));
-      const predictedCollateralValue = await contractGateway.calculatePredictedVaultAmount(predictedCollateralAmount, BigNumber.from(qiVault.dollarValue));
+      const collateralAmount = BigNumber.from(vaultData.collateralAmount).sub(BigNumber.from(closingFee));
+      const collateralValue = await contractGateway.calculatePredictedVaultAmount(collateralAmount, BigNumber.from(qiVault.dollarValue));
 
-      let predictedDebtRatio = BigNumber.from(0)
+      let debtRatio = BigNumber.from(0)
 
       try {
-        predictedDebtRatio = predictedCollateralValue.mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
+        debtRatio = collateralValue.mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
       } catch (E) {
         this.logger.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
         this.logger.error(E);
       }
 
       // Make a guess work for now, on deposit update predicted values,
-      vaultData.predictedCollateralRatio = this.safeConvertBigNumberToNumber(predictedDebtRatio),
-      vaultData.predictedTotalCollateralValue = predictedCollateralValue.toString(),
-      vaultData.predictedCollateralAmount = predictedCollateralAmount.toString(),
+      vaultData.collateralRatio = this.safeConvertBigNumberToNumber(debtRatio),
+      vaultData.totalCollateralValue = collateralValue.toString(),
+      vaultData.collateralAmount = collateralAmount.toString(),
       vaultData.maiDebt = newMaiDebt.toString(),
 
       this.vaultDataRepository.save(vaultData);

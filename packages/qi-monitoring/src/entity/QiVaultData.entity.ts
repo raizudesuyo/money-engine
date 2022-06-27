@@ -29,15 +29,6 @@ export class QiVaultData {
     @Index()
     maiDebt: string;
 
-    @Column({ type: "decimal" })
-    predictedCollateralRatio: number;
-
-    @Column()
-    predictedCollateralAmount: string;
-
-    @Column()
-    predictedTotalCollateralValue: string;
-
     @Column()
     owner: string;
 
