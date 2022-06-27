@@ -11,10 +11,9 @@ export class Server {
     const microservice = await NestFactory.createMicroservice<MicroserviceOptions>(
       AppModule,
       {
-        transport: Transport.RMQ,
+        transport: Transport.REDIS,
         options: {
-          urls: [process.env.RMQ_URL || 'amqp://localhost:5672'],
-          queue: MONEY_ENGINE_QUEUE_NAME,
+          url: process.env.REDIS_URL || 'redis://localhost:6379',
         },
         bufferLogs: true,
         abortOnError: false,

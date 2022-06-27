@@ -61,6 +61,7 @@
       "mysql": "^2.18.1",
       "nestjs-pino": "^2.5.2",
       "pg": "^8.7.3",
+      "redis": "^3",
       "reflect-metadata": "^0.1.13",
       "regenerator-runtime": "^0.13.9",
       "rxjs": "^7.5.5",

@@ -6,11 +6,9 @@ export const moneyEngineProvider = {
   provide: MONEY_ENGINE,
   useFactory: () => {
     return ClientProxyFactory.create({
-      transport: Transport.RMQ,
+      transport: Transport.REDIS,
       options: {
-        urls: ['amqp://localhost:5672'],
-        queue: MONEY_ENGINE_QUEUE_NAME,
-        persistent: true
+        url: process.env.REDIS_URL || 'redis://localhost:6379',
       },
     })
   }

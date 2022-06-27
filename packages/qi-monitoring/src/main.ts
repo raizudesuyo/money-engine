@@ -34,14 +34,10 @@ export class Server {
     const microservice = await NestFactory.createMicroservice<MicroserviceOptions>(
       MicroServiceModule,
       {
-        transport: Transport.RMQ,
+        transport: Transport.REDIS,
         options: {
-          urls: [process.env.RMQ_URL || 'amqp://localhost:5672'],
-          queue: MONEY_ENGINE_QUEUE_NAME,
-          prefetchCount: 10
+          url: process.env.REDIS_URL || 'redis://localhost:6379',
         },
-        bufferLogs: true,
-        abortOnError: true,
       }
     )
     microservice.useLogger(microservice.get(Logger));
