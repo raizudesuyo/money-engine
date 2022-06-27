@@ -37,66 +37,77 @@ export class QiReloadService implements OnApplicationBootstrap {
     const data = require("../../../config.json") as IData;
 
     const validContracts = filter(data.maiVaultContracts, (d) => !!d.type);
+    const allWaitingJobs = await this.reloadQueue.getWaiting()
 
     // prints check collateral percentage for each
-    validContracts.forEach(async (contract) => {
-      const web3Provider = Web3HttpFactory.getProvider(
-        contract.chain as Web3Chain
-      );
-
-      if (!web3Provider) {
-        return;
-      }
-
-      const vaultAdapter = QiDaoVaultContractAdapterFactory.getProvider({
-        contractAddress: contract.address,
-        contractProvider: web3Provider,
-        contractType: contract.type,
-      });
-
-      const vaultService = new QiDaoVaultService(vaultAdapter);
-
-      const {
-        dollarValue,
-        gainRatio,
-        minimumRatio,
-        priceOracleAddress,
-        stabilityPoolAddress,
-        tokenAddress,
-        vaultCount,
-      } = await vaultService.getVault();
-
-      const vault = await this.vaultRepository.updateVault({
-        canPublicLiquidate: !!stabilityPoolAddress.match(
-          "0x0000000000000000000000000000000000000000"
-        ),
-        dollarValue: dollarValue.toString(),
-        gainRatio,
-        minimumRatio,
-        priceOracleAddress,
-        tokenAddress,
-        tokenSymbol: contract.name, // not actually accurate
-        vaultName: contract.name,
-        vaultAddress: contract.address,
-        vaultChain: contract.chain,
-        oracleType: contract.priceSourceType
-      });
-
-      const vaultCountN = vaultCount.toNumber();
-
-      const allWaitingJobs = await this.reloadQueue.getWaiting()
-
-      for (let vaultNumber = 0; vaultNumber < vaultCountN; vaultNumber++) {
-        // If job doesn't exist yet, then add
-        const jobAlreadyExist = !!_.find(allWaitingJobs, (job) => job.data.vault.uuid === vault.uuid && job.data.vaultNumber == vaultNumber);
-        if(!jobAlreadyExist) {
-          this.reloadQueue.add({
-            vault,
-            vaultNumber,
-            contract
-          })
+    validContracts.forEach((contract) => {
+      const promise = (async () => {
+        const web3Provider = Web3HttpFactory.getProvider(
+          contract.chain as Web3Chain
+        );
+  
+        if (!web3Provider) {
+          return;
         }
-      }
+  
+        const vaultAdapter = QiDaoVaultContractAdapterFactory.getProvider({
+          contractAddress: contract.address,
+          contractProvider: web3Provider,
+          contractType: contract.type,
+        });
+  
+        const vaultService = new QiDaoVaultService(vaultAdapter);
+  
+        const vaultMetaData = await vaultService.getVault().catch((err) => this.logger.error(err));
+        if(!vaultMetaData) return;
+        const {
+          dollarValue,
+          gainRatio,
+          minimumRatio,
+          priceOracleAddress,
+          stabilityPoolAddress,
+          tokenAddress,
+          vaultCount,
+        } = vaultMetaData
+  
+        this.logger.info({
+          event: 'Vault Metadata Gathered',
+          ...vaultMetaData
+        })
+  
+        const vault = await this.vaultRepository.updateVault({
+          canPublicLiquidate: !!stabilityPoolAddress.match(
+            "0x0000000000000000000000000000000000000000"
+          ),
+          dollarValue: dollarValue.toString(),
+          gainRatio,
+          minimumRatio,
+          priceOracleAddress,
+          tokenAddress,
+          tokenSymbol: contract.name, // not actually accurate
+          vaultName: contract.name,
+          vaultAddress: contract.address,
+          vaultChain: contract.chain,
+          oracleType: contract.priceSourceType
+        });
+  
+        const vaultCountN = vaultCount.toNumber();
+  
+        for (let vaultNumber = 0; vaultNumber < vaultCountN; vaultNumber++) {
+          // If job doesn't exist yet, then add
+          const jobAlreadyExist = !!_.find(allWaitingJobs, (job) => job.data.vault.uuid === vault.uuid && job.data.vaultNumber == vaultNumber);
+          if(!jobAlreadyExist) {
+            
+            this.reloadQueue.add({
+              vault,
+              vaultNumber,
+              contract
+            })
+          }
+        }
+      })()
+
+      Promise.resolve(promise);
     });
 
     // If all vault data got, then emit an event that it is so

@@ -5,10 +5,10 @@ import { DatabaseModule } from '../database';
 import { BullModule } from '@nestjs/bull';
 
 @Module({
-  providers: [QiReloadService, QiReloadConsumer],
+  providers: [QiReloadService],
   imports: [DatabaseModule, BullModule.registerQueue({
     name: 'qi-reload',
   })],
-  exports: [QiReloadService, QiReloadConsumer]
+  exports: [QiReloadService]
 })
 export class QiReloadModule {}

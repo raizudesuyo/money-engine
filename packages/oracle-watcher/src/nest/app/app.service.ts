@@ -17,7 +17,7 @@ export class AppService implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
-    this.client.connect();
+    await this.client.connect();
     this.client.emit(ORACLE_WATCHER_INITIALIZED, {})
   }
 

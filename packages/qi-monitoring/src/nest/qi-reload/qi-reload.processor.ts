@@ -7,6 +7,7 @@ import { QiVault } from '../../entity';
 import { QI_VAULT_DATA_REPOSITORY, TQiVaultDataRepository } from '../database';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ALL_VAULT_DATA_SYNCED } from '../../constants/events';
+import { BigNumber, utils } from 'ethers'
 
 @Injectable()
 @Processor('qi-reload')
@@ -23,11 +24,12 @@ export class QiReloadConsumer {
   }
 
   @Process({
-    concurrency: 12
+    concurrency: 4
   })
   async getVaultData(job: Job<TGetVaultData>) {
 
-    const { data: { contract, vaultNumber, vault } } = job
+    const { data: { contract, vaultNumber, vault }} = job
+    const { vaultName, vaultChain, tokenSymbol } = vault;
 
     const [vaultService] = this.getVaultService(contract);
 
@@ -46,29 +48,43 @@ export class QiReloadConsumer {
         return null;
       });
 
-    this.logger.info(`synced ${JSON.stringify(vaultUserData)}`);
-    if (vaultUserData) {
+    if (!!vaultUserData) {
+      const { collateralAmount, collateralRatio, maiDebt, owner, collateralTotalAmount } = vaultUserData; 
+      const safeCollateralRatio = collateralRatio.lt(1000)
+      ? vaultUserData.collateralRatio.toNumber()
+      : 1000;
+
       this.vaultDataRepository.updateVaultData({
-        collateralAmount: vaultUserData.collateralAmount.toString(),
-        collateralRatio: vaultUserData.collateralRatio.lt(1000)
-          ? vaultUserData.collateralRatio.toNumber()
-          : 1000,
-        maiDebt: vaultUserData.maiDebt.toString(),
-        owner: vaultUserData.owner,
-        totalCollateralValue: vaultUserData.collateralTotalAmount.toString(),
+        collateralAmount: collateralAmount.toString(),
+        collateralRatio: safeCollateralRatio, 
+        maiDebt: maiDebt.toString(),
+        owner,
+        totalCollateralValue: collateralTotalAmount.toString(),
         vaultNumber,
         vault
       });
-    }
 
-    // If all vault data got, then emit an event that it is so
-    const waiting = await this.reloadQueue.getWaitingCount();
-    const active = await this.reloadQueue.getActiveCount();
+      this.logger.info({
+        'event': 'Vault Data Synced',
+        vaultNumber,
+        vaultName,
+        vaultChain,
+        owner,
+        collateralAmount: `${utils.commify(utils.formatUnits(collateralAmount))} ${tokenSymbol}`,
+        collateralTotalAmount: `$${utils.commify(utils.formatUnits(collateralTotalAmount))}`,
+        maiDebt: `$${utils.commify(utils.formatUnits(maiDebt))}`,
+        collateralRatio: safeCollateralRatio,
+      });
 
-    if(waiting + active == 0) {
-      this.logger.info('Event; All vault data synced')
-      this.eventEmitter.emit(ALL_VAULT_DATA_SYNCED)
-    }
+      // If all vault data got, then emit an event that it is so
+      const waiting = await this.reloadQueue.getWaitingCount();
+      const active = await this.reloadQueue.getActiveCount();
+
+      if(waiting + active == 0) {
+        this.logger.info('Event; All vault data synced')
+        this.eventEmitter.emit(ALL_VAULT_DATA_SYNCED)
+      }
+    }    
   }
 
   private getVaultService(contract: IMaiVaultContractData): [QiDaoVaultService?] {

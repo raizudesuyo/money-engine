@@ -45,7 +45,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       if(chain == 'polygon'){
           provider = Web3HttpFactory.getProvider(chain)
       } else {
-          provider = Web3WebSocketFactory.getProvider(chain);
+          provider = Web3HttpFactory.getProvider(chain);
       }
   
       if(!provider) {

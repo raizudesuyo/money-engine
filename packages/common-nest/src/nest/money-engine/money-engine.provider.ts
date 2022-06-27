@@ -9,7 +9,8 @@ export const moneyEngineProvider = {
       transport: Transport.RMQ,
       options: {
         urls: ['amqp://localhost:5672'],
-        queue: MONEY_ENGINE_QUEUE_NAME
+        queue: MONEY_ENGINE_QUEUE_NAME,
+        persistent: true
       },
     })
   }

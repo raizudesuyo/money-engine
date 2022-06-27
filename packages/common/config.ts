@@ -5,7 +5,7 @@ export const config = {
   },
   jsonRpcProviderUrls: {
     MATIC_RPC: "https://polygon-rpc.com/",
-    FANTOM_RPC: "https://rpc.ftm.tools/",
+    FANTOM_RPC: "https://rpc.ankr.com/fantom",
     AVALANCHE_RPC: "https://avalanche.public-rpc.com/"
   },
   explorers : {
