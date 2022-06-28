@@ -6,7 +6,7 @@ export const config = {
   jsonRpcProviderUrls: {
     MATIC_RPC: "https://polygon-rpc.com/",
     FANTOM_RPC: "https://rpc.ankr.com/fantom",
-    AVALANCHE_RPC: "https://avalanche.public-rpc.com/"
+    AVALANCHE_RPC: "https://rpc.ankr.com/avalanche"
   },
   explorers : {
     polygon: {

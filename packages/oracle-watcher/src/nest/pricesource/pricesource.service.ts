@@ -53,19 +53,29 @@ export class PricesourceService implements OnApplicationBootstrap {
     return priceSource.uuid;
   }
 
-  async updatePollPriority(updatePriceSourceRequestDto: UpdatePriceSourceRequest) {
-    const { pollPriority, priceSourceUuid } = updatePriceSourceRequestDto;
-    const priceSource = await this.priceSourceRepository.findOne({
-      where: {
-        uuid: priceSourceUuid
-      }
-    })
-
-    // If same poll priorities, then don't update
-    if(priceSource.pollJob.pollPriority === pollPriority) return;
+  async updatePollPriority(updatePriceSourceRequestDto: UpdatePriceSourceRequest[]) {
+    updatePriceSourceRequestDto.forEach(updatePriceSourceRequest => {
+      Promise.resolve((async () => {
+        const { pollPriority, priceSourceUuid } = updatePriceSourceRequest;
+        const priceSource = await this.priceSourceRepository.findOne({
+          where: {
+            uuid: priceSourceUuid
+          }
+        })
     
-    priceSource.pollJob.pollPriority = pollPriority;
-    await this.priceSourceRepository.save(priceSource);
+        // If same poll priorities, then don't update
+        if(priceSource.pollJob.pollPriority === pollPriority) return;
+        this.logger.info({
+          event: 'Updating Poll Priority',
+          pollJob: priceSource.pollJob.uuid,
+          previousPollPriority: priceSource.pollJob.pollPriority,
+          newPollPriority: pollPriority
+        })
+        
+        priceSource.pollJob.pollPriority = pollPriority;
+        await this.priceSourcePollJobRepository.save(priceSource.pollJob);
+      })())
+    });
     await this.reloadPollJobs();
   }
 

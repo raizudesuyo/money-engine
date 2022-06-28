@@ -1,6 +1,6 @@
 import { OracleType, ORACLE_WATCHER_UPDATE_PRICE_SOURCE, UpdatePriceEvent2 } from '@money-engine/common';
 import { CreateAssetRequest, MONEY_ENGINE, OracleWatcherIntegrationService, RegisterPricesourceRequest, UpdatePriceSourceRequest } from '@money-engine/common-nest';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cron } from '@nestjs/schedule';
 import { head } from 'lodash';
@@ -86,43 +86,72 @@ export class OracleWatcherService extends OracleWatcherIntegrationService {
     // Get vaults,
     const vaults = await this.vaultRepository.find({
       relations: {
+        vaultData: true
+      }, 
+      where: {
         vaultData: {
           isEmpty: false
-        },
+        }
       }
     });
 
-    vaults.forEach(async (vault) => {
-      const { minimumRatio, uuid, oracleWatcherIntegration: { priceSourceUuid } } = vault;
-      const vaultData = await vault.vaultData;
-      const vaultDataClosestToLiquidation = _(vaultData)
-        .filter((v) => v.collateralRatio > minimumRatio)
-        .map((v) => v.collateralRatio - minimumRatio)
-        .min()
-      const pollPriority = PollPriorityTime.deltaToPriority(vaultDataClosestToLiquidation)
-      await this.client.connect();
-      await this.client.send<void, UpdatePriceSourceRequest>(ORACLE_WATCHER_UPDATE_PRICE_SOURCE, {
-        priceSourceUuid,
-        pollPriority
-      })
-        .pipe(ignoreElements())
-        .subscribe({
-          error: (err) => this.logger.error(err),
-          complete: () => this.logger.info({
-            priceSourceUuid,
-            pollPriority
-          })
-      })
+    const requestDto: UpdatePriceSourceRequest[] = []
+
+    vaults.forEach((vault) => {
+      Promise.resolve((async () => {
+        const { minimumRatio, uuid, oracleWatcherIntegration: { priceSourceUuid } } = vault;
+        const vaultData = await vault.vaultData;
+        const vaultDataClosestToLiquidation = _(vaultData)
+          .filter((v) => v.collateralRatio > minimumRatio)
+          .map((v) => v.collateralRatio - minimumRatio)
+          .min()
+        const pollPriority = PollPriorityTime.deltaToPriority(vaultDataClosestToLiquidation)
+        requestDto.push({
+          pollPriority,
+          priceSourceUuid
+        })
+      })())
+    })
+
+    await this.client.connect();
+    this.client.send<void, UpdatePriceSourceRequest[]>(ORACLE_WATCHER_UPDATE_PRICE_SOURCE, requestDto)
+      .pipe(ignoreElements())
+      .subscribe({
+        error: (err) => this.logger.error(err),
+        complete: () => this.logger.info({
+          event: 'Updated Oracle Watcher Poll Priority',
+          data: requestDto
+        })
     })
   }
 
-  @Cron('0 0 * * *')
+  @Cron('0 0 0 * *')
   async resyncEverything() {
-    // Resync everything once a day                                                                                                 
+    // Resync everything once a week maybe                                                                                                 
     this.logger.info('Starting resync everything job')
   }
 
+  async recalculateMinimumLiquidationPrice() {
+    // total collateral value = (dollar value * collateral amount) -> Needs to have same decimal amount
+  }
+
   async onOracleWatcherPriceUpdated(payload: UpdatePriceEvent2) {
-    this.logger.info('Payload Received %s', JSON.stringify(payload))
+    this.logger.info({
+      event: 'Price Update Received',
+      ...payload
+    })
+
+    const asset = await this.vaultRepository.findOneBy({
+      oracleWatcherIntegration: {
+        assetUuid: payload.assetUuid
+      }
+    })
+
+    if(!!asset) {
+      asset.dollarValue = payload.price.toString();
+      this.vaultRepository.update({uuid: asset.uuid}, asset);
+
+      // TODO: Check if can now liquidate
+    }
   }
 }

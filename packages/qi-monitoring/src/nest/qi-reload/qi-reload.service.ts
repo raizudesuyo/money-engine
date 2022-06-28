@@ -38,6 +38,8 @@ export class QiReloadService implements OnApplicationBootstrap {
 
     const validContracts = filter(data.maiVaultContracts, (d) => !!d.type);
     const allWaitingJobs = await this.reloadQueue.getWaiting()
+    const allCompletedJobs = await this.reloadQueue.getCompleted()
+    const allJobs = _(allWaitingJobs).concat(allCompletedJobs).map((job) => job.data);
 
     // prints check collateral percentage for each
     validContracts.forEach((contract) => {
@@ -94,8 +96,9 @@ export class QiReloadService implements OnApplicationBootstrap {
         const vaultCountN = vaultCount.toNumber();
   
         for (let vaultNumber = 0; vaultNumber < vaultCountN; vaultNumber++) {
+          // TODO: Optimize this
           // If job doesn't exist yet, then add
-          const jobAlreadyExist = !!_.find(allWaitingJobs, (job) => job.data.vault.uuid === vault.uuid && job.data.vaultNumber == vaultNumber);
+          const jobAlreadyExist = !!allJobs.find((job) => job.vault.uuid === vault.uuid && job.vaultNumber == vaultNumber);
           if(!jobAlreadyExist) {
             
             this.reloadQueue.add({

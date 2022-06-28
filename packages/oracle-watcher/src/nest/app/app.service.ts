@@ -53,7 +53,7 @@ export class AppService implements OnApplicationBootstrap {
     return Promise.all(priceSourceWithUuid).then((priceSource) => priceSource.map((priceSource) => ({ ...priceSource })))
   }
 
-  async updatePriceSource(updatePriceSourceRequest: UpdatePriceSourceRequest) {
+  async updatePriceSource(updatePriceSourceRequest: UpdatePriceSourceRequest[]) {
     return this.priceSourceService.updatePollPriority(updatePriceSourceRequest);
   }
 }

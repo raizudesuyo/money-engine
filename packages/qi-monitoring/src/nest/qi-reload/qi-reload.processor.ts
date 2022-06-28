@@ -24,7 +24,7 @@ export class QiReloadConsumer {
   }
 
   @Process({
-    concurrency: 4
+    concurrency: 12
   })
   async getVaultData(job: Job<TGetVaultData>) {
 

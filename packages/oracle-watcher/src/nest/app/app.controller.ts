@@ -43,7 +43,7 @@ export class AppController {
   }
 
   @MessagePattern(ORACLE_WATCHER_UPDATE_PRICE_SOURCE)
-  async updatePriceSource(updatePriceSourceRequest: UpdatePriceSourceRequest) {
+  async updatePriceSource(updatePriceSourceRequest: UpdatePriceSourceRequest[]) {
     return this.appService.updatePriceSource(updatePriceSourceRequest);
   }
 
