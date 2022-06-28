@@ -4,5 +4,6 @@ export interface RegisterPricesourceRequest {
   oracleType: OracleType;
   oracleAddress: string;
   assetId: string;
-  pollPriority: PollPriority
+  pollPriority: PollPriority,
+  decimal: number
 }

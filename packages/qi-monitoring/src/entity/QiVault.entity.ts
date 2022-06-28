@@ -30,6 +30,9 @@ export class QiVault {
     @Column()
     dollarValue: string;
 
+    @Column({type: 'int2', default: 8})
+    decimal: number
+
     @Column()
     priceOracleAddress: string;
 

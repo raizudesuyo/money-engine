@@ -21,6 +21,9 @@ export class AssetPriceSource {
     @Column({type: 'varchar'})
     oracleAddress: string
 
+    @Column({type: 'int2', default: 8})
+    decimal: number
+
     @ManyToOne(type => Asset, asset => asset.priceSources)
     asset: Promise<Asset> 
 

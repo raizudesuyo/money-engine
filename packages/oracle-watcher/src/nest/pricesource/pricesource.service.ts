@@ -35,19 +35,21 @@ export class PricesourceService implements OnApplicationBootstrap {
   async create(registerPricesourceRequestDto: RegisterPricesourceRequest) {
     // if asset exists, continue, else throw an error
 
-    const { assetId, oracleAddress, oracleType, pollPriority } = registerPricesourceRequestDto
+    const { assetId, oracleAddress, oracleType, pollPriority, decimal } = registerPricesourceRequestDto
     const asset = await this.assetRepository.findOne({ 
       where: { deleteFlag: false, uuid: assetId },
     })
     if(!asset) throw new Error("Asset ID not found, Create Asset first");
 
-    const priceSource = new AssetPriceSource(); //Now only supports oracles
-    priceSource.oracleAddress = oracleAddress;
-    priceSource.oracleType = oracleType;
-    priceSource.asset = Promise.resolve(asset);
+    // Only supports decimals for now
+    const priceSource = new AssetPriceSource({
+      asset: Promise.resolve(asset),
+      oracleAddress,
+      oracleType,
+      decimal
+    });
 
     await this.priceSourceRepository.insert(priceSource);
-
     this.addPollJob(priceSource, pollPriority);
 
     return priceSource.uuid;

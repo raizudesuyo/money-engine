@@ -51,7 +51,8 @@ export class OracleWatcherService extends OracleWatcherIntegrationService {
       assetId: vault.oracleWatcherIntegration.assetUuid,
       oracleAddress: vault.priceOracleAddress,
       oracleType: vault.oracleType as OracleType,
-      pollPriority: PollPriority.MEDIUM
+      pollPriority: PollPriority.MEDIUM,
+      decimal: vault.decimal
     }))
 
     this.logger.info(`Registering PriceSources: ${JSON.stringify(priceSourceRequest)}`)
