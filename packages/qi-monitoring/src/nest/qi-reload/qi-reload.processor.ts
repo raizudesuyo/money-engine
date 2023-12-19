@@ -16,7 +16,6 @@ export class QiReloadConsumer {
   constructor(
     @InjectPinoLogger(QiReloadConsumer.name) private readonly logger: PinoLogger,
     @Inject(QI_VAULT_DATA_REPOSITORY) private readonly vaultDataRepository: TQiVaultDataRepository,
-
     @InjectQueue('qi-reload') private readonly reloadQueue: Queue<TGetVaultData>,
     private readonly eventEmitter: EventEmitter2
   ) {
@@ -75,15 +74,6 @@ export class QiReloadConsumer {
         maiDebt: `$${utils.commify(utils.formatUnits(maiDebt))}`,
         collateralRatio: safeCollateralRatio,
       });
-
-      // If all vault data got, then emit an event that it is so
-      const waiting = await this.reloadQueue.getWaitingCount();
-      const active = await this.reloadQueue.getActiveCount();
-
-      if(waiting + active == 0) {
-        this.logger.info('Event; All vault data synced')
-        this.eventEmitter.emit(ALL_VAULT_DATA_SYNCED)
-      }
     }    
   }
 

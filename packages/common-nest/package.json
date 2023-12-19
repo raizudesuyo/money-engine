@@ -7,18 +7,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@money-engine/common": "workspace:^1.0.0",
+    "@money-engine/common": "workspace:^",
     "@nestjs/common": "^8.4.7",
-    "@nestjs/core": "^8.4.4",
-    "@nestjs/microservices": "^8.4.4",
-    "@nestjs/schedule": "^2.0.1",
-    "ethers": "^5.6.5",
-    "nestjs-pino": "^2.5.2",
-    "redis": "^3",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.5.5"
+    "@nestjs/core": "^8.4.7",
+    "@nestjs/microservices": "^8.4.7",
+    "@nestjs/schedule": "^2.2.3",
+    "ethers": "^5.7.2",
+    "nestjs-pino": "^2.6.0",
+    "redis": "^3.1.2",
+    "reflect-metadata": "^0.1.14",
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@types/cron": "^2.0.0"
+    "@types/cron": "^2.4.0"
   }
 }

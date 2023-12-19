@@ -1,4 +1,4 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, MoreThanOrEqual, Repository } from 'typeorm';
 import { QiVaultData } from '../../../entity/QiVaultData.entity';
 import { QiVault } from '../../../entity/QiVault.entity';
 
@@ -61,12 +61,26 @@ export const QiVaultDataRepository = (dataSource: DataSource): TQiVaultDataRepos
     //   })
     // }
     return [];
+  },
+
+  async findVaultDataNearestTillLiquidation(params: FindVaultDataNearestTillLiquidationParams): Promise<QiVaultData> {
+    const fakeThis: Repository<QiVaultData> = this
+
+    const { vaultMinimumRatio, vaultUuid } = params;
+
+    return fakeThis.findOne({
+      where: {
+        vaultUuid: vaultUuid,
+        collateralRatio: MoreThanOrEqual(vaultMinimumRatio)
+      }
+    })
   }
 })
 
 export type TQiVaultDataRepository = Repository<QiVaultData> & {
   updateVaultData(params: UpdateVaultDataParams): Promise<QiVaultData>;
   findNonEmptyVaults(params: FindNonEmptyVaultsParams): Promise<QiVaultData[]>;
+  findVaultDataNearestTillLiquidation(params: FindVaultDataNearestTillLiquidationParams): Promise<QiVaultData>;
 }
 
 
@@ -82,4 +96,9 @@ interface UpdateVaultDataParams {
 
 interface FindNonEmptyVaultsParams {
   vaultUuid: string[]
+}
+
+interface FindVaultDataNearestTillLiquidationParams {
+  vaultUuid: string,
+  vaultMinimumRatio: number
 }

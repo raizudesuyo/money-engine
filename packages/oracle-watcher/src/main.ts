@@ -13,7 +13,7 @@ export class Server {
       {
         transport: Transport.REDIS,
         options: {
-          url: process.env.REDIS_URL || 'redis://localhost:6379',
+          url: process.env.REDIS_URL,
         },
         bufferLogs: true,
         abortOnError: false,

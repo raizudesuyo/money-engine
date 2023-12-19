@@ -92,6 +92,7 @@ export class DeltaService implements OnApplicationBootstrap {
 
       const [,actualDelta] = BigNumberMath.GetDelta(newPrice, reference);
 
+      //TODO: Need to know if actually works
       if(Math.abs(actualDelta.toNumber()) >= Math.abs(delta.delta)) {
         this.logger.info(`Sending Delta Event ${delta.uuid} to money-engine queue`)
         this.client.emit<void, DeltaAlertEvent>(ORACLE_WATCHER_DELTA_ALERT, {

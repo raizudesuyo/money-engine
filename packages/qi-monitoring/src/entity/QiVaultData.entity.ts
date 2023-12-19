@@ -25,6 +25,12 @@ export class QiVaultData {
     @Column()
     totalCollateralValue: string;
 
+    /***
+     Needed asset dollar amount to liquidate this
+     */
+    @Column()
+    collateralValueLiquidation: string;
+
     @Column()
     @Index()
     maiDebt: string;

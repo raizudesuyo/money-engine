@@ -1,11 +1,43 @@
 version: '3.9'
+name: 'money-engine--qi-monitoring'
 services:
+  qi-monitoring:
+    build:
+      context: .
+      dockerfile: Dockerfile.qi-monitoring
+    command: pnpm run listen
+    environment:
+      - REDIS_URL=redis://qi-monitoring_redis_1:6379
+      - db_host=qi-monitoring_pg_1
+      - db_port=5432
+      - db_user=postgres
+      - db_pass=mysecretpassword
+      - db_name=money-engine--qi-monitoring
+    depends_on:
+      - pg
+      - redis
+      - oracle-watcher
+  oracle-watcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.qi-monitoring
+    command: pnpm run run-swc
+    environment:
+      - REDIS_URL=redis://qi-monitoring_redis_1:6379
+      - db_host=qi-monitoring_pg_1
+      - db_port=5432
+      - db_user=postgres
+      - db_pass=mysecretpassword
+      - db_name=money-engine--oracle-watcher
+    depends_on:
+      - pg
+      - redis
   pg:
     image: postgres:alpine
     volumes: 
       - ./tmp/db:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: mysecretpassword
+      - POSTGRES_PASSWORD=mysecretpassword
     ports:
       - 5432:5432
   adminer:
@@ -16,10 +48,10 @@ services:
     image: redis:7-alpine
     ports:
       - 6379:6379
-  rabbitmq:
-    image: rabbitmq:3.10-management
-    ports:
-      - 5672:5672
-      - 15672:15672
+  # rabbitmq:
+  #   image: rabbitmq:3.10-management
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
 volumes:
   dbVol:

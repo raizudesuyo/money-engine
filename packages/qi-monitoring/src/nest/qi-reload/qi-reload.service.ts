@@ -37,9 +37,6 @@ export class QiReloadService implements OnApplicationBootstrap {
     const data = require("../../../config.json") as IData;
 
     const validContracts = filter(data.maiVaultContracts, (d) => !!d.type);
-    const allWaitingJobs = await this.reloadQueue.getWaiting()
-    const allCompletedJobs = await this.reloadQueue.getCompleted()
-    const allJobs = _(allWaitingJobs).concat(allCompletedJobs).map((job) => job.data);
 
     // prints check collateral percentage for each
     validContracts.forEach((contract) => {
@@ -96,30 +93,18 @@ export class QiReloadService implements OnApplicationBootstrap {
         const vaultCountN = vaultCount.toNumber();
   
         for (let vaultNumber = 0; vaultNumber < vaultCountN; vaultNumber++) {
-          // TODO: Optimize this
-          // If job doesn't exist yet, then add
-          const jobAlreadyExist = !!allJobs.find((job) => job.vault.uuid === vault.uuid && job.vaultNumber == vaultNumber);
-          if(!jobAlreadyExist) {
-            
-            this.reloadQueue.add({
-              vault,
-              vaultNumber,
-              contract
-            })
-          }
+          this.reloadQueue.add({
+            vault,
+            vaultNumber,
+            contract
+          })
         }
       })()
 
       Promise.resolve(promise);
     });
 
-    // If all vault data got, then emit an event that it is so
-    const waiting = await this.reloadQueue.getWaitingCount();
-    const active = await this.reloadQueue.getActiveCount();
-
-    if(waiting + active == 0) {
-      this.logger.info('Event; All vault data synced')
-      this.eventEmitter.emit(ALL_VAULT_DATA_SYNCED)
-    }
+    await this.globalStateRepository.setConfigBoolean('IS_SYNC_JOBS_CREATED', true);
+    this.eventEmitter.emit(ALL_VAULT_DATA_SYNCED)
   }
 }
