@@ -21,21 +21,7 @@ export class AppService implements OnApplicationBootstrap {
     this.client.emit(ORACLE_WATCHER_INITIALIZED, {})
   }
 
-  async registerAsset(
-    registerAssetDto: CreateAssetRequest[]
-  ): Promise<CreateAssetResponse[]> 
-  {
-    const assetWithUuid = registerAssetDto.map(async (assetDto) => {
-      const existingAsset = await this.assetService.findByAddress(assetDto.address, assetDto.chain);
-      const uuid = !!existingAsset ? existingAsset.uuid : await this.assetService.create(assetDto);
-
-      return {
-        uuid: uuid,
-        ...assetDto
-      }
-    })
-    return await Promise.all(assetWithUuid).then((asset) => asset.map((asset) => ({ ...asset })));
-  }
+  
 
   async registerPriceSource(
     registerPriceSourceDto: RegisterPricesourceRequest[]

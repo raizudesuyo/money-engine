@@ -64,7 +64,7 @@ importers:
         version: 5.7.2
       nestjs-pino:
         specifier: ^2.6.0
-        version: 2.6.0(@nestjs/common@8.4.7)(pino-http@7.1.0)
+        version: 2.6.0(@nestjs/common@8.4.7)(pino-http@6.6.0)
       redis:
         specifier: ^3.1.2
         version: 3.1.2
@@ -105,6 +105,9 @@ importers:
       '@nestjs/schedule':
         specifier: ^2.0.1
         version: 2.0.1(@nestjs/common@8.4.7)(@nestjs/core@8.4.7)(reflect-metadata@0.1.13)
+      '@nestjs/swagger':
+        specifier: ^5.2.1
+        version: 5.2.1(@nestjs/common@8.4.7)(@nestjs/core@8.4.7)(reflect-metadata@0.1.14)(swagger-ui-express@4.6.3)
       '@nestjs/typeorm':
         specifier: ^8.1.4
         version: 8.1.4(@nestjs/common@8.4.7)(@nestjs/core@8.4.7)(reflect-metadata@0.1.13)(rxjs@7.5.5)(typeorm@0.3.6)
@@ -151,15 +154,24 @@ importers:
       '@nestjs/testing':
         specifier: ^8.4.7
         version: 8.4.7(@nestjs/common@8.4.7)(@nestjs/core@8.4.7)(@nestjs/microservices@8.4.7)(@nestjs/platform-express@8.4.7)
+      '@types/jest':
+        specifier: ^27.5.2
+        version: 27.5.2
       '@types/node':
         specifier: ^18.0.0
         version: 18.0.0
+      jest:
+        specifier: ^27.5.1
+        version: 27.5.1(ts-node@10.8.1)
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.13
       rxjs:
         specifier: ^7.5.5
         version: 7.5.5
+      ts-jest:
+        specifier: ^27.1.5
+        version: 27.1.5(@babel/core@7.23.6)(@types/jest@27.5.2)(jest@27.5.1)(typescript@4.5.2)
       ts-node:
         specifier: ^10.8.1
         version: 10.8.1(@swc/core@1.2.205)(@types/node@18.0.0)(typescript@4.7.4)
@@ -1498,6 +1510,51 @@ packages:
       jest-message-util: 27.5.1
       jest-util: 27.5.1
       slash: 3.0.0
+    dev: true
+
+  /@jest/core@27.5.1(ts-node@10.8.1):
+    resolution: {integrity: sha512-AK6/UTrvQD0Cd24NSqmIA6rKsu0tKIxfiCducZvqxYdmMisOYAsdItspT+fQDQYARPf8XgjAFZi0ogW2agH5nQ==}
+    engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
+    peerDependencies:
+      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
+    peerDependenciesMeta:
+      node-notifier:
+        optional: true
+    dependencies:
+      '@jest/console': 27.5.1
+      '@jest/reporters': 27.5.1
+      '@jest/test-result': 27.5.1
+      '@jest/transform': 27.5.1
+      '@jest/types': 27.5.1
+      '@types/node': 16.18.68
+      ansi-escapes: 4.3.2
+      chalk: 4.1.2
+      emittery: 0.8.1
+      exit: 0.1.2
+      graceful-fs: 4.2.11
+      jest-changed-files: 27.5.1
+      jest-config: 27.5.1(ts-node@10.8.1)
+      jest-haste-map: 27.5.1
+      jest-message-util: 27.5.1
+      jest-regex-util: 27.5.1
+      jest-resolve: 27.5.1
+      jest-resolve-dependencies: 27.5.1
+      jest-runner: 27.5.1
+      jest-runtime: 27.5.1
+      jest-snapshot: 27.5.1
+      jest-util: 27.5.1
+      jest-validate: 27.5.1
+      jest-watcher: 27.5.1
+      micromatch: 4.0.5
+      rimraf: 3.0.2
+      slash: 3.0.0
+      strip-ansi: 6.0.1
+    transitivePeerDependencies:
+      - bufferutil
+      - canvas
+      - supports-color
+      - ts-node
+      - utf-8-validate
     dev: true
 
   /@jest/core@27.5.1(ts-node@10.9.2):
@@ -3401,7 +3458,7 @@ packages:
     resolution: {integrity: sha512-gxGWBrTT1JuMx6R+o5PTXMmUnhnVzLQ9SNutD4YqKtI6ap897t3tKECYla6gCWEkplXnlNybEkZg9GEGxKFCgw==}
     dependencies:
       pascal-case: 3.1.2
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /camelcase@5.3.1:
@@ -3422,7 +3479,7 @@ packages:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
       upper-case-first: 2.0.2
     dev: true
 
@@ -3632,7 +3689,7 @@ packages:
     resolution: {integrity: sha512-I2hSBi7Vvs7BEuJDr5dDHfzb/Ruj3FyvFyh7KLilAjNQw3Be+xgqUBA2W6scVEcL0hL1dwPRtIqEPVUCKkSsyQ==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
       upper-case: 2.0.2
     dev: true
 
@@ -3895,7 +3952,7 @@ packages:
     resolution: {integrity: sha512-Kv5nKlh6yRrdrGvxeJ2e5y2eRUpkUosIW4A2AS38zwSz27zu7ufDwQPi5Jhs3XAlGNetl3bmnGhQsMtkKJnj3w==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /dotenv@16.0.1:
@@ -4574,7 +4631,7 @@ packages:
     resolution: {integrity: sha512-H/vuk5TEEVZwrR0lp2zed9OCo1uAILMlx0JEMgC26rzyJJ3N1v6XkwHHXJQdR2doSjcGPM6OKPYoJgf0plJ11Q==}
     dependencies:
       capital-case: 1.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /highlight.js@10.7.3:
@@ -4881,6 +4938,36 @@ packages:
       - supports-color
     dev: true
 
+  /jest-cli@27.5.1(ts-node@10.8.1):
+    resolution: {integrity: sha512-Hc6HOOwYq4/74/c62dEE3r5elx8wjYqxY0r0G/nFrLDPMFRu6RA/u8qINOIkvhxG7mMQ5EJsOGfRpI8L6eFUVw==}
+    engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
+    hasBin: true
+    peerDependencies:
+      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
+    peerDependenciesMeta:
+      node-notifier:
+        optional: true
+    dependencies:
+      '@jest/core': 27.5.1(ts-node@10.8.1)
+      '@jest/test-result': 27.5.1
+      '@jest/types': 27.5.1
+      chalk: 4.1.2
+      exit: 0.1.2
+      graceful-fs: 4.2.11
+      import-local: 3.1.0
+      jest-config: 27.5.1(ts-node@10.8.1)
+      jest-util: 27.5.1
+      jest-validate: 27.5.1
+      prompts: 2.4.2
+      yargs: 16.2.0
+    transitivePeerDependencies:
+      - bufferutil
+      - canvas
+      - supports-color
+      - ts-node
+      - utf-8-validate
+    dev: true
+
   /jest-cli@27.5.1(ts-node@10.9.2):
     resolution: {integrity: sha512-Hc6HOOwYq4/74/c62dEE3r5elx8wjYqxY0r0G/nFrLDPMFRu6RA/u8qINOIkvhxG7mMQ5EJsOGfRpI8L6eFUVw==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
@@ -4908,6 +4995,47 @@ packages:
       - canvas
       - supports-color
       - ts-node
+      - utf-8-validate
+    dev: true
+
+  /jest-config@27.5.1(ts-node@10.8.1):
+    resolution: {integrity: sha512-5sAsjm6tGdsVbW9ahcChPAFCk4IlkQUknH5AvKjuLTSlcO/wCZKyFdn7Rg0EkC+OGgWODEy2hDpWB1PgzH0JNA==}
+    engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
+    peerDependencies:
+      ts-node: '>=9.0.0'
+    peerDependenciesMeta:
+      ts-node:
+        optional: true
+    dependencies:
+      '@babel/core': 7.23.6
+      '@jest/test-sequencer': 27.5.1
+      '@jest/types': 27.5.1
+      babel-jest: 27.5.1(@babel/core@7.23.6)
+      chalk: 4.1.2
+      ci-info: 3.9.0
+      deepmerge: 4.3.1
+      glob: 7.2.3
+      graceful-fs: 4.2.11
+      jest-circus: 27.5.1
+      jest-environment-jsdom: 27.5.1
+      jest-environment-node: 27.5.1
+      jest-get-type: 27.5.1
+      jest-jasmine2: 27.5.1
+      jest-regex-util: 27.5.1
+      jest-resolve: 27.5.1
+      jest-runner: 27.5.1
+      jest-util: 27.5.1
+      jest-validate: 27.5.1
+      micromatch: 4.0.5
+      parse-json: 5.2.0
+      pretty-format: 27.5.1
+      slash: 3.0.0
+      strip-json-comments: 3.1.1
+      ts-node: 10.8.1(@swc/core@1.2.205)(@types/node@18.0.0)(typescript@4.7.4)
+    transitivePeerDependencies:
+      - bufferutil
+      - canvas
+      - supports-color
       - utf-8-validate
     dev: true
 
@@ -5291,6 +5419,27 @@ packages:
       supports-color: 8.1.1
     dev: true
 
+  /jest@27.5.1(ts-node@10.8.1):
+    resolution: {integrity: sha512-Yn0mADZB89zTtjkPJEXwrac3LHudkQMR+Paqa8uxJHCBr9agxztUifWCyiYrjhMPBoUVBjyny0I7XH6ozDr7QQ==}
+    engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
+    hasBin: true
+    peerDependencies:
+      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
+    peerDependenciesMeta:
+      node-notifier:
+        optional: true
+    dependencies:
+      '@jest/core': 27.5.1(ts-node@10.8.1)
+      import-local: 3.1.0
+      jest-cli: 27.5.1(ts-node@10.8.1)
+    transitivePeerDependencies:
+      - bufferutil
+      - canvas
+      - supports-color
+      - ts-node
+      - utf-8-validate
+    dev: true
+
   /jest@27.5.1(ts-node@10.9.2):
     resolution: {integrity: sha512-Yn0mADZB89zTtjkPJEXwrac3LHudkQMR+Paqa8uxJHCBr9agxztUifWCyiYrjhMPBoUVBjyny0I7XH6ozDr7QQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
@@ -5428,7 +5577,7 @@ packages:
     dependencies:
       universalify: 2.0.0
     optionalDependencies:
-      graceful-fs: 4.2.10
+      graceful-fs: 4.2.11
     dev: true
 
   /kleur@3.0.3:
@@ -5485,7 +5634,7 @@ packages:
   /lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
     dependencies:
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /lru-cache@5.1.1:
@@ -5716,18 +5865,6 @@ packages:
       pino-http: 6.6.0
     dev: false
 
-  /nestjs-pino@2.6.0(@nestjs/common@8.4.7)(pino-http@7.1.0):
-    resolution: {integrity: sha512-sudCZ5wTjXf4L2iL1G1eh5PL15S5ADtjaW8bnNlg02ZKB81ySdSa0CJ4gMhB3UlGLWS80JoZVp+R3jeRizoJYA==}
-    engines: {node: '>=12.17.0 || >=13.10.0'}
-    requiresBuild: true
-    peerDependencies:
-      '@nestjs/common': ^8.0.0
-      pino-http: ^6.4.0 || ^7.0.0
-    dependencies:
-      '@nestjs/common': 8.4.7(reflect-metadata@0.1.14)(rxjs@7.8.1)
-      pino-http: 7.1.0
-    dev: false
-
   /nestjs-pino@2.6.0(@nestjs/common@8.4.7)(pino-http@8.0.1):
     resolution: {integrity: sha512-sudCZ5wTjXf4L2iL1G1eh5PL15S5ADtjaW8bnNlg02ZKB81ySdSa0CJ4gMhB3UlGLWS80JoZVp+R3jeRizoJYA==}
     engines: {node: '>=12.17.0 || >=13.10.0'}
@@ -5752,7 +5889,7 @@ packages:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /node-fetch@2.6.7:
@@ -5879,7 +6016,7 @@ packages:
     resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /parse-gitignore@1.0.1:
@@ -5918,7 +6055,7 @@ packages:
     resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /password-prompt@1.1.2:
@@ -5932,7 +6069,7 @@ packages:
     resolution: {integrity: sha512-qO4qCFjXqVTrcbPt/hQfhTQ+VhFsqNKOPtytgNKkKxSoEp3XPUQ8ObFuePylOIok5gjn69ry8XiULxCwot3Wfg==}
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /path-exists@4.0.0:
@@ -6097,16 +6234,6 @@ packages:
       pino: 7.11.0
       pino-std-serializers: 5.6.0
 
-  /pino-http@7.1.0:
-    resolution: {integrity: sha512-p/SqK6VpLP2AawGZEmciboat3TXlXwbvlElquBfht1gLQkMKwKDTDlsXOEOfKjOXX21ZYHFVVO75C1uKESXHxg==}
-    dependencies:
-      fast-url-parser: 1.1.3
-      get-caller-file: 2.0.5
-      pino: 7.11.0
-      pino-std-serializers: 5.6.0
-      process-warning: 2.3.2
-    dev: false
-
   /pino-http@8.0.1:
     resolution: {integrity: sha512-g+PGxKLfR3Cu9DncDN5U3FSeT2762HcqqHR3l5iOkbfuYBrSTUouFcvCgzD7JQio19Z/JBJKYE1GSPh0MX/9DA==}
     dependencies:
@@ -6218,10 +6345,6 @@ packages:
 
   /process-warning@2.0.0:
     resolution: {integrity: sha512-+MmoAXoUX+VTHAlwns0h+kFUWFs/3FZy+ZuchkgjyOu3oioLAo2LB5aCfKPh2+P9O18i3m43tUEv3YqttSy0Ww==}
-    dev: false
-
-  /process-warning@2.3.2:
-    resolution: {integrity: sha512-n9wh8tvBe5sFmsqlg+XQhaQLumwpqoAUruLwjCopgTmUBjJ/fjtBsJzKleCaIGBOMXYEhp1YfKl4d7rJ5ZKJGA==}
     dev: false
 
   /promise-breaker@5.0.0:
@@ -6572,7 +6695,7 @@ packages:
     resolution: {integrity: sha512-8LS0JInaQMCRoQ7YUytAo/xUu5W2XnQxV2HI/6uM6U7CITS1RqPElr30V6uIqyMKM9lJGRVFy5/4CuzcixNYSg==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
       upper-case-first: 2.0.2
     dev: true
 
@@ -6661,7 +6784,7 @@ packages:
     resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /sonic-boom@2.8.0:
@@ -7461,13 +7584,13 @@ packages:
   /upper-case-first@2.0.2:
     resolution: {integrity: sha512-514ppYHBaKwfJRK/pNC6c/OxfGa0obSnAl106u97Ed0I625Nin96KAjttZF6ZL3e1XLtphxnqrOi9iWgm+u+bg==}
     dependencies:
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /upper-case@2.0.2:
     resolution: {integrity: sha512-KgdgDGJt2TpuwBUIjgG6lzw2GWFRCW9Qkfkiv0DxqHHLYJHmtmdUIKcZd8rHgFSjopVTlw6ggzCm1b8MFQwikg==}
     dependencies:
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /uri-js@4.4.1:

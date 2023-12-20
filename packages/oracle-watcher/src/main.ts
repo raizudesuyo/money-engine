@@ -5,23 +5,22 @@ import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { AppModule } from "./nest/app/app.module";
 import { MONEY_ENGINE_QUEUE_NAME } from "@money-engine/common-nest";
 
-
 export class Server {
   static bootstrap = async () => {
-    const microservice = await NestFactory.createMicroservice<MicroserviceOptions>(
-      AppModule,
-      {
-        transport: Transport.REDIS,
-        options: {
-          url: process.env.REDIS_URL,
-        },
-        bufferLogs: true,
-        abortOnError: false,
-      }
-    )
+    const app = await NestFactory.create(AppModule)
+    const microservice = app.connectMicroservice<MicroserviceOptions>({
+      transport: Transport.REDIS,
+      options: {
+        url: process.env.REDIS_URL,
+      },
+      bufferLogs: true,
+      abortOnError: false,
+    })
 
     microservice.useLogger(microservice.get(Logger))
-    await microservice.listen();
+    
+    await app.startAllMicroservices()
+    await app.listen(7070)
   }
 }
 

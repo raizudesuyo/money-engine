@@ -1,4 +1,4 @@
-import { Controller } from "@nestjs/common";
+import { Controller, Get, Put, Post } from "@nestjs/common";
 import { MessagePattern } from "@nestjs/microservices";
 import { AppService } from "./app.service";
 import {
@@ -12,14 +12,14 @@ import {
 import { DeltaService } from '../delta'
 import { UpdatePriceSourceRequest } from '../../../../common-nest/src/nest/oracle-watcher-integration/dtos/UpdatePriceSourceRequest.dto';
 import { 
-  CreateAssetRequest,
-  CreateAssetResponse,
   CreateDeltaRequest, 
   RegisterPricesourceRequest, 
   RegisterPricesourceResponse, 
   UpdateDeltaRequest ,
   IsOracleWatcherInitializeResponse
 } from '@money-engine/common-nest';
+import { Body } from "@nestjs/common/decorators";
+
 
 @Controller()
 export class AppController {
@@ -28,40 +28,43 @@ export class AppController {
     private readonly deltaService: DeltaService
   ) {}
 
-  @MessagePattern(ORACLE_WATCHER_REGISTER_ASSET)
-  async registerAsset(
-    createAssetDto: CreateAssetRequest[]
-  ): Promise<CreateAssetResponse[]> {
-    return await this.appService.registerAsset(createAssetDto);
-  }
-
+  @Post('/price-source')
   @MessagePattern(ORACLE_WATCHER_REGISTER_PRICE_SOURCE)
   async registerPriceSource(
-    registerPriceSourceDto: RegisterPricesourceRequest[]
+    @Body() registerPriceSourceDto: RegisterPricesourceRequest[]
   ): Promise<RegisterPricesourceResponse[]> {
     return this.appService.registerPriceSource(registerPriceSourceDto);
   }
 
+  @Put('/price-source')
   @MessagePattern(ORACLE_WATCHER_UPDATE_PRICE_SOURCE)
-  async updatePriceSource(updatePriceSourceRequest: UpdatePriceSourceRequest[]) {
+  async updatePriceSource(
+    @Body() updatePriceSourceRequest: UpdatePriceSourceRequest[]
+  ) {
     return this.appService.updatePriceSource(updatePriceSourceRequest);
   }
 
+  @Post('/delta-alert')
   @MessagePattern(ORACLE_WATCHER_CREATE_DELTA_ALERT)
-  async createDeltaAlert(createDeltaAlertRequest: CreateDeltaRequest): Promise<string> {
+  async createDeltaAlert(
+    @Body() createDeltaAlertRequest: CreateDeltaRequest
+  ): Promise<string> {
     return this.deltaService.create(createDeltaAlertRequest)
   }
 
+  @Put('/delta-alert')
   @MessagePattern(ORACLE_WATCHER_UPDATE_DELTA_ALERT)
-  async updateDataAlert(updateDeltaAlertRequest: UpdateDeltaRequest) {
+  async updateDataAlert(
+    @Body() updateDeltaAlertRequest: UpdateDeltaRequest
+  ) {
     return this.deltaService.update(updateDeltaAlertRequest);
   }
 
+  @Get('/')
   @MessagePattern(IS_ORACLE_WATCHER_INITIALIZED)
   isOracleWatcherInitialized(): IsOracleWatcherInitializeResponse {
     return {
       isInitialized: true
     }
   }
-
 }

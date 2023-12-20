@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Asset } from '../../entity';
 import { Repository } from 'typeorm';
 import { ASSET_REPOSITORY } from '../database'
-import { CreateAssetRequest } from '@money-engine/common-nest';
+import { CreateAssetRequest, CreateAssetResponse } from '@money-engine/common-nest';
 
 @Injectable()
 export class AssetService {
@@ -10,6 +10,22 @@ export class AssetService {
   constructor(
     @Inject(ASSET_REPOSITORY) private assetRepository: Repository<Asset>
   ) {}
+
+  async registerAsset(
+    registerAssetDto: CreateAssetRequest[]
+  ): Promise<CreateAssetResponse[]> 
+  {
+    const assetWithUuid = registerAssetDto.map(async (assetDto) => {
+      const existingAsset = await this.findByAddress(assetDto.address, assetDto.chain);
+      const uuid = !!existingAsset ? existingAsset.uuid : await this.create(assetDto);
+
+      return {
+        uuid: uuid,
+        ...assetDto
+      }
+    })
+    return await Promise.all(assetWithUuid).then((asset) => asset.map((asset) => ({ ...asset })));
+  }
 
   async create(createAssetDto: CreateAssetRequest): Promise<string> {
     const newAsset = new Asset();
