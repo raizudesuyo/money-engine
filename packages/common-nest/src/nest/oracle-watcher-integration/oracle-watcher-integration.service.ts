@@ -1,7 +1,6 @@
 import { firstValueFrom } from 'rxjs'
 import { Injectable } from '@nestjs/common';
-import { CreateAssetResponse } from './dtos/CreateAssetResponse.dto';
-import { CreateAssetRequest } from './dtos/CreateAssetRequest.dto';
+import { CreateAssetRequest, CreateAssetResponse } from './dtos/Asset.dto';
 import { RegisterPricesourceResponse } from './dtos/RegisterPricesourceResponse.dto';
 import { RegisterPricesourceRequest } from './dtos/RegisterPricesourceRequest.dto';
 import { ClientProxy } from '@nestjs/microservices';

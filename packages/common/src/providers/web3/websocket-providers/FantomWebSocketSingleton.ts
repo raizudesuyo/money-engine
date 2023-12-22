@@ -1,15 +1,15 @@
-import { providers } from 'ethers';
+import { WebSocketProvider } from 'ethers';
 import { config } from '../../../../config'
 
 export class FantomWebSocketSingleton {
 
-    private static instance: providers.WebSocketProvider;
+    private static instance: WebSocketProvider;
     
     private constructor() {}
 
-    public static getInstance(): providers.WebSocketProvider {
+    public static getInstance(): WebSocketProvider {
         if(!FantomWebSocketSingleton.instance) {
-            FantomWebSocketSingleton.instance = new providers.WebSocketProvider(config.web3ProviderUrls.FANTOM_RPC);
+            FantomWebSocketSingleton.instance = new WebSocketProvider(config.web3ProviderUrls.FANTOM_RPC);
         }
 
         return FantomWebSocketSingleton.instance;

@@ -1,17 +1,17 @@
 import { QiStablecoin, QiStablecoin__factory } from '../../../../../typechain';
 import { IQiDaoVaultContractAdapter, ContractTransactionParams } from '../IQiDaoVaultContractAdapter';
-import { BigNumber, providers } from 'ethers';
+import { AbstractProvider } from 'ethers';
 
 // Actually an Adapter
 export class QiStableCoinService implements IQiDaoVaultContractAdapter {
 
     private smartContract: QiStablecoin; 
 
-    constructor(contractAddress: string, provider: providers.BaseProvider) {
+    constructor(contractAddress: string, provider: AbstractProvider) {
         this.smartContract = QiStablecoin__factory.connect(contractAddress, provider);
     }
     
-    _minimumCollateralPercentage = async () => BigNumber.from(130); //  minimum collateral percentage is a private property
+    _minimumCollateralPercentage = async () => BigInt(130); //  minimum collateral percentage is a private property
     
     vaultCount = () => this.smartContract.vaultCount();
 
@@ -27,15 +27,15 @@ export class QiStableCoinService implements IQiDaoVaultContractAdapter {
 
     vaultDebt = (vaultId: number) => this.smartContract.vaultDebt(vaultId);
 
-    debtRatio = async () => BigNumber.from(-1);
+    debtRatio = async () => BigInt(-1);
 
-    gainRatio = async () => BigNumber.from(-1);
+    gainRatio = async () => BigInt(-1);
     
     stabilityPool = () => this.smartContract.stabilityPool();
 
     collateral = async () => "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
 
-    priceSourceDecimals = async () => BigNumber.from(8);
+    priceSourceDecimals = async () => BigInt(8);
 
     getDebtCeiling = () => this.smartContract.getDebtCeiling();
 
@@ -49,17 +49,17 @@ export class QiStableCoinService implements IQiDaoVaultContractAdapter {
 
     getEthPriceSource = () => this.smartContract.getEthPriceSource();
 
-    createVault = (overrides?: ContractTransactionParams) => this.smartContract.createVault(overrides)
+    createVault = (overrides?: ContractTransactionParams) => this.smartContract.createVault()
 
     destroyVault = (vaultId: number, overrides?: ContractTransactionParams) => this.smartContract.destroyVault(vaultId, overrides)
 
-    depositCollateral = (vaultID: number, amount: BigNumber, overrides?: ContractTransactionParams) => { throw new Error('Not Implemented') };
+    depositCollateral = (vaultID: number, amount: BigInt, overrides?: ContractTransactionParams) => { throw new Error('Not Implemented') };
 
-    withdrawCollateral = (vaultID: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.withdrawCollateral(vaultID, amount, overrides);
+    withdrawCollateral = (vaultID: number, amount: BigInt, overrides?: ContractTransactionParams) => this.smartContract.withdrawCollateral(vaultID, amount.toString());
 
-    borrowToken = () => (vaultID: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.borrowToken(vaultID, amount, overrides);;
+    borrowToken = () => (vaultID: number, amount: BigInt, overrides?: ContractTransactionParams) => this.smartContract.borrowToken(vaultID, amount.toString());
 
-    payBackToken = (vaultId: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.payBackToken(vaultId, amount, overrides);
+    payBackToken = (vaultId: number, amount: BigInt, overrides?: ContractTransactionParams) => this.smartContract.payBackToken(vaultId, amount.toString());
 
     getPaid = () => { throw new Error('Not Implemented') }
 
@@ -75,16 +75,16 @@ export class QiStableCoinService implements IQiDaoVaultContractAdapter {
         const getEthPriceSource = this.getEthPriceSource();
         const getTokenPriceSource = this.getTokenPriceSource()
 
-        const collateralValue = (await collateralAmount).mul(await getEthPriceSource)
-        const debtValue = (await maiDebt).mul(await getTokenPriceSource);
+        const collateralValue = (await collateralAmount) * (await getEthPriceSource)
+        const debtValue = (await maiDebt) * (await getTokenPriceSource);
 
-        if(debtValue.isZero()) return BigNumber.from(0);
+        if(debtValue === BigInt(0)) return BigInt(0);
 
-        return (collateralValue.mul(100).div(debtValue))
+        return (collateralValue * BigInt(100)) / debtValue
     }
 
     checkLiquidation = async (vaultId: number) => 
-        (await this.checkCollateralPercentage(vaultId)).lt(await this._minimumCollateralPercentage());
+        (await this.checkCollateralPercentage(vaultId)) < (await this._minimumCollateralPercentage());
 
     liquidateVault = (vaultId: number, overrides?: ContractTransactionParams) => { throw new Error('Not Implemented') }
 
@@ -92,5 +92,5 @@ export class QiStableCoinService implements IQiDaoVaultContractAdapter {
 
     ownerOf = (vaultId: number) => this.smartContract.vaultOwner(vaultId);
 
-    amountDecimals = async () => BigNumber.from(18);
+    amountDecimals = async () => BigInt(18);
 }

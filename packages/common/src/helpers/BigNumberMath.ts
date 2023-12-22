@@ -40,7 +40,7 @@ export class BigNumberMath {
   }
 
   static normalizedTo18Decimals({ decimals, value }: NormalizeTo18DecimalsParams): bigint {
-    return pow(value, BigInt(18) - decimals);
+    return BigNumberMath.pow(value, BigInt(18) - decimals);
   }
 }
 

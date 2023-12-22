@@ -1,11 +1,11 @@
 import { MaticWebSockerSingleton } from './websocket-providers/MaticWebSocketSingleton';
-import { ethers } from 'ethers';
+import { WebSocketProvider } from 'ethers';
 import { FantomWebSocketSingleton } from './websocket-providers/FantomWebSocketSingleton';
 import { LoggerSingleton } from '../LoggerSingleton';
 
 export class Web3WebSocketFactory {
 
-    static getProvider = (chain: Web3Chain): ethers.providers.WebSocketProvider => {
+    static getProvider = (chain: Web3Chain): WebSocketProvider => {
         switch (chain) {
             case 'polygon':
                 return MaticWebSockerSingleton.getInstance();

@@ -6,9 +6,11 @@ export const moneyEngineProvider = {
   provide: MONEY_ENGINE,
   useFactory: () => {
     return ClientProxyFactory.create({
-      transport: Transport.REDIS,
+      // transport: Transport.REDIS,
+      // transport?: Transport.REDIS,
       options: {
-        url: process.env.REDIS_URL || 'redis://localhost:6379',
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT
       },
     })
   }

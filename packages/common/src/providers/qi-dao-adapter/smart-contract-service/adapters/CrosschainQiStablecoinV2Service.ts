@@ -1,5 +1,5 @@
 import { IQiDaoVaultContractAdapter, ContractTransactionParams } from '../IQiDaoVaultContractAdapter';
-import { providers } from 'ethers';
+import { AbstractProvider } from 'ethers';
 import { CrosschainQiStablecoinV2, CrosschainQiStablecoinV2__factory } from '../../../../../typechain';
 
 // Actually an Adapter
@@ -7,7 +7,7 @@ export class CrosschainQiStablecoinV2Service implements IQiDaoVaultContractAdapt
 
     private smartContract: CrosschainQiStablecoinV2; 
 
-    constructor(contractAddress: string, provider: providers.BaseProvider) {
+    constructor(contractAddress: string, provider: AbstractProvider) {
         this.smartContract = CrosschainQiStablecoinV2__factory.connect(contractAddress, provider);
     }
     
@@ -77,5 +77,5 @@ export class CrosschainQiStablecoinV2Service implements IQiDaoVaultContractAdapt
 
     ownerOf = (vaultId: number) => this.smartContract.ownerOf(vaultId);
 
-    amountDecimals = async () => bigint.from(18);
+    amountDecimals = async () => BigInt(18);
 }

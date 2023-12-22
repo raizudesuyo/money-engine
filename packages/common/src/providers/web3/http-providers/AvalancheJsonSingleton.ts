@@ -1,15 +1,15 @@
-import { providers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { config } from '../../../../config'
 
 export class AvalancheJsonSingleton {
 
-    private static instance: providers.JsonRpcProvider;
+    private static instance: JsonRpcProvider;
     
     private constructor() {}
 
-    public static getInstance(): providers.JsonRpcProvider {
+    public static getInstance(): JsonRpcProvider {
         if(!AvalancheJsonSingleton.instance) {
-            AvalancheJsonSingleton.instance = new providers.JsonRpcProvider(config.jsonRpcProviderUrls.AVALANCHE_RPC);
+            AvalancheJsonSingleton.instance = new JsonRpcProvider(config.jsonRpcProviderUrls.AVALANCHE_RPC);
         }
 
         return AvalancheJsonSingleton.instance;

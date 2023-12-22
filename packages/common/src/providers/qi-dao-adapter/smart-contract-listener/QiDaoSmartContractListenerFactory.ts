@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { AbstractProvider } from 'ethers';
 import { MaiVaultContractType } from '../../../interfaces/data';
 import { IQiDaoSmartContractListener } from './IQiDaoSmartContractListener';
 import { Erc20QiStablecoinListenerAdapter } from './adapters/Erc20QiStablecoinListenerAdapter';
@@ -6,7 +6,7 @@ import { Erc20QiStablecoinListenerAdapter } from './adapters/Erc20QiStablecoinLi
 export interface IQiDaoSmartContractListenerFactoryParams {
     contractType: MaiVaultContractType
     contractAddress: string
-    contractProvider: ethers.providers.BaseProvider
+    contractProvider: AbstractProvider
 }
 
 export class QiDaoSmartContractListenerFactory {

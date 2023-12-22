@@ -1,15 +1,15 @@
-import { providers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { config } from '../../../../config'
 
 export class FantomJsonSingleton {
 
-    private static instance: providers.JsonRpcProvider;
+    private static instance: JsonRpcProvider;
     
     private constructor() {}
 
-    public static getInstance(): providers.JsonRpcProvider {
+    public static getInstance(): JsonRpcProvider {
         if(!FantomJsonSingleton.instance) {
-            FantomJsonSingleton.instance = new providers.JsonRpcProvider(config.jsonRpcProviderUrls.FANTOM_RPC);
+            FantomJsonSingleton.instance = new JsonRpcProvider(config.jsonRpcProviderUrls.FANTOM_RPC);
         }
 
         return FantomJsonSingleton.instance;

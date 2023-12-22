@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { AbstractProvider } from "ethers";
 import { OracleType } from '../../constants/oracle-types';
 import { PriceSourceAdapter } from './PriceSourceAdapter';
 import { IPriceSourceAdapter } from './IPriceSourceAdapter';
@@ -7,7 +7,7 @@ import { PriceSourceHybridSd3crvAdapter } from "./PriceSourceHybridSd3crvAdapter
 export interface IPriceSourceAdapterFactoryParam {
     contractType: OracleType
     contractAddress: string
-    contractProvider: ethers.providers.BaseProvider
+    contractProvider: AbstractProvider
 }
 
 export class PriceSourceAdapterFactory {

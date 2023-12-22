@@ -1,15 +1,15 @@
-import { providers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { config } from '../../../../config'
 
 export class MaticJsonSingleton {
 
-    private static instance: providers.JsonRpcProvider;
+    private static instance: JsonRpcProvider;
     
     private constructor() {}
 
-    public static getInstance(): providers.JsonRpcProvider {
+    public static getInstance(): JsonRpcProvider {
         if(!MaticJsonSingleton.instance) {
-            MaticJsonSingleton.instance = new providers.JsonRpcProvider(config.jsonRpcProviderUrls.MATIC_RPC);
+            MaticJsonSingleton.instance = new JsonRpcProvider(config.jsonRpcProviderUrls.MATIC_RPC);
         }
 
         return MaticJsonSingleton.instance;

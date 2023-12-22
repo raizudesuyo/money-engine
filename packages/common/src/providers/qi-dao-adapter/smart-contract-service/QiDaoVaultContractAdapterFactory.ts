@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { AbstractProvider } from "ethers";
 import { MaiVaultContractType } from "../../../interfaces";
 import { IQiDaoVaultContractAdapter } from "./IQiDaoVaultContractAdapter";
 import { CrosschainQiStablecoinV2Service } from "./adapters/CrosschainQiStablecoinV2Service";
@@ -10,7 +10,7 @@ import { LoggerSingleton } from '../../LoggerSingleton';
 export interface IQiDaoVaultContractAdapterFactoryParam {
     contractType: MaiVaultContractType
     contractAddress: string
-    contractProvider: ethers.providers.BaseProvider
+    contractProvider: AbstractProvider
 }
 
 export class QiDaoVaultContractAdapterFactory {
