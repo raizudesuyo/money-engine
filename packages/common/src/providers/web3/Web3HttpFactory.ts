@@ -7,7 +7,7 @@ import { AvalancheJsonSingleton } from './http-providers/AvalancheJsonSingleton'
 
 export class Web3HttpFactory {
 
-    static getProvider = (chain: Web3Chain): ethers.providers.JsonRpcProvider => {
+    static getProvider = (chain: Web3Chain): ethers.JsonRpcProvider => {
         switch (chain) {
             case 'polygon':
                 return MaticJsonSingleton.getInstance();

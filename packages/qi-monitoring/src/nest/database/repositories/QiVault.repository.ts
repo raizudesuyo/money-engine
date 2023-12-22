@@ -1,6 +1,5 @@
 import { DataSource, Repository } from 'typeorm';
 import { QiVault } from '../../../entity/QiVault.entity';
-import { BigNumber } from 'ethers';
 
 export const QiVaultRepository = (dataSource: DataSource): TQiVaultRepository => dataSource.getRepository(QiVault).extend({
 
@@ -29,8 +28,8 @@ export const QiVaultRepository = (dataSource: DataSource): TQiVaultRepository =>
       },
     })
 
-    const gainRationAsNumber = gainRatio.toNumber();
-    const minimumRatioAsNumber = minimumRatio.toNumber();
+    const gainRationAsNumber = Number(gainRatio);
+    const minimumRatioAsNumber = Number(minimumRatio);
 
     if (!vault) {
       const newVault = new QiVault({
@@ -69,8 +68,8 @@ interface UpdateVaultParams {
   priceOracleAddress?: string
   dollarValue: string
   canPublicLiquidate?: boolean
-  gainRatio?: BigNumber
-  minimumRatio?: BigNumber
+  gainRatio?: bigint
+  minimumRatio?: bigint
   vaultAddress: string
   vaultChain: string
   oracleType?: string

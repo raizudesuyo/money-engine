@@ -1,4 +1,4 @@
-import { BigNumber, providers } from 'ethers';
+import { AbstractProvider } from 'ethers';
 import { IQiDaoSmartContractListener } from '../IQiDaoSmartContractListener';
 import { Erc20QiStablecoin, Erc20QiStablecoin__factory } from '../../../../../typechain';
 
@@ -8,41 +8,41 @@ export class Erc20QiStablecoinListenerAdapter implements IQiDaoSmartContractList
 
     constructor(
         contractAddress: string, 
-        provider: providers.BaseProvider) {
+        provider: AbstractProvider) {
         this.smartContract = Erc20QiStablecoin__factory.connect(contractAddress, provider);
     }
 
-    onVaultCreated = async (listener: (id: BigNumber, ownerAddress: string) => Promise<void>) => {
+    onVaultCreated = async (listener: (id: bigint, ownerAddress: string) => Promise<void>) => {
         const filter = this.smartContract.filters.CreateVault(null, null);
 
         this.smartContract.on(filter, listener);
     };
 
-    onCollateralDeposited = async (listener: (id: BigNumber, amount: BigNumber) => Promise<void>) => {
+    onCollateralDeposited = async (listener: (id: bigint, amount: bigint) => Promise<void>) => {
         const filter = this.smartContract.filters.DepositCollateral(null, null);
 
         this.smartContract.on(filter, listener);
     }
 
-    onCollateralWithdrawn = async (listener: (id: BigNumber, amount: BigNumber) => Promise<void>) => {
+    onCollateralWithdrawn = async (listener: (id: bigint, amount: bigint) => Promise<void>) => {
         const filter = this.smartContract.filters.WithdrawCollateral(null, null);
 
         this.smartContract.on(filter, listener);
     }
 
-    onTokenBorrow = async (listener: (id: BigNumber, amount: BigNumber) => Promise<void>) => {
+    onTokenBorrow = async (listener: (id: bigint, amount: bigint) => Promise<void>) => {
         const filter = this.smartContract.filters.BorrowToken(null, null);
 
         this.smartContract.on(filter, listener);
     }
 
-    onTokenRepaid = async (listener: (id: BigNumber, amount: BigNumber, closingFee: BigNumber) => Promise<void>) => {
+    onTokenRepaid = async (listener: (id: bigint, amount: bigint, closingFee: bigint) => Promise<void>) => {
         const filter = this.smartContract.filters.PayBackToken(null, null, null);
 
         this.smartContract.on(filter, listener);
     };
 
-    onLiquidateVault = async (listener: (id: BigNumber, owner: string, buyer: string, debtRepaid: BigNumber, collateralLiquidated: BigNumber, closingFee: BigNumber) => Promise<void>) => {
+    onLiquidateVault = async (listener: (id: bigint, owner: string, buyer: string, debtRepaid: bigint, collateralLiquidated: bigint, closingFee: bigint) => Promise<void>) => {
         const filter = this.smartContract.filters.LiquidateVault(null, null, null, null, null, null);
 
         this.smartContract.on(filter, listener);

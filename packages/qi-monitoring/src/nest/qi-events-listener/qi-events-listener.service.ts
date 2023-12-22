@@ -11,7 +11,7 @@ import { IData,
   Web3WebSocketFactory } from '@money-engine/common';
 import { Inject, Injectable, 
   OnApplicationBootstrap } from '@nestjs/common';
-import { BigNumber, ethers, providers } from 'ethers';
+import { AbstractProvider, ethers } from 'ethers';
 import { InjectPinoLogger, 
   PinoLogger } from 'nestjs-pino';
 import { QiVaultData, QiVault } from '../../entity';
@@ -39,7 +39,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
     data.maiVaultContracts.forEach((vault) => {
       this.logger.info(`Listening to Events ${vault.name}`);
 
-      let provider: providers.BaseProvider;
+      let provider: AbstractProvider;
       const chain = vault.chain as Web3Chain;
 
       if(chain == 'polygon'){
@@ -90,7 +90,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
 
       this.vaultDataRepository.save(new QiVaultData({
         owner: ownerAddress,
-        vaultNumber: id.toNumber(),
+        vaultNumber: Number(id),
         vaultUuid: qiVault?.uuid,
         collateralRatio: 0,
         collateralAmount: '0',
@@ -104,10 +104,10 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
   listenToCollateralDeposits (params: ListenerParams) {
     const { vaultListener: contractListener, vault, vaultService: contractGateway } = params;
     contractListener.onCollateralDeposited(async (id, amount) => {
-      const logMessage = `Vault ${vault.name} # ${id} Deposited ${ethers.utils.commify(ethers.utils.formatEther(amount))}`
+      const logMessage = `Vault ${vault.name} # ${id} Deposited ${this.commify(ethers.formatEther(amount))}`
 
       const qiVault = await this.getQiVault(vault.address);
-      const vaultData = await this.getQiVaultData(qiVault, id.toNumber());
+      const vaultData = await this.getQiVaultData(qiVault, Number(id));
 
       if (!vaultData) {
           this.logger.info(`${logMessage} but it hasn't been synced yet 😥`)
@@ -117,13 +117,13 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       }
 
       // TODO: update algorithm to include latest dollar price of asset?
-      const collateralAmount = BigNumber.from(vaultData.collateralAmount).add(amount);
-      const collateralValue = await contractGateway.calculatePredictedVaultAmount(collateralAmount, BigNumber.from(qiVault?.dollarValue));
+      const collateralAmount = BigInt(vaultData.collateralAmount) + amount;
+      const collateralValue = await contractGateway.calculatePredictedVaultAmount(collateralAmount, BigInt(qiVault?.dollarValue));
       
-      let debtRatio = BigNumber.from(0);
+      let debtRatio = BigInt(0);
 
       try {
-        debtRatio = collateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
+        debtRatio = (collateralValue * BigInt(100)) / (BigInt(vaultData.maiDebt) * BigInt(100000000));
       } catch (E) {
         this.logger.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
         this.logger.error(E);
@@ -141,10 +141,10 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
     const { vaultListener: contractListener, vault, vaultService: contractGateway } = params;
 
     contractListener.onCollateralWithdrawn(async (id, amount) => {
-      const logMessage = `Vault ${vault.name} # ${id} Withdrawn ${ethers.utils.commify(ethers.utils.formatEther(amount))}`;
+      const logMessage = `Vault ${vault.name} # ${id} Withdrawn ${this.commify(ethers.formatEther(amount))}`;
 
       const qiVault = await this.getQiVault(vault.address);
-      const vaultData = await this.getQiVaultData(qiVault, id.toNumber());
+      const vaultData = await this.getQiVaultData(qiVault, Number(id));
 
       if (!vaultData) {
         this.logger.info(`${logMessage} but it hasn't been synced yet 😥`)
@@ -154,12 +154,12 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       }
 
       // TODO: update algorithm to include latest dollar price of asset?
-      const collateralAmount = BigNumber.from(vaultData.collateralAmount).sub(amount);
-      const collateralValue = await contractGateway.calculatePredictedVaultAmount(collateralAmount, BigNumber.from(qiVault?.dollarValue));
-      let debtRatio = BigNumber.from(0)
+      const collateralAmount = BigInt(vaultData.collateralAmount) - amount;
+      const collateralValue = await contractGateway.calculatePredictedVaultAmount(collateralAmount, BigInt(qiVault?.dollarValue));
+      let debtRatio = BigInt(0)
 
       try {
-        debtRatio = collateralValue.mul(100).div(BigNumber.from(vaultData.maiDebt).mul(100000000));
+        debtRatio = (collateralValue * BigInt(100)) / (BigInt(vaultData.maiDebt) * BigInt(100000000));
       } catch (E) {
         this.logger.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
         this.logger.error(E);
@@ -178,10 +178,10 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
     const { vaultListener: contractListener, vault, vaultService: contractGateway } = params;
 
     contractListener.onTokenBorrow(async (id, amount) => {
-      const logMessage = `Vault ${vault.name} # ${id} Withdrawn ${ethers.utils.commify(ethers.utils.formatEther(amount))}`;
+      const logMessage = `Vault ${vault.name} # ${id} Withdrawn ${this.commify(ethers.formatEther(amount))}`;
 
       const qiVault = await this.getQiVault(vault.address);
-      const vaultData = await this.getQiVaultData(qiVault, id.toNumber());
+      const vaultData = await this.getQiVaultData(qiVault, Number(id));
 
       if (!vaultData) {
         this.logger.info(`${logMessage} but it hasn't been synced yet 😥`)
@@ -191,12 +191,11 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       }
 
       // TODO: update algorithm to include latest dollar price of asset?
-      const newMaiDebt = BigNumber.from(vaultData.maiDebt).add(amount);
-      let debtRatio = BigNumber.from(0)
+      const newMaiDebt = BigInt(vaultData.maiDebt) + amount;
+      let debtRatio = BigInt(0)
 
-      try {
-        debtRatio = BigNumber.from(vaultData.collateralAmount).mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
-
+      try {        
+        debtRatio = (BigInt(vaultData.collateralAmount) * BigInt(100)) / newMaiDebt * BigInt(100000000);
       } catch (E) {
         this.logger.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
         this.logger.error(E);
@@ -214,7 +213,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
     const { vaultListener: contractListener, vault, vaultService: contractGateway } = params;
 
     contractListener.onTokenRepaid(async (id, amount, closingFee) => {
-      const logMessage = `Vault ${vault.name} # ${id} Repayed ${ethers.utils.commify(ethers.utils.formatEther(amount))}`;
+      const logMessage = `Vault ${vault.name} # ${id} Repayed ${this.commify(ethers.formatEther(amount))}`;
 
       const qiVault = await this.getQiVault(vault.address);
 
@@ -223,7 +222,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
         return;
       }
 
-      const vaultData = await this.getQiVaultData(qiVault, id.toNumber());
+      const vaultData = await this.getQiVaultData(qiVault, Number(id));
 
       if (!vaultData) {
         this.logger.info(`${logMessage} but it hasn't been synced yet 😥`)
@@ -233,14 +232,14 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       }
 
       // TODO: update algorithm to include latest dollar price of asset?
-      const newMaiDebt = BigNumber.from(vaultData.maiDebt).sub(amount);
-      const collateralAmount = BigNumber.from(vaultData.collateralAmount).sub(BigNumber.from(closingFee));
-      const collateralValue = await contractGateway.calculatePredictedVaultAmount(collateralAmount, BigNumber.from(qiVault.dollarValue));
+      const newMaiDebt = BigInt(vaultData.maiDebt) - (amount);
+      const collateralAmount = BigInt(vaultData.collateralAmount) - closingFee;
+      const collateralValue = await contractGateway.calculatePredictedVaultAmount(collateralAmount, BigInt(qiVault.dollarValue));
 
-      let debtRatio = BigNumber.from(0)
+      let debtRatio = BigInt(0)
 
       try {
-        debtRatio = collateralValue.mul(100).div(BigNumber.from(newMaiDebt).mul(100000000));
+        debtRatio = (collateralValue * BigInt(100)) / (newMaiDebt) * BigInt(100000000);
       } catch (E) {
         this.logger.error('Div by zero error, check maiDebt of ' + JSON.stringify(vaultData))
         this.logger.error(E);
@@ -264,7 +263,7 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       const logMessage = `Vault ${vault.name} # ${id} Liquidated by ${buyer}`;
 
       const qiVault = await this.getQiVault(vault.address);
-      const vaultUserData: IQiDaoVaultData | null = await contractGateway.getVaultUserData(id.toNumber()).catch(() => null);
+      const vaultUserData: IQiDaoVaultData | null = await contractGateway.getVaultUserData(Number(id)).catch(() => null);
 
       if (!vaultUserData) {
         this.logger.info(`${logMessage} but it hasn't been synced yet 😥`)
@@ -276,12 +275,12 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
       if (vaultUserData) {
         this.vaultDataRepository.updateVaultData({
           collateralAmount: vaultUserData.collateralAmount.toString(),
-          collateralRatio: vaultUserData.collateralRatio.lt(1000) ? vaultUserData.collateralRatio.toNumber() : 1000,
+          collateralRatio: vaultUserData.collateralRatio > BigInt(1000) ? Number(vaultUserData.collateralRatio) : 1000,
           maiDebt: vaultUserData.maiDebt.toString(),
           owner: vaultUserData.owner,
           totalCollateralValue: vaultUserData.collateralTotalAmount.toString(),
           vault: qiVault,
-          vaultNumber: id.toNumber()
+          vaultNumber: Number(id)
         })
       }
     });
@@ -298,13 +297,26 @@ export class QiEventsListenerService implements OnApplicationBootstrap {
     return await this.vaultDataRepository.findOne({where: { vaultNumber: vaultNumber, vault: { uuid: vault.uuid } }, relations: ['vault'] });
   }
 
-  private safeConvertBigNumberToNumber(n: BigNumber) {
+  private safeConvertBigNumberToNumber(n: bigint) {
     try {
-        return n.toNumber();
+        return Number(n)
     } catch (error) {
         return 0;
     }
   };
+
+  private commify(value: string) {
+    const match = value.match(/^(-?)([0-9]*)(\.?)([0-9]*)$/);
+    if (!match || (!match[2] && !match[4])) {
+      throw new Error(`bad formatted number: ${ JSON.stringify(value) }`);
+    }
+  
+    const neg = match[1];
+    const whole = BigInt(match[2] || 0).toLocaleString("en-us");
+    const frac = match[4] ? match[4].match(/^(.*?)0*$/)[1]: "0";
+  
+    return `${ neg }${ whole }.${ frac }`;
+  }
 }
 
 

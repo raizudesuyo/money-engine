@@ -10,8 +10,6 @@ import { GLOBAL_STATE_REPOSITORY, QI_VAULT_DATA_REPOSITORY, QI_VAULT_REPOSITORY,
 import { PollPriority, PollPriorityTime } from '../../../../common/src/constants/PollPriority';
 import * as _ from 'lodash';
 import { ignoreElements } from 'rxjs';
-import { MoreThanOrEqual } from 'typeorm';
-import { BigNumber } from 'ethers';
 
 @Injectable()
 export class OracleWatcherService extends OracleWatcherIntegrationService {
@@ -162,7 +160,7 @@ export class OracleWatcherService extends OracleWatcherIntegrationService {
         vaultMinimumRatio: minimumRatio
       })
 
-      const dollarValueBn = BigNumber.from(dollarValue)
+      const dollarValueBn = BigInt(dollarValue)
 
       // Calculate the whole thing
       // mai debt / dollar collateral value to liquidation 

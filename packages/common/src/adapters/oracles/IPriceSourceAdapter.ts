@@ -1,17 +1,15 @@
-import { BigNumber } from "ethers";
-
 export interface IPriceSourceAdapter {
   latestRoundData: () => Promise<LatestRoundDataResponse>
 }
 
 export type IPriceSourceOrdinaryLatestRoundDataResponse = {
-  roundId: BigNumber;
-  answer: BigNumber;
-  startedAt: BigNumber;
-  updatedAt: BigNumber;
-  answeredInRound: BigNumber;
+  roundId: bigint;
+  answer: bigint;
+  startedAt: bigint;
+  updatedAt: bigint;
+  answeredInRound: bigint;
 }
 
-export type IPriceSourceCurveLatestRoundDataResponse = BigNumber
+export type IPriceSourceCurveLatestRoundDataResponse = bigint
 
 export type LatestRoundDataResponse = IPriceSourceOrdinaryLatestRoundDataResponse | IPriceSourceCurveLatestRoundDataResponse

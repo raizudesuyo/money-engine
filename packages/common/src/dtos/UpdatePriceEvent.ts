@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 export interface UpdatePriceEvent {
   crypto: {
     symbol: string,
@@ -16,6 +15,6 @@ export interface UpdatePriceEvent {
 export interface UpdatePriceEvent2 {
   priceSourceUuid: string,
   assetUuid: string,
-  price: BigNumber,
+  price: BigInt,
   priceDelta: number
 }

@@ -1,4 +1,4 @@
-import { BigNumber, providers } from 'ethers';
+import { AbstractProvider } from 'ethers';
 import { IPriceSource, IPriceSource__factory } from '../../../typechain';
 import { IPriceSourceAdapter } from './IPriceSourceAdapter';
 
@@ -8,7 +8,7 @@ export class PriceSourceAdapter implements IPriceSourceAdapter {
 
   constructor(
     contractAddress: string, 
-    provider: providers.BaseProvider) {
+    provider: AbstractProvider) {
     this.smartContract = IPriceSource__factory.connect(contractAddress, provider);
   }
   

@@ -1,12 +1,13 @@
-import { ethers, BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 import { IQiDaoVaultService, IQiDaoVault, IQiDaoVaultData } from './IQiDaoVaultContract';
 import { IQiDaoVaultContractAdapter } from './smart-contract-service/IQiDaoVaultContractAdapter';
 import { MaiVaultContractType } from '../../interfaces/data';
+import { BigNumberMath } from '../../helpers';
 
 export interface Erc20QiStablecoinProviderConstructorParams {
     contractType: MaiVaultContractType
     contractAddress: string
-    contractProvider: ethers.providers.BaseProvider
+    contractProvider: ethers.AbstractProvider
 }
 
 export class QiDaoVaultService implements IQiDaoVaultService {
@@ -66,20 +67,21 @@ export class QiDaoVaultService implements IQiDaoVaultService {
     }
 
     // Returns in ether value, has 18 decimals
-    calculatePredictedVaultAmount = async (collateralAmount: BigNumber, tokenDollarValue: BigNumber): Promise<BigNumber> => {
+    calculatePredictedVaultAmount = async (collateralAmount: bigint, tokenDollarValue: bigint): Promise<bigint> => {
 
-        const targetDecimal = BigNumber.from(18);
+        const targetDecimal = BigInt(18);
+
+        const collateralDecimalAmount = this.smartContractAdapter.amountDecimals();
+        const priceSourceDecimals = this.smartContractAdapter.priceSourceDecimals();
 
         // If collateralized amount is already 18, it will result the same, anything to the power of 0 is 1
-        const normalizedCollateralAmount = collateralAmount.mul(
-            BigNumber.from(10).pow(targetDecimal).sub(BigNumber.from(await this.smartContractAdapter.amountDecimals()))
-        );
+        // Result should be collateral amount with 18 decimals
+        const normalizedCollateralAmount = collateralAmount * BigNumberMath.pow(BigInt(10), targetDecimal - await collateralDecimalAmount)
+        const normalizedDollarValue = tokenDollarValue * BigNumberMath.pow(BigInt(10), targetDecimal - await priceSourceDecimals)
 
-        const normalizedDollarValue = tokenDollarValue.mul(
-            BigNumber.from(10).pow(targetDecimal).sub(BigNumber.from(await this.smartContractAdapter.priceSourceDecimals()))
-        );
-
-        return (normalizedDollarValue.mul(normalizedCollateralAmount)).div(BigNumber.from(10).pow(targetDecimal));
+        const to18th = BigNumberMath.pow(BigInt(10), targetDecimal)
+        const result = (normalizedDollarValue * normalizedCollateralAmount) / to18th;
+        return result;
     }
 
     getSmartContract = (): IQiDaoVaultContractAdapter => this.smartContractAdapter; 

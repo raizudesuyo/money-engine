@@ -1,4 +1,4 @@
-import { BigNumber, providers } from 'ethers';
+import { AbstractProvider } from 'ethers';
 import { CrosschainQiStablecoin, Erc20QiStablecoin, Erc20QiStablecoincamwbtc, Erc20QiStablecoinwbtc, Erc20QiStablecoin__factory } from '../../../../../typechain';
 import { IQiDaoVaultContractAdapter, ContractTransactionParams } from '../IQiDaoVaultContractAdapter';
 
@@ -7,7 +7,7 @@ export default class Erc20QiStablecoinService implements IQiDaoVaultContractAdap
     
     protected smartContract: Erc20QiStablecoin | Erc20QiStablecoinwbtc | Erc20QiStablecoincamwbtc | CrosschainQiStablecoin
 
-    constructor(contractAddress: string, provider: providers.BaseProvider) {
+    constructor(contractAddress: string, provider: AbstractProvider) {
         this.smartContract = Erc20QiStablecoin__factory.connect(contractAddress, provider);
     }
     
@@ -35,7 +35,7 @@ export default class Erc20QiStablecoinService implements IQiDaoVaultContractAdap
 
     collateral = () => this.smartContract.collateral();
 
-    priceSourceDecimals = async () => BigNumber.from(8);
+    priceSourceDecimals = async () => BigInt(8);
 
     getDebtCeiling = () => this.smartContract.getDebtCeiling();
 
@@ -53,13 +53,13 @@ export default class Erc20QiStablecoinService implements IQiDaoVaultContractAdap
 
     destroyVault = (vaultId: number, overrides?: ContractTransactionParams) => this.smartContract.destroyVault(vaultId, overrides)
 
-    depositCollateral = (vaultID: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.depositCollateral(vaultID, amount, overrides);
+    depositCollateral = (vaultID: number, amount: bigint, overrides?: ContractTransactionParams) => this.smartContract.depositCollateral(vaultID, amount, overrides);
 
-    withdrawCollateral = (vaultID: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.withdrawCollateral(vaultID, amount, overrides);
+    withdrawCollateral = (vaultID: number, amount: bigint, overrides?: ContractTransactionParams) => this.smartContract.withdrawCollateral(vaultID, amount, overrides);
 
-    borrowToken = () => (vaultID: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.borrowToken(vaultID, amount, overrides);;
+    borrowToken = () => (vaultID: number, amount: bigint, overrides?: ContractTransactionParams) => this.smartContract.borrowToken(vaultID, amount, overrides);;
 
-    payBackToken = (vaultId: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.payBackToken(vaultId, amount, overrides);
+    payBackToken = (vaultId: number, amount: bigint, overrides?: ContractTransactionParams) => this.smartContract.payBackToken(vaultId, amount, overrides);
 
     getPaid = () => this.smartContract.getPaid();
 
@@ -77,5 +77,5 @@ export default class Erc20QiStablecoinService implements IQiDaoVaultContractAdap
 
     ownerOf = (vaultId: number) => this.smartContract.ownerOf(vaultId);
 
-    amountDecimals = async () => BigNumber.from(18);
+    amountDecimals = async () => BigInt(18);
 }

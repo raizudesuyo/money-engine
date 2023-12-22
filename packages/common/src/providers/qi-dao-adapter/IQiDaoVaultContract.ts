@@ -1,6 +1,5 @@
 // A Strategy actually
 
-import { BigNumber } from "ethers"
 import { IQiDaoVaultContractAdapter } from "./smart-contract-service/IQiDaoVaultContractAdapter";
 
 export interface IQiDaoVaultService {
@@ -11,25 +10,25 @@ export interface IQiDaoVaultService {
     
     getVaultUserData: (vaultId: number) => Promise<IQiDaoVaultData> 
 
-    calculatePredictedVaultAmount: (collateralAmount: BigNumber, tokenDollarValue: BigNumber) => Promise<BigNumber>
+    calculatePredictedVaultAmount: (collateralAmount: bigint, tokenDollarValue: bigint) => Promise<bigint>
 
     getSmartContract: () => IQiDaoVaultContractAdapter
 }
 
 export interface IQiDaoVaultData {
-    collateralRatio: BigNumber
-    collateralAmount: BigNumber
-    collateralTotalAmount: BigNumber
+    collateralRatio: bigint
+    collateralAmount: bigint
+    collateralTotalAmount: bigint
     owner: string
-    maiDebt: BigNumber
+    maiDebt: bigint
 }
 
 export interface IQiDaoVault {
     tokenAddress: string
     priceOracleAddress: string // can actually be an address
-    dollarValue: BigNumber
-    vaultCount: BigNumber
+    dollarValue: bigint
+    vaultCount: bigint
     stabilityPoolAddress: string 
-    gainRatio: BigNumber
-    minimumRatio: BigNumber
+    gainRatio: bigint
+    minimumRatio: bigint
 }

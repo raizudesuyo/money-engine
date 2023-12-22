@@ -1,5 +1,5 @@
 import { IQiDaoVaultContractAdapter, ContractTransactionParams } from '../IQiDaoVaultContractAdapter';
-import { BigNumber, providers } from 'ethers';
+import { providers } from 'ethers';
 import { CrosschainQiStablecoinV2, CrosschainQiStablecoinV2__factory } from '../../../../../typechain';
 
 // Actually an Adapter
@@ -35,7 +35,7 @@ export class CrosschainQiStablecoinV2Service implements IQiDaoVaultContractAdapt
 
     collateral = () => this.smartContract.collateral();
 
-    priceSourceDecimals = async () => BigNumber.from(8);
+    priceSourceDecimals = async () => BigInt(8);
 
     getDebtCeiling = () => this.smartContract.getDebtCeiling();
 
@@ -43,7 +43,7 @@ export class CrosschainQiStablecoinV2Service implements IQiDaoVaultContractAdapt
 
     getClosingFee = () => this.smartContract.getClosingFee();
 
-    getOpeningFee = async () => BigNumber.from(0);
+    getOpeningFee = async () => BigInt(0);
 
     getTokenPriceSource = () => this.smartContract.getTokenPriceSource();
 
@@ -53,13 +53,13 @@ export class CrosschainQiStablecoinV2Service implements IQiDaoVaultContractAdapt
 
     destroyVault = (vaultId: number, overrides?: ContractTransactionParams) => this.smartContract.destroyVault(vaultId, overrides)
 
-    depositCollateral = (vaultID: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.depositCollateral(vaultID, amount, overrides);
+    depositCollateral = (vaultID: number, amount: bigint, overrides?: ContractTransactionParams) => this.smartContract.depositCollateral(vaultID, amount, overrides);
 
-    withdrawCollateral = (vaultID: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.withdrawCollateral(vaultID, amount, overrides);
+    withdrawCollateral = (vaultID: number, amount: bigint, overrides?: ContractTransactionParams) => this.smartContract.withdrawCollateral(vaultID, amount, overrides);
 
-    borrowToken = () => (vaultID: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.borrowToken(vaultID, amount, overrides);;
+    borrowToken = () => (vaultID: number, amount: bigint, overrides?: ContractTransactionParams) => this.smartContract.borrowToken(vaultID, amount, overrides);;
 
-    payBackToken = (vaultId: number, amount: BigNumber, overrides?: ContractTransactionParams) => this.smartContract.payBackToken(vaultId, amount, overrides);
+    payBackToken = (vaultId: number, amount: bigint, overrides?: ContractTransactionParams) => this.smartContract.payBackToken(vaultId, amount, overrides);
 
     getPaid = () => this.smartContract.getPaid();
 
@@ -77,5 +77,5 @@ export class CrosschainQiStablecoinV2Service implements IQiDaoVaultContractAdapt
 
     ownerOf = (vaultId: number) => this.smartContract.ownerOf(vaultId);
 
-    amountDecimals = async () => BigNumber.from(18);
+    amountDecimals = async () => bigint.from(18);
 }

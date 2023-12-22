@@ -3,13 +3,11 @@ import { ASSET_DELTA_ALERT_REPOSITORY, ASSET_PRICE_DATA_REPOSITORY, ASSET_REPOSI
 import { Asset, AssetPriceData, AssetDeltaAlert } from '../../entity';
 import { Repository } from 'typeorm';
 import { OnEvent } from '@nestjs/event-emitter';
-import { BigNumber } from 'ethers';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { ClientProxy } from '@nestjs/microservices';
-import { DeltaAlertEvent, ORACLE_WATCHER_DELTA_ALERT } from '@money-engine/common'
+import { DeltaAlertEvent, ORACLE_WATCHER_DELTA_ALERT, BigNumberMath } from '@money-engine/common'
 import { CreateDeltaRequest, MONEY_ENGINE, UpdateDeltaRequest } from '@money-engine/common-nest';
 import { AssetPriceDataUpdatedEvent, PRICE_UPDATED } from '../../constants/events';
-import { BigNumberMath } from '../../../../common/src/helpers/BigNumberMath';
 
 @Injectable()
 export class DeltaService implements OnApplicationBootstrap {
@@ -88,18 +86,18 @@ export class DeltaService implements OnApplicationBootstrap {
     
     deltas.forEach(delta => {
       const newPrice = payload.newPrice;
-      const reference = BigNumber.from(delta.referencePrice.price);
+      const reference = BigInt(delta.referencePrice.price);
 
       const [,actualDelta] = BigNumberMath.GetDelta(newPrice, reference);
 
       //TODO: Need to know if actually works
-      if(Math.abs(actualDelta.toNumber()) >= Math.abs(delta.delta)) {
+      if(Math.abs(Number(actualDelta)) >= Math.abs(delta.delta)) {
         this.logger.info(`Sending Delta Event ${delta.uuid} to money-engine queue`)
         this.client.emit<void, DeltaAlertEvent>(ORACLE_WATCHER_DELTA_ALERT, {
           deltaId: delta.uuid,
           previousPrice: reference,
           newPrice: newPrice,
-          priceDelta: actualDelta.toNumber()
+          priceDelta: Number(actualDelta)
         })
       }
     });

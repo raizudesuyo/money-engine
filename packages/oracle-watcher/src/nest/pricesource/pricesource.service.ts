@@ -4,7 +4,6 @@ import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { BigNumber } from 'ethers';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 import { AssetPriceDataUpdatedEvent, PRICE_UPDATED } from '../../constants/events';
@@ -155,16 +154,19 @@ export class PricesourceService implements OnApplicationBootstrap {
         }
       })
 
-      const oraclePrice = await oraclePricePromise;
+      // any added as a hack, actually is LatestRoundDataResponse
+      // LatestRoundDataResponse might have a answer property, 
+      // if it has, then get that value, if it doesn't it's probably a bigint
+      const oraclePrice: any = await oraclePricePromise;
       if(!oraclePrice) return;
       const lastPriceFromDb = (await lastPriceFromDbPromise);
       // if that price and this price were different, then emit price.updated event
 
-      const oraclePriceAnswer = "answer" in oraclePrice ? oraclePrice.answer : oraclePrice;
+      const oraclePriceAnswer: bigint = "answer" in oraclePrice ? oraclePrice.answer : oraclePrice;
       
       if(oraclePriceAnswer.toString() != lastPriceFromDb?.price) {
 
-        const actualLastPrice = !!lastPriceFromDb?.price ? BigNumber.from(lastPriceFromDb?.price) : oraclePriceAnswer
+        const actualLastPrice = !!lastPriceFromDb?.price ? BigInt(lastPriceFromDb?.price) : oraclePriceAnswer
 
         const asset = await pollJob.priceSource.asset;
 
@@ -181,8 +183,8 @@ export class PricesourceService implements OnApplicationBootstrap {
         const priceUpdateData: AssetPriceDataUpdatedEvent = {
           assetUuid: asset.uuid,
           newPrice: oraclePriceAnswer,
-          delta: priceDelta.toNumber(),
-          oldPrice: BigNumber.from(actualLastPrice),
+          delta: Number(priceDelta),
+          oldPrice: BigInt(actualLastPrice),
           priceSourceUuid: pollJob.priceSource.uuid
         }
 

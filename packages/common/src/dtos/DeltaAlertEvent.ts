@@ -1,7 +1,6 @@
-import { BigNumber } from 'ethers';
 export interface DeltaAlertEvent {
   deltaId: string,
-  previousPrice: BigNumber,
-  newPrice: BigNumber,
+  previousPrice: BigInt,
+  newPrice: BigInt,
   priceDelta: number
 }

@@ -1,8 +1,8 @@
-import { BigNumber, ContractTransaction, Overrides } from 'ethers';
+import { ContractTransaction, Overrides } from 'ethers';
 
 interface CalculatePropertiesResult {
-    collateralVaultTimes100: BigNumber
-    debtValue: BigNumber
+    collateralVaultTimes100: bigint
+    debtValue: bigint
 }
 
 export type ContractTransactionParams = Overrides & {
@@ -16,58 +16,58 @@ export interface IQiDaoVaultContractAdapter {
      */
     ethPriceSource: () => Promise<string>
 
-    _minimumCollateralPercentage: () => Promise<BigNumber>;
+    _minimumCollateralPercentage: () => Promise<bigint>;
 
-    vaultCount: () => Promise<BigNumber>;
-    closingFee: () => Promise<BigNumber>;
-    openingFee: () => Promise<BigNumber>;
+    vaultCount: () => Promise<bigint>;
+    closingFee: () => Promise<bigint>;
+    openingFee: () => Promise<bigint>;
 
-    treasury: () => Promise<BigNumber>;
-    tokenPeg: () => Promise<BigNumber>;
+    treasury: () => Promise<bigint>;
+    tokenPeg: () => Promise<bigint>;
 
-    vaultCollateral: (vaultId: number) => Promise<BigNumber>;
-    vaultDebt: (vaultId: number) => Promise<BigNumber>;
+    vaultCollateral: (vaultId: number) => Promise<bigint>;
+    vaultDebt: (vaultId: number) => Promise<bigint>;
 
-    debtRatio: () => Promise<BigNumber>;
-    gainRatio: () => Promise<BigNumber>;
+    debtRatio: () => Promise<bigint>;
+    gainRatio: () => Promise<bigint>;
 
     stabilityPool: () => Promise<string>;
 
     collateral: () => Promise<string>;
 
-    priceSourceDecimals: () => Promise<BigNumber>;
+    priceSourceDecimals: () => Promise<bigint>;
 
-    getDebtCeiling: () => Promise<BigNumber>;
+    getDebtCeiling: () => Promise<bigint>;
 
     exists: (vaultId: number) => Promise<Boolean>;
 
-    getClosingFee: () => Promise<BigNumber>
+    getClosingFee: () => Promise<bigint>
 
-    getOpeningFee: () => Promise<BigNumber>;
+    getOpeningFee: () => Promise<bigint>;
 
-    getTokenPriceSource: () => Promise<BigNumber>
+    getTokenPriceSource: () => Promise<bigint>
 
-    getEthPriceSource: () => Promise<BigNumber>
+    getEthPriceSource: () => Promise<bigint>
 
     createVault: (overrides: ContractTransactionParams) => Promise<ContractTransaction>;
 
     destroyVault: (vaultID: number, overrides: ContractTransactionParams) => Promise<ContractTransaction>;
 
-    depositCollateral: (vaultID: number, amount: BigNumber, overrides: ContractTransactionParams) => Promise<ContractTransaction>;
+    depositCollateral: (vaultID: number, amount: bigint, overrides: ContractTransactionParams) => Promise<ContractTransaction>;
 
-    withdrawCollateral: (vaultID: number, amount: BigNumber, overrides: ContractTransactionParams) => Promise<ContractTransaction>;
+    withdrawCollateral: (vaultID: number, amount: bigint, overrides: ContractTransactionParams) => Promise<ContractTransaction>;
 
-    borrowToken: () => (vaultID: number, amount: BigNumber, overrides: ContractTransactionParams) => Promise<ContractTransaction>;
+    borrowToken: () => (vaultID: number, amount: bigint, overrides: ContractTransactionParams) => Promise<ContractTransaction>;
 
-    payBackToken: (vaultId: number, amount: BigNumber, overrides: ContractTransactionParams) => Promise<ContractTransaction>;
+    payBackToken: (vaultId: number, amount: bigint, overrides: ContractTransactionParams) => Promise<ContractTransaction>;
 
     getPaid: (overrides: ContractTransactionParams) => Promise<ContractTransaction>
 
-    checkCost: (vaultId: number) => Promise<BigNumber>
+    checkCost: (vaultId: number) => Promise<bigint>
 
-    checkExtract: (vaultId: number) => Promise<BigNumber>
+    checkExtract: (vaultId: number) => Promise<bigint>
 
-    checkCollateralPercentage: (vaultId: number) => Promise<BigNumber>
+    checkCollateralPercentage: (vaultId: number) => Promise<bigint>
 
     checkLiquidation: (vaultId: number) => Promise<Boolean>
 
@@ -75,5 +75,5 @@ export interface IQiDaoVaultContractAdapter {
 
     ownerOf: (vaultId: number) => Promise<string>
 
-    amountDecimals: () => Promise<BigNumber>
+    amountDecimals: () => Promise<bigint>
 }
