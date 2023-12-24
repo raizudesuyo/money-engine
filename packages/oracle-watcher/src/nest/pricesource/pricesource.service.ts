@@ -1,5 +1,5 @@
 import { BigNumberMath, OracleType, ORACLE_WATCHER_PRICE_UPDATED, PriceSourceAdapterFactory, UpdatePriceEvent2, Web3Chain, Web3HttpFactory } from '@money-engine/common';
-import { MONEY_ENGINE, RegisterPricesourceRequest, UpdatePriceSourceRequest } from '@money-engine/common-nest';
+import { MONEY_ENGINE, RegisterPricesourceRequest, RegisterPricesourceResponse, UpdatePriceSourceRequest } from '@money-engine/common-nest';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ClientProxy } from '@nestjs/microservices';
@@ -52,6 +52,26 @@ export class PricesourceService implements OnApplicationBootstrap {
     this.addPollJob(priceSource, pollPriority);
 
     return priceSource.uuid;
+  }
+
+  async registerPriceSource(
+    registerPriceSourceDto: RegisterPricesourceRequest[]
+  ): Promise<RegisterPricesourceResponse[]> {
+    const priceSourceWithUuid = registerPriceSourceDto.map(async (priceSourceDto) => {
+      const existingPriceSource = await this.findByAddress(priceSourceDto.oracleAddress)
+      const uuid = !!existingPriceSource ? existingPriceSource.uuid : await this.create(priceSourceDto);
+
+      return {
+        uuid,
+        ...priceSourceDto
+      }
+    })
+
+    return Promise.all(priceSourceWithUuid).then((priceSource) => priceSource.map((priceSource) => ({ ...priceSource })))
+  }
+
+  async updatePriceSource(updatePriceSourceRequest: UpdatePriceSourceRequest[]) {
+    return this.updatePollPriority(updatePriceSourceRequest);
   }
 
   async updatePollPriority(updatePriceSourceRequestDto: UpdatePriceSourceRequest[]) {

@@ -17,81 +17,11 @@ describe('AppController', () => {
       controllers: [AppController],
       providers: [
         AppService,
-        AssetService,
-        PricesourceService,
-        DeltaService,
-        {
-          provide: ASSET_DELTA_ALERT_REPOSITORY,
-          useValue: {
-            find: jest.fn(),
-            findOne: jest.fn(),
-            insert: jest.fn(),
-          },
-        },
-        {
-          provide: getLoggerToken(DeltaService.name),
-          useValue: {
-            info: jest.fn(),
-            error: jest.fn(),
-          }
-        },
         {
           provide: 'MONEY_ENGINE',
           useValue: {
             send: jest.fn(),
             connect: jest.fn(),
-          }
-        },
-        {
-          provide: PRICE_SOURCE_POLL_JOB_REPOSITORY,
-          useValue: {
-            find: jest.fn(),
-            findOne: jest.fn(),
-            insert: jest.fn(),
-          },
-        },
-        {
-          provide: PRICE_SOURCE_ORACLE_REPOSITORY,
-          useValue: {
-            find: jest.fn(),
-            findOne: jest.fn(),
-            insert: jest.fn(),
-          },
-        },
-        {
-          provide: ASSET_PRICE_DATA_REPOSITORY,
-          useValue: {
-            find: jest.fn(),
-            findOne: jest.fn(),
-            insert: jest.fn(),
-          },
-        },
-        {
-          provide: ASSET_REPOSITORY,
-          useValue: {
-            find: jest.fn(),
-            findOne: jest.fn(),
-            insert: jest.fn(),
-          },
-        },
-        {
-          provide: getLoggerToken(PricesourceService.name),
-          useValue: {
-            info: jest.fn(),
-            error: jest.fn(),
-          }
-        },
-        {
-          provide: SchedulerRegistry,
-          useValue: {
-            deleteInterval: jest.fn(),
-            addInterval: jest.fn(),
-          }
-        },
-        {
-          provide: EventEmitter2,
-          useValue: {
-            emit: jest.fn(),
           }
         }
       ],
