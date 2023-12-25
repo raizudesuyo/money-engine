@@ -11,10 +11,11 @@ export class Server {
     const microservice = app.connectMicroservice<MicroserviceOptions>({
       transport: Transport.REDIS,
       options: {
-        url: process.env.REDIS_URL,
+        host: process.env.REDIS_HOST || 'localhost',
+        port: Number(process.env.REDIS_PORT) || 6379,
       },
-      bufferLogs: true,
-      abortOnError: false,
+      // bufferLogs: true,
+      // abortOnError: false,
     })
 
     microservice.useLogger(microservice.get(Logger))
